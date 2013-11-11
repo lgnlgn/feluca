@@ -12,6 +12,7 @@ public class Constants {
 	
 	public final static String CSEARCH_PATH = SEARCH_CHROOT + "/csearch";
 
+	public final static String FELUCA_ZK_ROOT = "/feluca";
 	
 	public static final String REALCOLLECTION_KEY = "indexName";
 	public static final String JSON_CALLBACK = "callback";

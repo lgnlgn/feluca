@@ -1,7 +1,7 @@
 package org.shanbo.feluca.datasys;
 
 public interface DataServer {
-	public void start();
+	public void start() throws Exception;
 	
-	public void close();
+	public void close() throws Exception;
 }
