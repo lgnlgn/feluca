@@ -1,9 +1,11 @@
-package org.shanbo.feluca.common.http;
+package org.shanbo.feluca.node.http;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.concurrent.Executors;
+
+
 
 
 
@@ -23,6 +25,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.ObjectDecoder;
 import org.jboss.netty.handler.codec.serialization.ObjectEncoder;
 import org.shanbo.feluca.common.Config;
+import org.shanbo.feluca.node.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +48,7 @@ public abstract class BaseNioServer implements Server {
 	/**
 	 * init
 	 * 
-	 * Implement this {@link org.jarachne.network.http.woyo.search.query.common.Server} method
+	 * Implement this {@link org.shanbo.feluca.node.jarachne.network.http.woyo.search.query.common.Server} method
 	 */
 	public void init() {
 		log = LoggerFactory.getLogger(this.serverName());
@@ -104,7 +107,7 @@ public abstract class BaseNioServer implements Server {
 	/**
 	 * start
 	 * 
-	 * Implement this {@link org.jarachne.network.http.woyo.search.query.common.Server} method
+	 * Implement this {@link org.shanbo.feluca.node.jarachne.network.http.woyo.search.query.common.Server} method
 	 */
 	public void start() {
 		this.channelFactory = this.createChannelFactory();
@@ -121,7 +124,7 @@ public abstract class BaseNioServer implements Server {
 	/**
 	 * stop
 	 * 
-	 * Implement this {@link org.jarachne.network.http.woyo.search.query.common.Server} method
+	 * Implement this {@link org.shanbo.feluca.node.jarachne.network.http.woyo.search.query.common.Server} method
 	 */
 	public void stop() {
 		ChannelGroupFuture closeFuture = allChannels.close();

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.shanbo.feluca.common.http;
+package org.shanbo.feluca.node.http;
 
 import java.util.ArrayList;
 import java.util.HashSet;

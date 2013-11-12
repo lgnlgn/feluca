@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.shanbo.feluca.common.http;
+package org.shanbo.feluca.node.http;
 
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;

@@ -1,4 +1,4 @@
-package org.shanbo.feluca.common.http;
+package org.shanbo.feluca.node.http;
 
 import java.nio.charset.Charset;
 
