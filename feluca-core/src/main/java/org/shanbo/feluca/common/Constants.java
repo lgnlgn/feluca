@@ -1,5 +1,7 @@
 package org.shanbo.feluca.common;
 
+import org.shanbo.feluca.util.Config;
+
 
 public class Constants {
 	public final static String DATA_DIR = "./data";

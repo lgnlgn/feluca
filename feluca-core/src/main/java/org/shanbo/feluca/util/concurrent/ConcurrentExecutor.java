@@ -11,11 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.shanbo.feluca.common.Config;
-
-
-
-
+import org.shanbo.feluca.util.Config;
 
 
 
@@ -77,6 +73,11 @@ public class ConcurrentExecutor {
 		}
 		return respList;
 		
+	}
+	
+	
+	public static Future<?> submit(Runnable task){
+		return executor.submit(task);
 	}
 	
 }

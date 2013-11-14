@@ -1,4 +1,4 @@
-package org.shanbo.feluca.common;
+package org.shanbo.feluca.util;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.shanbo.feluca.common.FelucaException;
 
 
 

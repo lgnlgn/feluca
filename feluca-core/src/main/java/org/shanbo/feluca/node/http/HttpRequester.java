@@ -12,6 +12,11 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
+/**
+ * 
+ *  @Description: TODO
+ *	@author shanbo.liang
+ */
 public class HttpRequester {
 	public ChannelFuture asynDoGet(ClientBootstrap client, String hostPort, String uri){
 		String[] hp = hostPort.split(":");

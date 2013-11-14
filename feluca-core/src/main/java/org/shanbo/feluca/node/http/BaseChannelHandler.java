@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 
 
 
+
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -20,7 +21,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.util.CharsetUtil;
-import org.shanbo.feluca.common.Strings;
+import org.shanbo.feluca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

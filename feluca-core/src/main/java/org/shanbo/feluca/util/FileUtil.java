@@ -1,4 +1,4 @@
-package org.shanbo.feluca.common;
+package org.shanbo.feluca.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

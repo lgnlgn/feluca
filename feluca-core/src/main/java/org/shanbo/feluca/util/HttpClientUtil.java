@@ -1,4 +1,4 @@
-package org.shanbo.feluca.common;
+package org.shanbo.feluca.util;
 
 public class HttpClientUtil {
 	

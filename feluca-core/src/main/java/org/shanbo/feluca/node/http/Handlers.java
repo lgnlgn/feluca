@@ -4,19 +4,16 @@
  */
 package org.shanbo.feluca.node.http;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.shanbo.feluca.common.Strings;
-
+import org.shanbo.feluca.util.Strings;
 
 /**
  * 
- * @author lgn
- *
+ *  @Description: TODO
+ *	@author shanbo.liang
  */
 public class Handlers {
 

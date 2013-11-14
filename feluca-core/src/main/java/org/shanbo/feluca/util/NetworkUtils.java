@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node.http;
+package org.shanbo.feluca.util;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
