@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node;
+package org.shanbo.feluca.node.leader;
 
 import java.util.LinkedList;
 import java.util.concurrent.Future;
