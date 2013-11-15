@@ -1,6 +1,8 @@
 package org.shanbo.feluca.common;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,8 +19,8 @@ public abstract class FelucaJob {
 	
 	protected long startTime ;
 	protected long finishTime;
-	protected StringBuilder logCollector;
-	protected Properties properties;
+	protected final List<String> logCollector;
+	protected final Properties properties;
 	protected volatile JobState state;
 	protected int ttl = -1;	
 	
@@ -31,11 +33,20 @@ public abstract class FelucaJob {
 	}
 	
 	public static interface SubJob{
-		public void run();
+		/**
+		 * this method is unstoppable, 
+		 * in order to interrupt your job, you must split a job into many subjobs ;
+		 * return execution status  
+		 */
+		public boolean run();
+		
+		public String getSubJobName();
 	}
 	
 	
 	public FelucaJob(){
+		this.properties = new Properties();
+		this.logCollector  = new ArrayList<String>();
 		this.startTime = System.currentTimeMillis();
 		this.finishTime = startTime;
 		this.state = JobState.PENDING;
@@ -45,7 +56,7 @@ public abstract class FelucaJob {
 		
 		this.startTime = System.currentTimeMillis();
 		if (prop != null){
-			this.properties = prop;
+			this.properties.putAll(prop);
 			String expTime = prop.getProperty("job.ttl");
 			if(StringUtils.isNumeric(expTime)){
 				Integer t = Integer.parseInt(expTime);
@@ -60,15 +71,15 @@ public abstract class FelucaJob {
 	 * unit: ms, default = -1, check by {@link JobManager}
 	 * @return
 	 */
-	public int getTimeToLive(){
+	public final int getTimeToLive(){
 		return ttl;
 	}
 	
-	public String getJobName(){
+	public final String getJobName(){
 		return  this.getClass().getSimpleName();
 	}
 	
-	public long getJobDuration(){
+	public final long getJobDuration(){
 		if (state == JobState.RUNNING){
 			return System.currentTimeMillis() - startTime;
 		}else{
@@ -80,9 +91,9 @@ public abstract class FelucaJob {
 	
 	public void appendMessage(String content){
 		if (content.endsWith("\n"))
-			logCollector.append(content);
+			logCollector.add(content);
 		else {
-			logCollector.append(content).append("\n");
+			logCollector.add(content + "\n");
 		}
 	}
 	
@@ -100,13 +111,20 @@ public abstract class FelucaJob {
 	 * invoke by {@link JobManager}
 	 * you should watch a stop signal for potential interruption. 
 	 */
-	public void start(){
+	public final void start(){
 		this.state = JobState.RUNNING;
 		Iterator<SubJob> it = splitJobToSub();
 		while(it.hasNext()){
 			if (this.state == JobState.RUNNING){
 				SubJob subJob = it.next();
-				subJob.run();
+				long tStart = System.currentTimeMillis();
+				boolean runSuccess = subJob.run();
+				long tEnd = System.currentTimeMillis();
+				if (!runSuccess){
+					appendMessage("SubJob " + subJob.getSubJobName() + " failed~~~\tcost(ms):" + (tEnd - tStart));
+				}else{
+					appendMessage("SubJob " + subJob.getSubJobName() + " finish~~~\tcost(ms):" + (tEnd - tStart));
+				}
 			}else{
 				// without change state
 				return;
@@ -121,7 +139,7 @@ public abstract class FelucaJob {
 	 * maybe invoked by {@link JobManager}
 	 * Send stop signal & distributed request for stopping, is 
 	 */
-	public void stop(){
+	public final void stop(){
 		this.state = JobState.STOPPING;
 		doStopJob();
 		this.state = JobState.INTERRUPTED;

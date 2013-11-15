@@ -1,6 +1,9 @@
 package org.shanbo.feluca.node.leader;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -127,13 +130,19 @@ public class JobManager{
 	
 	/**
 	 * 
-	 * @param job
+	 * @param jobClz
+	 * @param conf
 	 * @return
+	 * @throws Exception
 	 */
-	public synchronized boolean asynRunJob(final FelucaJob job){
+	public synchronized boolean asynRunJob(Class<? extends FelucaJob> jobClz, Properties conf) throws Exception{
+		
 		if (isJobSlotFree()){
-			this.jobCounts.incrementAndGet();
+		    Constructor<? extends FelucaJob> constructor = jobClz.getConstructor();
+		    FelucaJob job = constructor.newInstance();
+		    job.setJobConfig(conf);
 			this.asyncStartJob(job);
+			this.jobCounts.incrementAndGet();
 			return true;
 		}else{
 			return false;

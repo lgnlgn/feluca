@@ -14,7 +14,7 @@ public class Constants {
 	
 	public final static String CSEARCH_PATH = SEARCH_CHROOT + "/csearch";
 
-	public final static String FELUCA_ZK_ROOT = "/feluca";
+	public final static String ZK_CHROOT = "/feluca";
 	
 	public static final String REALCOLLECTION_KEY = "indexName";
 	public static final String JSON_CALLBACK = "callback";
@@ -36,5 +36,15 @@ public class Constants {
 	public final static String LSTUPD = "lstupd";
 	
 	public final static String DELETE_CLAUSE = "delete";
+	
+	public final static String DATA_PATH = Config.get().get("dataDir", "./data");
+	
+	
+	public final static String ZK_WORKER_PATH = "/jarachne/slaves";
+	public final static String ZK_LEADER_PATH = "/jarachne/master";
+
+
+	public final static String[] BLOCK_SUFFIXES = new String[]{	".data", ".sta", };
+	public final static String[] DATA_SUFFIXES = new String[]{".global"};
 	
 }
