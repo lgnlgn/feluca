@@ -7,7 +7,7 @@ package org.shanbo.feluca.common;
  * 
  *          知道明确的错误原因的异常
  */
-public class FelucaException extends Exception {
+public class FelucaException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	public int errorCode=502;
 	public FelucaException(String message) {

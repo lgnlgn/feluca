@@ -5,14 +5,17 @@ import org.shanbo.feluca.node.RequestHandler;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
 
-public class JobHandler extends RequestHandler{
+public class JobKillRequest extends RequestHandler{
 
-	public JobHandler(RoleModule module) {
+	public static String PATH = "kill";
+	
+	public JobKillRequest(RoleModule module) {
 		super(module);
+		// TODO Auto-generated constructor stub
 	}
 
 	public String getPath() {
-		return "job";
+		return PATH;
 	}
 
 	public void handle(NettyHttpRequest req, DefaultHttpResponse resp) {

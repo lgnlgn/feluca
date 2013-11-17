@@ -21,9 +21,9 @@ import org.shanbo.feluca.util.Strings;
 
 import com.alibaba.fastjson.JSONArray;
 
-public class LeaderChannelHandler extends BaseChannelHandler{
+public class LeaderRequestChannel extends BaseChannelHandler{
 
-	public LeaderChannelHandler(Handlers handlers) {
+	public LeaderRequestChannel(Handlers handlers) {
 		super(handlers);
 	}
 

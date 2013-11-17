@@ -18,14 +18,15 @@ import org.slf4j.LoggerFactory;
  *  @Description data server
  *	@author shanbo.liang
  */
-public class DataFtpServer implements DataServer{
+public class DataFtpServer extends DataServer{
 	static Logger log = LoggerFactory.getLogger(DataFtpServer.class);
 	
 	FtpServer server; 
-	int port ;
+
 	byte[] propInBytes;
 	
 	
+
 	public DataFtpServer(int port){
 		ByteArrayOutputStream temp = new ByteArrayOutputStream();
 		this.port = port;
@@ -40,16 +41,20 @@ public class DataFtpServer implements DataServer{
 		}
 	}
 
+	
+	
 	public DataFtpServer(){
 		this(FTPConstants.PORT);
 	}
 
-	public void start() throws FtpException {
+	public void preStart() throws FtpException {
 		FtpServerFactory serverFactory = new FtpServerFactory();
 		ListenerFactory factory = new ListenerFactory();
-		// set the port of the listener
-		factory.setPort(port);
 
+		// set the ip, port of the listener
+		factory.setPort(port);
+		factory.setServerAddress(getServerAddress().split(":")[0]);
+		
 		// replace the default listener
 		PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
 		userManagerFactory.setInputSteam(new ByteArrayInputStream(propInBytes));
@@ -57,13 +62,14 @@ public class DataFtpServer implements DataServer{
 		serverFactory.addListener("default", factory.createListener());
 		// start the server
 		serverFactory.setUserManager(userManagerFactory.createUserManager());
-
+		
 		server = serverFactory.createServer();         
 		server.start();
 	}
 
-	public void close() {
+	public void postStop() {
 		server.stop();
 	}
+
 
 }

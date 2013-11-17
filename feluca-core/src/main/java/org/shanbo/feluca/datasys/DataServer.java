@@ -1,7 +1,19 @@
 package org.shanbo.feluca.datasys;
 
-public interface DataServer {
-	public void start() throws Exception;
+import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.common.Server;
+
+public abstract  class DataServer extends Server{
 	
-	public void close() throws Exception;
+	public final String zkRegisterPath(){
+		return Constants.FDFS_ZK_ROOT;
+	}
+	
+	public final String serverName(){
+		return Constants.FDFS_SERVER_NAME;
+	}
+	
+	public int defaultPort() {
+		return 12221;
+	}
 }

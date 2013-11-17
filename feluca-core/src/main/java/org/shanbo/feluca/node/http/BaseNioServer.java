@@ -26,17 +26,15 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.serialization.ObjectDecoder;
 import org.jboss.netty.handler.codec.serialization.ObjectEncoder;
-import org.shanbo.feluca.node.Server;
+
+import org.shanbo.feluca.common.Server;
 import org.shanbo.feluca.util.Config;
 import org.shanbo.feluca.util.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
-
-
-public abstract class BaseNioServer implements Server {
+public abstract class BaseNioServer extends Server {
 	final ChannelGroup allChannels = new DefaultChannelGroup(
 			"nio-server");
 	protected Logger log;
@@ -90,7 +88,8 @@ public abstract class BaseNioServer implements Server {
 		int port = c.getInt(this.serverName() + ".bind-port", defaultPort());
 		return ip + ":" + port;
 	}
-	protected int defaultPort()
+	
+	public int defaultPort()
 	{
 		return 21001;
 	}

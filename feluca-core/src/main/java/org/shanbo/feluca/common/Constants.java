@@ -16,6 +16,11 @@ public class Constants {
 
 	public final static String ZK_CHROOT = "/feluca";
 	
+	public final static String FDFS_ZK_ROOT = ZK_CHROOT + "/fdfs";
+	
+	public final static String FDFS_SERVER_NAME = "FDSFServer";
+	
+	
 	public static final String REALCOLLECTION_KEY = "indexName";
 	public static final String JSON_CALLBACK = "callback";
 	public static final String CONFIG_NAME = "index.config";

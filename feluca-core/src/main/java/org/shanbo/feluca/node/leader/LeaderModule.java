@@ -25,18 +25,18 @@ import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
 
 import com.alibaba.fastjson.JSONArray;
 
-public class MasterModule extends RoleModule{
+public class LeaderModule extends RoleModule{
 	
-	private JobManager masterJobManager;
-	private volatile Map<String, String> slaves;
+	private JobManager jobManager;
+	private volatile Map<String, String> workers;
 	private String dataDir;
 	public ClientBootstrap bootstrap;
 	public HttpClient httpClient;
 
 	private ChildrenWatcher cw;
-	
-	public MasterModule() throws KeeperException, InterruptedException{
-		slaves = new ConcurrentHashMap<String, String>();
+
+	public LeaderModule() throws KeeperException, InterruptedException{
+		workers = new ConcurrentHashMap<String, String>();
 		dataDir = Constants.DATA_DIR;
 		bootstrap = new ClientBootstrap(
 				new NioClientSocketChannelFactory(
@@ -48,16 +48,16 @@ public class MasterModule extends RoleModule{
 		ZKClient.get().createIfNotExist(Constants.ZK_LEADER_PATH);
 		ZKClient.get().createIfNotExist(Constants.ZK_WORKER_PATH);
 		this.watchZookeeper();
-		this.masterJobManager = new JobManager();
+		this.jobManager = new JobManager();
 	}
 
 	
 	public void addSlave(String hostPort){
-		this.slaves.put(hostPort, "");
+		this.workers.put(hostPort, "");
 	}
 	
 	public String removeSlave(String hostPort){
-		return this.slaves.remove(hostPort);
+		return this.workers.remove(hostPort);
 	}
 	
 	public String getDataDir(){
@@ -66,25 +66,24 @@ public class MasterModule extends RoleModule{
 	
 	public Map<String, String> copySlave(){
 		Map<String, String> slaves = new ConcurrentHashMap<String, String>();
-		for(String slaveAddress : this.slaves.keySet()){
+		for(String slaveAddress : this.workers.keySet()){
 			slaves.put(slaveAddress, null);
 		}
 		return slaves;
 	}
 	
-	public boolean submitJob(String jobName, Properties conf) throws Exception{
-		if (jobName == null)
+	public boolean submitJob(Class<? extends FelucaJob> clz, Properties conf) throws Exception{
+		if (clz == null)
 			return false;
-		Class<FelucaJob> clz = (Class<FelucaJob>) Class.forName(jobName);
-		return this.masterJobManager.asynRunJob(clz, conf);
+		return this.jobManager.asynRunJob(clz, conf);
 	}
 	
 	public String getJobStatus(){
-		return masterJobManager.getCurrentJobState();
+		return jobManager.getCurrentJobState();
 	}
 	
 	public String getLatestJobStatus(int num){
-		JSONArray ja = masterJobManager.getLatestJobStates();
+		JSONArray ja = jobManager.getLatestJobStates();
 		JSONArray jaa = new JSONArray();
 		int n = 0;
 		for(int i = ja.size()-1; i >= 0 && n < num; n++,i--){
@@ -109,12 +108,12 @@ public class MasterModule extends RoleModule{
 	}
 	
 	public void addMessageToJob(String content){
-		this.masterJobManager.addMessageToJob(content);
+		this.jobManager.addMessageToJob(content);
 	}
 	
 	public List<String> yieldSlaves(){
 		List<String> a = new ArrayList<String>();
-		a.addAll(this.slaves.keySet());
+		a.addAll(this.workers.keySet());
 		return a;
 	}
 	
