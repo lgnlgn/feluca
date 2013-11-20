@@ -9,7 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
+/**
+ * 
+ *  @Description: TODO
+ *	@author shanbo.liang
+ */
 public abstract class Server {
 	Logger log = LoggerFactory.getLogger(Server.class);
 	protected String ip = null;
@@ -20,8 +24,8 @@ public abstract class Server {
 			this.preStart();
 			ZKClient.get().registerEphemeralNode(zkRegisterPath(), getServerAddress());
 		}catch (Exception e) {
-			log.error("server start failed", e);
-			throw new FelucaException("data sys start failed");
+			log.error("Server [" + this.getClass().getName() + "] start failed", e);
+			throw new FelucaException("Server [" + this.getClass().getName() + "] start failed");
 		}
 		
 	}
@@ -31,8 +35,8 @@ public abstract class Server {
 			this.postStop();
 			ZKClient.get().unRegisterEphemeralNode(zkRegisterPath(), getServerAddress());
 		}catch (Exception e) {
-			log.error("server stop failed", e);
-			throw new FelucaException("server stop failed");
+			log.error("Server [" + this.getClass().getName() + "] stop failed", e);
+			throw new FelucaException("Server [" + this.getClass().getName() + "] stop failed");
 		}
 	}
 
