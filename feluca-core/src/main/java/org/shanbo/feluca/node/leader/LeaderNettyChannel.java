@@ -21,9 +21,14 @@ import org.shanbo.feluca.util.Strings;
 
 import com.alibaba.fastjson.JSONArray;
 
-public class LeaderRequestChannel extends BaseChannelHandler{
+/**
+ * 
+ *  @Description for netty
+ *	@author shanbo.liang
+ */
+public class LeaderNettyChannel extends BaseChannelHandler{
 
-	public LeaderRequestChannel(Handlers handlers) {
+	public LeaderNettyChannel(Handlers handlers) {
 		super(handlers);
 	}
 

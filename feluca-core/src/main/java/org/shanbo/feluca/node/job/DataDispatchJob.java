@@ -1,6 +1,7 @@
 package org.shanbo.feluca.node.job;
 
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.shanbo.feluca.common.FelucaJob;
 
@@ -12,21 +13,15 @@ import org.shanbo.feluca.common.FelucaJob;
 public class DataDispatchJob extends FelucaJob{
 
 	@Override
-	protected String getExecutionLog() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected Iterator<SubJob> splitJobToSub() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected void doStopJob() {
+	public void init(Properties prop) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected String getAllLog() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -77,7 +77,8 @@ public class ConcurrentExecutor {
 	
 	
 	public static Future<?> submit(Runnable task){
-		return executor.submit(task);
+		Future<?> f = executor.submit(task);
+		return f;
 	}
 	
 }

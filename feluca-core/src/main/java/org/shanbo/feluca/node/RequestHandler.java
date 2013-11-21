@@ -5,9 +5,9 @@ import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.shanbo.feluca.node.http.Handler;
 
 /**
- * master handler 
- * slave handler 
- * @author lgn-mop
+ * leader handler 
+ * worker handler 
+ * @author shanbo.liang
  *
  */
 public abstract class RequestHandler implements Handler{

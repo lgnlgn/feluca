@@ -3,55 +3,70 @@ package org.shanbo.feluca.node.job;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.shanbo.feluca.common.FelucaJob;
 
 public class StoppableSleepJob extends FelucaJob{
 	
-	class Nap implements SubJob{
+	static class Nap extends FelucaJob{
+		final static int DEFUALT_SLEEP_MS = 4000;
+		int loop = 10;
+		Thread sleeper;
+		
+		
+		
+		@Override
+		public void init(Properties prop) {
+			
+		}
 
-		String name;
-		int sleep;
-		public Nap(int id, int msToSleep){
-			this.name = "nap(" + id+ ")";
-			this.sleep = msToSleep;
+		@Override
+		protected String getAllLog() {
+			return StringUtils.join(this.logCollector.iterator(), "");
+		}
+
+
+		public void stopJob() {
+			state = JobState.INTERRUPTED;
+			
+		}
+
+		public void startJob(){
+			state = JobState.RUNNING;
+			sleeper = new Thread(new Runnable() {
+				
+				public void run() {
+					for(int i = 0 ; i < loop && state != JobState.INTERRUPTED; i++){
+						try {
+							appendMessage("let me sleep " + DEFUALT_SLEEP_MS);
+							Thread.sleep(DEFUALT_SLEEP_MS);
+						} catch (InterruptedException e) {
+						}
+					}
+					state = JobState.FINISHED;
+				}
+			});
+			sleeper.setDaemon(true);
+			sleeper.start();
 		}
 		
-		public boolean run() {
-			try {
-				Thread.sleep(sleep);
-				return true;
-			} catch (InterruptedException e) {
-				appendMessage("sleep subjob interrupted~~~");
-			}
-			return false;
-		}
-
-		public String getSubJobName() {
-			return name;
-		}
 	}
 	
-	final static int DEFUALT_SLEEP_MS = 4000;
+	
 	
 	@Override
-	protected String getExecutionLog() {
-		return StringUtils.join(this.logCollector.iterator(), "");
+	protected String getAllLog() {
+		return StringUtils.join(this.logPipe.iterator(), "");
+		
 	}
 
 	@Override
-	protected Iterator<SubJob> splitJobToSub() {
-		List<SubJob> sleeps = new ArrayList<FelucaJob.SubJob>();
-		for(int i = 0 ; i < 10; i+=1){
-			sleeps.add(new Nap(i, DEFUALT_SLEEP_MS));
-		}
-		return sleeps.iterator();
-	}
-
-	@Override
-	protected void doStopJob() {
-		//do nothing;		
+	public void init(Properties prop) {
+		Nap n = new Nap();
+		n.setLogPipe(logPipe);
+		this.subJobs.add(n);
 	}
 
 }

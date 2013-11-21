@@ -44,9 +44,9 @@ public class JobManager{
 				while(true){
 					if (isJobSlotFree()){
 					}else{
-						if (running.getTimeToLive() > 0 && running.getJobDuration() > running.getTimeToLive()){
-							killJob();
-						}
+//						if (running.getTimeToLive() > 0 && running.getJobDuration() > running.getTimeToLive()){
+//							killJob();
+//						}
 					}
 					try {
 						Thread.sleep(100);
@@ -87,7 +87,7 @@ public class JobManager{
 		this.running = job;
 		ConcurrentExecutor.submit(new Runnable() {	
 			public void run() {
-				running.start();				
+				running.startJob();			
 			}
 		});
 	}
@@ -155,7 +155,7 @@ public class JobManager{
 		}else{
 			ConcurrentExecutor.submit(new Runnable() {	
 				public void run() {
-					running.stop();				
+					running.stopJob();			
 				}
 			});
 		}

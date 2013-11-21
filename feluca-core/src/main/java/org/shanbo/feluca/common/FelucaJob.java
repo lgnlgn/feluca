@@ -1,7 +1,6 @@
 package org.shanbo.feluca.common;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -16,34 +15,32 @@ import com.alibaba.fastjson.JSONObject;
  *	@author shanbo.liang
  */
 public abstract class FelucaJob {
-	
+
 	protected long startTime ;
 	protected long finishTime;
-	protected final List<String> logCollector;
+	protected List<String> logCollector;
+	protected List<String> logPipe;
 	protected final Properties properties;
 	protected volatile JobState state;
 	protected int ttl = -1;	
-	
-	public enum JobState{
+
+	protected String jobName;
+
+	protected List<FelucaJob> subJobs;
+
+	protected Thread subJobWatcher; //determine job state by subjobs
+
+
+	public static enum JobState{
 		PENDING,
 		RUNNING,
 		STOPPING,
 		FINISHED,
 		INTERRUPTED
 	}
-	
-	public static interface SubJob{
-		/**
-		 * this method is unstoppable, 
-		 * in order to interrupt your job, you must split a job into many subjobs ;
-		 * return execution status  
-		 */
-		public boolean run();
-		
-		public String getSubJobName();
-	}
-	
-	
+
+
+
 	public FelucaJob(){
 		this.properties = new Properties();
 		this.logCollector  = new ArrayList<String>();
@@ -51,9 +48,16 @@ public abstract class FelucaJob {
 		this.finishTime = startTime;
 		this.state = JobState.PENDING;
 	}
-	
+
+	/**
+	 * specify sub job!
+	 * @param prop
+	 */
+	public abstract void init(Properties prop);
+
+
 	public void setJobConfig(Properties prop){
-		
+
 		this.startTime = System.currentTimeMillis();
 		if (prop != null){
 			this.properties.putAll(prop);
@@ -62,11 +66,16 @@ public abstract class FelucaJob {
 				Integer t = Integer.parseInt(expTime);
 				this.ttl = t;
 			}
-					
+
 		}
 	}
-	
-	
+
+
+	public void setLogPipe(List<String> logCollector){
+		this.logPipe = logCollector;
+	}
+
+
 	/**
 	 * unit: ms, default = -1, check by {@link JobManager}
 	 * @return
@@ -74,11 +83,11 @@ public abstract class FelucaJob {
 	public final int getTimeToLive(){
 		return ttl;
 	}
-	
+
 	public final String getJobName(){
-		return  this.getClass().getSimpleName();
+		return  this.jobName;
 	}
-	
+
 	public final long getJobDuration(){
 		if (state == JobState.RUNNING){
 			return System.currentTimeMillis() - startTime;
@@ -86,74 +95,111 @@ public abstract class FelucaJob {
 			return finishTime - startTime;
 		}
 	}
-	
-	protected abstract String getExecutionLog();
-	
-	public void appendMessage(String content){
-		if (content.endsWith("\n"))
-			logCollector.add(content);
-		else {
-			logCollector.add(content + "\n");
+
+	protected abstract String getAllLog();
+
+	public synchronized void appendMessage(String content){
+		String line = content.endsWith("\n")?content:content+"\n";
+		logCollector.add(line);
+		if (this.logPipe!= null){
+			logPipe.add(line);
 		}
 	}
-	
+
 	public String getJobInfo(){
 		JSONObject json = new JSONObject();
 		json.put("jobName", this.getJobName());
 		json.put("jobCreate", startTime);
 		json.put("jobDuration", getJobDuration());
 		json.put("jobState", this.getJobState().toString());
-		json.put("jobLog", this.getExecutionLog());
+		json.put("jobLog", this.getAllLog());
 		return json.toString();
 	}
-	
+
 	/**
 	 * invoke by {@link JobManager}
-	 * you should watch a stop signal for potential interruption. 
+	 * implement this method on the leaf of job-tree;
 	 */
-	public final void start(){
+	public void startJob(){
+		//start all jobs
+		for(FelucaJob subJob: this.subJobs){
+			subJob.startJob();
+		}
 		this.state = JobState.RUNNING;
-		Iterator<SubJob> it = splitJobToSub();
-		while(it.hasNext()){
-			if (this.state == JobState.RUNNING){
-				SubJob subJob = it.next();
-				long tStart = System.currentTimeMillis();
-				boolean runSuccess = subJob.run();
-				long tEnd = System.currentTimeMillis();
-				if (!runSuccess){
-					appendMessage("SubJob " + subJob.getSubJobName() + " failed~~~\tcost(ms):" + (tEnd - tStart));
-				}else{
-					appendMessage("SubJob " + subJob.getSubJobName() + " finish~~~\tcost(ms):" + (tEnd - tStart));
+		if (this.subJobs.size() > 0){
+			subJobWatcher = new Thread(new Runnable() {
+
+				public void run() {
+					int action = 0;
+					long tStart = System.currentTimeMillis();
+					while( true){
+						JobState currentState = checkAllSubJobState();
+						long elapse = System.currentTimeMillis() - tStart;
+						if (ttl > 0 && elapse > ttl){
+							action = 1;
+							break;
+						}
+						if (currentState == JobState.FINISHED){
+							break;
+						}
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {
+						}
+					}
+					if (action == 1){
+						//self kill
+						stopJob();
+					}
 				}
-			}else{
-				// without change state
-				return;
+			}, jobName + "@watcher");
+			subJobWatcher.setDaemon(true);
+			subJobWatcher.start();
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected JobState checkAllSubJobState(){
+		List<JobState> currentStates = new ArrayList<FelucaJob.JobState>(subJobs.size());
+		for(FelucaJob subJob: subJobs){
+			currentStates.add(subJob.getJobState());
+		}
+		for(JobState state : currentStates){
+			if (state != JobState.FINISHED){
+				return JobState.RUNNING;
 			}
 		}
-		this.state = JobState.FINISHED;
+		return JobState.FINISHED;
 	}
-	
-	protected abstract Iterator<SubJob> splitJobToSub();
-	
+
+	protected void gatherInfoFromSubJobs(){
+		for(FelucaJob subJob: subJobs){
+			appendMessage(String.format("%s log: %s ", subJob.getJobName(), subJob.getJobInfo()));
+		}
+	}
+
+
 	/**
-	 * maybe invoked by {@link JobManager}
-	 * Send stop signal & distributed request for stopping, is 
+	 * invoke by {@link JobManager}
+	 * implement this method on the leaf of job-tree;
 	 */
-	public final void stop(){
+	public void stopJob(){
 		this.state = JobState.STOPPING;
-		doStopJob();
+		for(FelucaJob job : subJobs){
+			job.stopJob();
+		}
 		this.state = JobState.INTERRUPTED;
 	}
-	
-	
-	protected abstract void doStopJob();
-	
+
 	public synchronized void setJobState(JobState state){
 		this.state = state;
 	}
-	
+
 	public synchronized JobState getJobState(){
 		return this.state;
 	}
-	
+
 }
