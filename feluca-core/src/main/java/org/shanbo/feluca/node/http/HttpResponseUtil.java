@@ -70,8 +70,16 @@ public class HttpResponseUtil {
 	public static void setResponse( DefaultHttpResponse resp, String respHead, String respBody, HttpResponseStatus status){
 		resp.setStatus( status );
 		JSONObject json = new JSONObject();
-		json.put(REQUEST , respHead);
-		json.put(RESPONSE , respBody);
+		if (respHead.startsWith("{") && respHead.endsWith("}")){
+			json.put(REQUEST, JSONObject.parse(respHead));
+		}else
+			json.put(REQUEST , respHead);
+		if (respBody.endsWith("}") && respBody.startsWith("{"))
+			json.put(RESPONSE, JSONObject.parse(respBody));
+		else {
+			json.put(RESPONSE , respBody);
+		}
+		
 		resp.setContent(ChannelBuffers.copiedBuffer( json.toString().getBytes()));
 	}
 }

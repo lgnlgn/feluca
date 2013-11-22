@@ -17,7 +17,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class ClusterStatusRequest extends RequestHandler{
 
-	public final static String PATH = "cluster";
+	public final static String PATH = "/cluster";
 	
 	public ClusterStatusRequest(RoleModule module) {
 		super(module);

@@ -85,11 +85,12 @@ public class JobManager{
 	 */
 	private void asyncStartJob(final FelucaJob job){
 		this.running = job;
-		ConcurrentExecutor.submit(new Runnable() {	
-			public void run() {
-				running.startJob();			
-			}
-		});
+		this.running.startJob();
+//		ConcurrentExecutor.submit(new Runnable() {	
+//			public void run() {
+//				running.startJob();			
+//			}
+//		});
 	}
 	
 	/**
@@ -124,7 +125,7 @@ public class JobManager{
 		if (!isJobSlotFree()){
 			return running.getJobInfo();
 		}else{ //free
-			return " no job running ";
+			return "no job running";
 		}
 	}
 	
@@ -140,7 +141,7 @@ public class JobManager{
 		if (isJobSlotFree()){
 		    Constructor<? extends FelucaJob> constructor = jobClz.getConstructor();
 		    FelucaJob job = constructor.newInstance();
-		    job.setJobConfig(conf);
+		    job.init(conf);
 			this.asyncStartJob(job);
 			this.jobCounts.incrementAndGet();
 			return true;
@@ -153,11 +154,7 @@ public class JobManager{
 		if (this.running == null || isJobSlotFree()){
 			;
 		}else{
-			ConcurrentExecutor.submit(new Runnable() {	
-				public void run() {
-					running.stopJob();			
-				}
-			});
+			running.stopJob();
 		}
 	}
 	

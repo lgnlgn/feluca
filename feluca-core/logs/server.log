@@ -1,0 +1,473 @@
+2013-11-22 15:03:06,352 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:03:06,418 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : localhost/127.0.0.1:12020 
+2013-11-22 15:14:36,418 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:14:36,420 DEBUG org.shanbo.feluca.util.ZKClient: use test hosts.....
+2013-11-22 15:14:36,451 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 15:14:36,451 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 15:14:36,451 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 15:14:36,451 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 15:14:36,451 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 15:14:36,451 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 15:14:36,451 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 15:14:36,451 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 15:14:36,452 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 15:14:36,452 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 15:14:36,452 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 15:14:36,452 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 15:14:36,452 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 15:14:36,452 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 15:14:36,452 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 15:14:36,466 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=10.249.15.202:2181,10.249.15.201:2181,10.249.15.199:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@14377358
+2013-11-22 15:17:51,875 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:17:51,897 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 15:17:51,898 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 15:17:51,898 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 15:17:51,898 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 15:17:51,898 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 15:17:51,898 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 15:17:51,898 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 15:17:51,898 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 15:17:51,899 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 15:17:51,899 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 15:17:51,899 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 15:17:51,899 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 15:17:51,899 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 15:17:51,899 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 15:17:51,899 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 15:17:51,901 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@249a2807
+2013-11-22 15:17:51,965 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 15:17:51,966 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 15:17:52,014 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00001, negotiated timeout = 4000
+2013-11-22 15:17:52,016 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 15:17:52,018 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 15:17:52,630 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : localhost/127.0.0.1:12020 
+2013-11-22 15:37:37,206 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:37:37,223 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 15:37:37,223 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 15:37:37,223 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 15:37:37,223 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 15:37:37,223 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 15:37:37,223 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 15:37:37,223 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 15:37:37,223 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 15:37:37,224 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 15:37:37,224 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 15:37:37,224 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 15:37:37,224 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 15:37:37,224 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 15:37:37,224 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 15:37:37,224 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 15:37:37,225 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@6c7d84ce
+2013-11-22 15:37:37,253 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 15:37:37,254 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 15:37:37,289 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00003, negotiated timeout = 4000
+2013-11-22 15:37:37,291 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 15:37:37,292 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 15:37:37,615 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 15:37:49,011 INFO org.shanbo.feluca.node.http.BaseChannelHandler: 0:0:0:0:0:0:0:1:58742 /cluster	{"request":"request path :/cluster","response":"{\"available_path\":[\"/job\"],\"code\":404}"}
+2013-11-22 15:38:04,139 INFO org.shanbo.feluca.node.http.BaseChannelHandler: 0:0:0:0:0:0:0:1:58742 /cluster	{"request":"request path :/cluster","response":"{\"available_path\":[\"/job\"],\"code\":404}"}
+2013-11-22 15:49:26,676 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:49:26,688 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Program Files\Java\jdk1.7.0_13\jre\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 15:49:26,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 15:49:26,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 15:49:26,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 15:49:26,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 15:49:26,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 15:49:26,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 15:49:26,691 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@17e3b98
+2013-11-22 15:49:26,721 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 15:49:26,722 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 15:49:26,749 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00004, negotiated timeout = 4000
+2013-11-22 15:49:26,751 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 15:49:26,752 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 15:49:27,076 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 15:49:30,102 INFO org.shanbo.feluca.node.http.BaseChannelHandler: 0:0:0:0:0:0:0:1:58838 /cluster	{"request":"request path :/cluster","response":"{\"available_path\":[\"/job\"],\"code\":404}"}
+2013-11-22 15:49:36,281 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:49:36,294 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 15:49:36,294 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 15:49:36,294 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 15:49:36,294 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 15:49:36,294 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 15:49:36,294 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 15:49:36,295 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Program Files\Java\jdk1.7.0_13\jre\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 15:49:36,295 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 15:49:36,295 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 15:49:36,295 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 15:49:36,295 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 15:49:36,295 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 15:49:36,295 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 15:49:36,295 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 15:49:36,296 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 15:49:36,297 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@17e3b98
+2013-11-22 15:49:36,330 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server activate.adobe.com/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 15:49:36,331 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to activate.adobe.com/127.0.0.1:2181, initiating session
+2013-11-22 15:49:36,359 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server activate.adobe.com/127.0.0.1:2181, sessionid = 0x1427e86eba00005, negotiated timeout = 4000
+2013-11-22 15:49:36,360 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 15:49:36,362 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 15:49:36,723 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 15:49:44,053 INFO org.shanbo.feluca.node.http.BaseChannelHandler: 0:0:0:0:0:0:0:1:58852 /cluster	{"request":"request path :/cluster","response":"{\"available_path\":[\"/job\"],\"code\":404}"}
+2013-11-22 15:50:31,678 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:50:31,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 15:50:31,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 15:50:31,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 15:50:31,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 15:50:31,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 15:50:31,689 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Program Files\Java\jdk1.7.0_13\jre\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 15:50:31,690 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 15:50:31,691 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@312d0089
+2013-11-22 15:50:31,723 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 15:50:31,724 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 15:50:31,756 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00006, negotiated timeout = 4000
+2013-11-22 15:50:31,757 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 15:50:31,759 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 15:50:32,113 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 15:50:36,162 INFO org.shanbo.feluca.node.http.BaseChannelHandler: 0:0:0:0:0:0:0:1:58873 /cluster	{"request":"request path :/cluster","response":"{\"available_path\":[\"/job\"],\"code\":404}"}
+2013-11-22 15:55:38,532 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:55:38,544 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 15:55:38,544 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 15:55:38,544 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 15:55:38,544 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 15:55:38,544 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Program Files\Java\jdk1.7.0_13\jre\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 15:55:38,545 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 15:55:38,546 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 15:55:38,547 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@67a78ec
+2013-11-22 15:55:38,577 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 15:55:38,578 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 15:55:38,608 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00007, negotiated timeout = 4000
+2013-11-22 15:55:38,609 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 15:55:38,611 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 15:55:38,966 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 15:55:49,013 INFO org.shanbo.feluca.node.http.BaseChannelHandler: 0:0:0:0:0:0:0:1:58915 /cluster	{"request":"request path :/cluster","response":{"available_path":["/job","cluster"],"code":404}}
+2013-11-22 15:58:00,243 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Program Files\Java\jdk1.7.0_13\jre\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 15:58:00,256 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 15:58:00,257 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 15:58:00,257 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 15:58:00,257 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 15:58:00,258 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@67a78ec
+2013-11-22 15:58:00,288 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 15:58:00,289 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 15:58:00,320 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00008, negotiated timeout = 4000
+2013-11-22 15:58:00,324 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 15:58:00,327 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 15:58:00,738 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 15:58:02,736 INFO org.shanbo.feluca.node.http.BaseChannelHandler: 0:0:0:0:0:0:0:1:58939 /cluster	{"request":"cluster status","response":{"leader":"0.0.0.0:12020","worker":[]}}
+2013-11-22 16:04:13,737 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 16:04:13,756 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 16:04:13,756 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 16:04:13,756 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 16:04:13,756 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 16:04:13,756 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 16:04:13,756 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 16:04:13,756 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 16:04:13,757 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 16:04:13,757 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 16:04:13,757 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 16:04:13,757 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 16:04:13,757 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 16:04:13,757 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 16:04:13,757 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 16:04:13,757 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 16:04:13,758 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@4b9f657
+2013-11-22 16:04:13,786 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 16:04:13,787 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 16:04:13,829 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00009, negotiated timeout = 4000
+2013-11-22 16:04:13,832 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 16:04:13,835 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 16:04:14,161 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 16:52:39,803 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 16:52:39,821 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 16:52:39,821 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 16:52:39,821 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 16:52:39,821 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 16:52:39,821 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 16:52:39,821 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 16:52:39,821 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 16:52:39,822 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 16:52:39,822 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 16:52:39,822 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 16:52:39,822 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 16:52:39,822 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 16:52:39,822 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 16:52:39,822 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 16:52:39,822 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 16:52:39,823 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@4cdbcc2d
+2013-11-22 16:52:39,857 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 16:52:39,858 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 16:52:39,889 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba0000a, negotiated timeout = 4000
+2013-11-22 16:52:39,891 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 16:52:39,894 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 16:52:40,241 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 16:56:02,668 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 16:56:02,684 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 16:56:02,684 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 16:56:02,684 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 16:56:02,684 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 16:56:02,684 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 16:56:02,684 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 16:56:02,684 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Program Files\Java\jdk1.7.0_13\jre\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 16:56:02,685 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 16:56:02,685 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 16:56:02,685 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 16:56:02,685 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 16:56:02,685 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 16:56:02,685 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 16:56:02,685 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 16:56:02,685 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 16:56:02,687 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@3ca83695
+2013-11-22 16:56:02,720 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server activate.adobe.com/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 16:56:02,722 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to activate.adobe.com/127.0.0.1:2181, initiating session
+2013-11-22 16:56:02,764 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server activate.adobe.com/127.0.0.1:2181, sessionid = 0x1427e86eba0000b, negotiated timeout = 4000
+2013-11-22 16:56:02,766 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 16:56:02,767 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 16:56:10,451 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 17:00:35,125 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 17:00:35,136 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 17:00:35,137 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 17:00:35,137 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 17:00:35,137 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 17:00:35,137 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 17:00:35,137 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 17:00:35,137 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Program Files\Java\jdk1.7.0_13\jre\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 17:00:35,137 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 17:00:35,138 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 17:00:35,138 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 17:00:35,138 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 17:00:35,138 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 17:00:35,138 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 17:00:35,138 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 17:00:35,138 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 17:00:35,139 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@3ca83695
+2013-11-22 17:00:35,171 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 17:00:35,172 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 17:00:35,200 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba0000c, negotiated timeout = 4000
+2013-11-22 17:00:35,202 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 17:00:35,204 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 17:00:44,335 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 17:00:55,669 ERROR org.shanbo.feluca.node.leader.handler.JobSubmitRequest: submit job error
+java.lang.NullPointerException
+	at org.shanbo.feluca.common.FelucaJob.startJob(FelucaJob.java:126)
+	at org.shanbo.feluca.node.leader.JobManager.asyncStartJob(JobManager.java:88)
+	at org.shanbo.feluca.node.leader.JobManager.asynRunJob(JobManager.java:145)
+	at org.shanbo.feluca.node.leader.LeaderModule.submitJob(LeaderModule.java:81)
+	at org.shanbo.feluca.node.leader.handler.JobSubmitRequest.handle(JobSubmitRequest.java:81)
+	at org.shanbo.feluca.node.leader.LeaderNettyChannel.messageReceived(LeaderNettyChannel.java:55)
+	at org.jboss.netty.channel.SimpleChannelHandler.handleUpstream(SimpleChannelHandler.java:100)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:545)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:754)
+	at org.jboss.netty.handler.codec.http.HttpChunkAggregator.messageReceived(HttpChunkAggregator.java:99)
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:80)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:545)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:754)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:302)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.unfoldAndfireMessageReceived(ReplayingDecoder.java:523)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.callDecode(ReplayingDecoder.java:507)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.messageReceived(ReplayingDecoder.java:444)
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:80)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:545)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:540)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:274)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:261)
+	at org.jboss.netty.channel.socket.nio.NioWorker.read(NioWorker.java:350)
+	at org.jboss.netty.channel.socket.nio.NioWorker.processSelectedKeys(NioWorker.java:281)
+	at org.jboss.netty.channel.socket.nio.NioWorker.run(NioWorker.java:201)
+	at org.jboss.netty.util.ThreadRenamingRunnable.run(ThreadRenamingRunnable.java:108)
+	at org.jboss.netty.util.internal.IoWorkerRunnable.run(IoWorkerRunnable.java:46)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:722)
+2013-11-22 17:31:53,025 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 17:31:53,039 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 17:31:53,039 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 17:31:53,040 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 17:31:53,041 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 17:31:53,041 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 17:31:53,041 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 17:31:53,042 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@4cdbcc2d
+2013-11-22 17:31:53,071 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 17:31:53,072 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 17:31:53,104 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba0000d, negotiated timeout = 4000
+2013-11-22 17:31:53,106 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 17:31:53,107 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 17:31:53,462 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 17:31:57,470 ERROR org.shanbo.feluca.node.leader.handler.JobSubmitRequest: submit job error
+java.lang.NullPointerException
+	at org.shanbo.feluca.common.FelucaJob.startJob(FelucaJob.java:134)
+	at org.shanbo.feluca.node.leader.JobManager.asyncStartJob(JobManager.java:88)
+	at org.shanbo.feluca.node.leader.JobManager.asynRunJob(JobManager.java:145)
+	at org.shanbo.feluca.node.leader.LeaderModule.submitJob(LeaderModule.java:81)
+	at org.shanbo.feluca.node.leader.handler.JobSubmitRequest.handle(JobSubmitRequest.java:81)
+	at org.shanbo.feluca.node.leader.LeaderNettyChannel.messageReceived(LeaderNettyChannel.java:55)
+	at org.jboss.netty.channel.SimpleChannelHandler.handleUpstream(SimpleChannelHandler.java:100)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:545)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:754)
+	at org.jboss.netty.handler.codec.http.HttpChunkAggregator.messageReceived(HttpChunkAggregator.java:99)
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:80)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:545)
+	at org.jboss.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendUpstream(DefaultChannelPipeline.java:754)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:302)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.unfoldAndfireMessageReceived(ReplayingDecoder.java:523)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.callDecode(ReplayingDecoder.java:507)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.messageReceived(ReplayingDecoder.java:444)
+	at org.jboss.netty.channel.SimpleChannelUpstreamHandler.handleUpstream(SimpleChannelUpstreamHandler.java:80)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:545)
+	at org.jboss.netty.channel.DefaultChannelPipeline.sendUpstream(DefaultChannelPipeline.java:540)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:274)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:261)
+	at org.jboss.netty.channel.socket.nio.NioWorker.read(NioWorker.java:350)
+	at org.jboss.netty.channel.socket.nio.NioWorker.processSelectedKeys(NioWorker.java:281)
+	at org.jboss.netty.channel.socket.nio.NioWorker.run(NioWorker.java:201)
+	at org.jboss.netty.util.ThreadRenamingRunnable.run(ThreadRenamingRunnable.java:108)
+	at org.jboss.netty.util.internal.IoWorkerRunnable.run(IoWorkerRunnable.java:46)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:722)
+2013-11-22 17:40:09,738 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 17:40:09,753 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 17:40:09,753 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 17:40:09,753 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 17:40:09,753 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 17:40:09,754 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 17:40:09,755 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 17:40:09,756 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@4cdbcc2d
+2013-11-22 17:40:09,783 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 17:40:09,784 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 17:40:09,815 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba0000e, negotiated timeout = 4000
+2013-11-22 17:40:09,816 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 17:40:09,818 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 17:40:10,140 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 17:55:59,434 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 17:55:59,453 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 17:55:59,453 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 17:55:59,454 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 17:55:59,454 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 17:55:59,454 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 17:55:59,454 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 17:55:59,454 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 17:55:59,454 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 17:55:59,455 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 17:55:59,455 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 17:55:59,455 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 17:55:59,455 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 17:55:59,455 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 17:55:59,455 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 17:55:59,455 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 17:55:59,456 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@4b9f657
+2013-11-22 17:55:59,490 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server activate.adobe.com/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 17:55:59,492 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to activate.adobe.com/127.0.0.1:2181, initiating session
+2013-11-22 17:55:59,525 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server activate.adobe.com/127.0.0.1:2181, sessionid = 0x1427e86eba0000f, negotiated timeout = 4000
+2013-11-22 17:55:59,528 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 17:55:59,529 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 17:55:59,859 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 17:56:27,061 DEBUG org.shanbo.feluca.common.FelucaJob: subjobs:1
+2013-11-22 17:56:28,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:29,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:30,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:31,063 DEBUG org.shanbo.feluca.node.job.StoppableSleepJob$Nap: let me sleep(0)4000
+2013-11-22 17:56:31,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:32,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:33,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:34,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:35,063 DEBUG org.shanbo.feluca.node.job.StoppableSleepJob$Nap: let me sleep(1)4000
+2013-11-22 17:56:35,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:36,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:37,064 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:56:38,065 DEBUG org.shanbo.feluca.common.FelucaJob: checking~~~~RUNNING
+2013-11-22 17:57:15,448 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\Program Files\Java\jdk1.7.0_13\jre\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 17:57:15,460 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 17:57:15,461 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 17:57:15,461 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 17:57:15,461 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 17:57:15,461 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 17:57:15,461 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 17:57:15,462 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@67a78ec
+2013-11-22 17:57:15,491 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 17:57:15,493 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 17:57:15,555 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00010, negotiated timeout = 4000
+2013-11-22 17:57:15,558 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 17:57:15,562 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 17:57:15,959 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 
+2013-11-22 18:04:08,469 INFO org.shanbo.feluca.util.Config: loading config from:E:\github\feluca\feluca-core\.\conf\config.properties
+2013-11-22 18:04:08,488 INFO org.apache.zookeeper.ZooKeeper: Client environment:zookeeper.version=3.4.5-1392090, built on 09/30/2012 17:52 GMT
+2013-11-22 18:04:08,488 INFO org.apache.zookeeper.ZooKeeper: Client environment:host.name=LGN-SSD
+2013-11-22 18:04:08,488 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.version=1.7.0_13
+2013-11-22 18:04:08,488 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.vendor=Oracle Corporation
+2013-11-22 18:04:08,488 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.home=D:\Program Files\Java\jdk1.7.0_13\jre
+2013-11-22 18:04:08,488 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.class.path=E:\github\feluca\feluca-core\target\classes;D:\.m2\repository\org\apache\ftpserver\ftpserver-core\1.0.6\ftpserver-core-1.0.6.jar;D:\.m2\repository\org\apache\ftpserver\ftplet-api\1.0.6\ftplet-api-1.0.6.jar;D:\.m2\repository\org\apache\mina\mina-core\2.0.4\mina-core-2.0.4.jar;D:\.m2\repository\org\apache\zookeeper\zookeeper\3.4.5\zookeeper-3.4.5.jar;D:\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\.m2\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\.m2\repository\org\jboss\netty\netty\3.2.2.Final\netty-3.2.2.Final.jar;D:\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar;D:\.m2\repository\commons-net\commons-net\3.2\commons-net-3.2-ftp.jar;D:\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\.m2\repository\log4j\log4j\1.2.16\log4j-1.2.16.jar;D:\.m2\repository\com\alibaba\fastjson\1.1.37\fastjson-1.1.37.jar;D:\.m2\repository\org\apache\httpcomponents\httpclient\4.1.3\httpclient-4.1.3.jar;D:\.m2\repository\org\apache\httpcomponents\httpcore\4.1.4\httpcore-4.1.4.jar;D:\.m2\repository\commons-logging\commons-logging\1.1.1\commons-logging-1.1.1.jar;D:\.m2\repository\commons-codec\commons-codec\1.4\commons-codec-1.4.jar
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.library.path=D:\Program Files\Java\jdk1.7.0_13\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\apache-maven-3.0.4\bin;D:\Program Files (x86)\VanDyke Software\Clients\;D:\Program Files\Java\jdk1.7.0_13\bin;D:\Program Files\TortoiseGit\bin;.
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.io.tmpdir=C:\Users\lgn-ssd\AppData\Local\Temp\
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:java.compiler=<NA>
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.name=Windows 7
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.arch=amd64
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:os.version=6.1
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.name=lgn-ssd
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.home=C:\Users\lgn-ssd
+2013-11-22 18:04:08,489 INFO org.apache.zookeeper.ZooKeeper: Client environment:user.dir=E:\github\feluca\feluca-core
+2013-11-22 18:04:08,491 INFO org.apache.zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=1000 watcher=org.shanbo.feluca.util.ZKClient$1@4cdbcc2d
+2013-11-22 18:04:08,526 INFO org.apache.zookeeper.ClientCnxn: Opening socket connection to server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181. Will not attempt to authenticate using SASL (unknown error)
+2013-11-22 18:04:08,528 INFO org.apache.zookeeper.ClientCnxn: Socket connection established to 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, initiating session
+2013-11-22 18:04:08,557 INFO org.apache.zookeeper.ClientCnxn: Session establishment complete on server 0:0:0:0:0:0:0:1/0:0:0:0:0:0:0:1:2181, sessionid = 0x1427e86eba00011, negotiated timeout = 4000
+2013-11-22 18:04:08,559 INFO org.shanbo.feluca.util.ZKClient: 
+2013-11-22 18:04:08,561 WARN org.shanbo.feluca.util.ZKClient: ZKSyncConnected! WatchedEvent state:SyncConnected type:None path:null
+2013-11-22 18:04:08,905 INFO org.shanbo.feluca.node.leader.LeaderServer: [feluca.leader] started at : /0.0.0.0:12020 

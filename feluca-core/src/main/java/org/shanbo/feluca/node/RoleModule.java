@@ -12,6 +12,7 @@ import org.shanbo.feluca.util.ZKClient;
 public abstract class RoleModule {
 	
 	private String address;
+	protected NodeRole role;
 	
 	public void register(String path, String address) throws Exception{
 		ZKClient.get().registerEphemeralNode(path, address);

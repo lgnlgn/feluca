@@ -52,7 +52,7 @@ public abstract class Server {
 	
 	
 	public String getServerAddress(){
-		if (ip != null){
+		if (ip == null){
 			String myip = "0.0.0.0";
 			try {
 				myip = NetworkUtils.getFirstNonLoopbackAddress(

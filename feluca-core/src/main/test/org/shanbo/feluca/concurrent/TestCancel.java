@@ -13,7 +13,7 @@ public class TestCancel {
 			for(int j = 0 ; j < 300000;j++)
 			   c += Math.sqrt(2.0);
 		}
-		System.out.println("finished");
+		System.out.println("finished " + c);
 	}
 	
 	

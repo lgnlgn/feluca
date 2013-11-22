@@ -33,7 +33,11 @@ import org.shanbo.feluca.util.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * 
+ *  @Description HTTP SERVER
+ *	@author shanbo.liang
+ */
 public abstract class BaseNioServer extends Server {
 	final ChannelGroup allChannels = new DefaultChannelGroup(
 			"nio-server");
@@ -49,7 +53,7 @@ public abstract class BaseNioServer extends Server {
 	/**
 	 * init
 	 * 
-	 * Implement this {@link org.shanbo.feluca.node.jarachne.network.http.woyo.search.query.common.Server} method
+	 * Implement this {@link org.shanbo.feluca.common.Server} method
 	 */
 	public void init() {
 		log = LoggerFactory.getLogger(this.serverName());
@@ -72,36 +76,11 @@ public abstract class BaseNioServer extends Server {
 				Integer.parseInt(this.getServerAddress().split(":")[1]));
 	}
 
-	public String getServerAddress() {
-
-		String myip = "0.0.0.0";
-		try {
-			myip = NetworkUtils.getFirstNonLoopbackAddress(
-					NetworkUtils.StackType.IPv4).getHostAddress();
-		} catch (SocketException e) {
-		}
-		Config c = Config.get();
-		if (c.get(this.serverName() + ".bind-address") == null || c.get(this.serverName() + ".bind-port") == null){
-			System.out.println("YOURSERVER.bind-address and port not set!!!! use default value");
-		}
-		String ip = c.get(this.serverName() + ".bind-address", myip);
-		int port = c.getInt(this.serverName() + ".bind-port", defaultPort());
-		return ip + ":" + port;
-	}
-	
-	public int defaultPort()
-	{
-		return 21001;
-	}
 
 	protected ChannelFactory createChannelFactory() {
-//		ExecutorService es = Executors.newCachedThreadPool();
-
 		return new NioServerSocketChannelFactory(//es, es
 		 Executors.newCachedThreadPool(),
 		 Executors.newCachedThreadPool()
-		// new MemoryAwareThreadPoolExecutor(4, 0, 100000000)
-
 		);
 
 	}
@@ -109,9 +88,9 @@ public abstract class BaseNioServer extends Server {
 	/**
 	 * start
 	 * 
-	 * Implement this {@link org.shanbo.feluca.node.jarachne.network.http.woyo.search.query.common.Server} method
+	 * Implement this {@link org.shanbo.feluca.common.Server} method
 	 */
-	public void start() {
+	public void preStart() throws Exception{
 		this.channelFactory = this.createChannelFactory();
 
 		bootstrap = new ServerBootstrap(channelFactory);
@@ -126,9 +105,9 @@ public abstract class BaseNioServer extends Server {
 	/**
 	 * stop
 	 * 
-	 * Implement this {@link org.shanbo.feluca.node.jarachne.network.http.woyo.search.query.common.Server} method
+	 * Implement this {@link org.shanbo.feluca.common.Server} method
 	 */
-	public void stop() {
+	public void postStop() throws Exception {
 		ChannelGroupFuture closeFuture = allChannels.close();
 		closeFuture.awaitUninterruptibly();
 		

@@ -45,8 +45,8 @@ public class Constants {
 	public final static String DATA_PATH = Config.get().get("dataDir", "./data");
 	
 	
-	public final static String ZK_WORKER_PATH = "/jarachne/slaves";
-	public final static String ZK_LEADER_PATH = "/jarachne/master";
+	public final static String ZK_WORKER_PATH = ZK_CHROOT + "/workers";
+	public final static String ZK_LEADER_PATH = ZK_CHROOT + "/leader";
 
 
 	public final static String[] BLOCK_SUFFIXES = new String[]{	".data", ".sta", };

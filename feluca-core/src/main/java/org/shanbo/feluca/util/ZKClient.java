@@ -46,12 +46,6 @@ import org.apache.zookeeper.data.Stat;
  */
 public class ZKClient
 {
-	private static String zkHostPattern = "^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)){3}(:\\d{1,5}){0,1},)*((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)){3}(:\\d{1,5}){0,1})$";
-	private final static String debugHost = "localhost:2181";
-	private final static String devHost =  "10.249.15.209:2181";
-	private final static String testHost = "10.249.15.199:2181,10.249.15.201:2181,10.249.15.202:2181";
-	private final static String prodHost = "10.249.15.194:2181,10.249.15.195:2181,10.249.15.196:2181";
-
 	//    static private ESLogger log = Loggers.getLogger(ZKClient.class);
 	private static final Logger log = LoggerFactory.getLogger(ZKClient.class);
 	private volatile ZooKeeper zooKeeper;
@@ -418,33 +412,10 @@ public class ZKClient
 			throws IOException
 			{
 		//        zooKeeper = new ZooKeeper(SystemConfig.getProperty("zk.quorum"), Integer.parseInt(SystemConfig.getProperty("zk.session.timeout", "30000")), defaultWatch);
-		String zkQuorum = Config.get().get("zk.quorum", "");
-		
-		List<String> zkHostList = new ArrayList<String>();
+		String zkQuorum = Config.get().get("zk.quorum", "localhost:2181");
 
-		if (Pattern.matches(zkHostPattern, zkQuorum)){
-			log.debug("use zk.quorum hosts.....:" + zkQuorum);
-			connectAddress = zkQuorum.split(",");
-		}else{
-			if (zkQuorum.toLowerCase().equals("dev")){
-				log.debug("use dev hosts.....");
-				connectAddress = devHost.split(",");
-			}else if (zkQuorum.toLowerCase().equals("prod")) {
-				log.debug("use prod hosts.....");
-				connectAddress = prodHost.split(",");
-			}else if (zkQuorum.toLowerCase().equals("debug")) {
-				log.debug("use debug hosts.....");
-				connectAddress = debugHost.split(",");
-			}else {
-				log.debug("use test hosts.....");
-				connectAddress = testHost.split(",");
-			}
-
-		}
-		Collections.addAll(zkHostList, connectAddress);
-		Collections.shuffle(zkHostList);
 //		zooKeeper = new ZooKeeper(StringUtils.join(zkHostList, ","), new Integer(BaseConfig.getValue("zk.session.timeout", "30000")), defaultWatch);
-		zooKeeper = new ZooKeeperRetry(StringUtils.join(zkHostList, ","), new Integer(Config.get().get("zk.session.timeout", "30000")), defaultWatch);
+		zooKeeper = new ZooKeeperRetry(zkQuorum, new Integer(Config.get().get("zk.session.timeout", "30000")), defaultWatch);
 	}
 
 

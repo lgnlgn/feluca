@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 
 
 
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -19,6 +20,7 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaJob;
+import org.shanbo.feluca.node.NodeRole;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
@@ -36,6 +38,7 @@ public class LeaderModule extends RoleModule{
 	private ChildrenWatcher cw;
 
 	public LeaderModule() throws KeeperException, InterruptedException{
+		this.role = NodeRole.Leader;
 		workers = new ConcurrentHashMap<String, String>();
 		dataDir = Constants.DATA_DIR;
 		bootstrap = new ClientBootstrap(

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import java.util.Properties;
+
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.shanbo.feluca.common.FelucaJob;
@@ -35,8 +37,8 @@ public class JobSubmitRequest extends RequestHandler{
 
 	final static List<String> jobAllow = new ArrayList<String>();
 	static {
-		jobAllow.add("data");
-		jobAllow.add("algorithm");
+//		jobAllow.add("data");
+//		jobAllow.add("algorithm");
 		jobAllow.add("sleep");
 	}
 	
@@ -54,6 +56,7 @@ public class JobSubmitRequest extends RequestHandler{
 		}
 		LeaderModule m = (LeaderModule)this.module;
 		Class<? extends FelucaJob> jobClz = null;
+		Properties properties = null;
 		if (jobName.equals("data")){
 			String dataName = req.param("data");
 			if (dataName == null){
@@ -64,14 +67,18 @@ public class JobSubmitRequest extends RequestHandler{
 //			jobClz =
 //			job = new DataDistributeJob(m.httpClient, m.getModuleAddress(), dataName);
 		}else if (jobName.equals("sleep")){
-			String ms = req.param("ms", "10000");
+			String ms = req.param("ms");
 //			job = new SleepingJob(new Integer(ms));
 			jobClz = StoppableSleepJob.class;
+			if (ms != null){
+				properties = new Properties();
+				properties.put("job.ttl", new Integer(ms));
+			}
 		}
 
 		boolean submission;
 		try {
-			submission = m.submitJob(jobClz, null);
+			submission = m.submitJob(jobClz, properties);
 			if (submission == true){
 				HttpResponseUtil.setResponse(resp, "start job : data", "\"job submited\"");
 			}else{

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -15,11 +17,13 @@ import com.alibaba.fastjson.JSONObject;
  *	@author shanbo.liang
  */
 public abstract class FelucaJob {
-
+	
+	static Logger log = LoggerFactory.getLogger(FelucaJob.class);
+	
 	protected long startTime ;
 	protected long finishTime;
-	protected List<String> logCollector;
-	protected List<String> logPipe;
+	protected List<String> logCollector; //each job has it's own one
+	protected List<String> logPipe; //you may need to share it with sub jobs 
 	protected final Properties properties;
 	protected volatile JobState state;
 	protected int ttl = -1;	
@@ -43,7 +47,8 @@ public abstract class FelucaJob {
 
 	public FelucaJob(){
 		this.properties = new Properties();
-		this.logCollector  = new ArrayList<String>();
+		this.logCollector  = new ArrayList<String>(); //each job has it's own one
+		this.logPipe = new ArrayList<String>(); //you may need to share it with sub jobs
 		this.startTime = System.currentTimeMillis();
 		this.finishTime = startTime;
 		this.state = JobState.PENDING;
@@ -53,12 +58,7 @@ public abstract class FelucaJob {
 	 * specify sub job!
 	 * @param prop
 	 */
-	public abstract void init(Properties prop);
-
-
-	public void setJobConfig(Properties prop){
-
-		this.startTime = System.currentTimeMillis();
+	public void init(Properties prop){
 		if (prop != null){
 			this.properties.putAll(prop);
 			String expTime = prop.getProperty("job.ttl");
@@ -66,7 +66,6 @@ public abstract class FelucaJob {
 				Integer t = Integer.parseInt(expTime);
 				this.ttl = t;
 			}
-
 		}
 	}
 
@@ -75,6 +74,14 @@ public abstract class FelucaJob {
 		this.logPipe = logCollector;
 	}
 
+	public synchronized void addSubJobs(FelucaJob... subJobs){
+		if (this.subJobs == null){
+			this.subJobs = new ArrayList<FelucaJob>();
+		}
+		for(FelucaJob subJob: subJobs)
+			this.subJobs.add(subJob);
+	}
+	
 
 	/**
 	 * unit: ms, default = -1, check by {@link JobManager}
@@ -118,10 +125,12 @@ public abstract class FelucaJob {
 
 	/**
 	 * invoke by {@link JobManager}
-	 * implement this method on the leaf of job-tree;
+	 * override this method on the leaf of job-tree;
+	 * remember to start your job in background; i.e. use a thread and the jobstate
 	 */
 	public void startJob(){
 		//start all jobs
+		log.debug("subjobs:" + this.subJobs.size());
 		for(FelucaJob subJob: this.subJobs){
 			subJob.startJob();
 		}
@@ -135,21 +144,24 @@ public abstract class FelucaJob {
 					while( true){
 						JobState currentState = checkAllSubJobState();
 						long elapse = System.currentTimeMillis() - tStart;
-						if (ttl > 0 && elapse > ttl){
+						if (action == 0 && ttl > 0 && elapse > ttl){
+							stopJob();
 							action = 1;
-							break;
+							log.debug("too long, kill job !");
+							//then wait for JobState.FINISHED
 						}
+						//check stop action
 						if (currentState == JobState.FINISHED){
+							finishTime = System.currentTimeMillis();
+							log.debug("sub jobs finished");
 							break;
 						}
 						try {
-							Thread.sleep(200);
+							Thread.sleep(1000);
+							log.debug("checking~~~~" + subJobs.get(0).getJobState());
+							System.out.println("checking~~~~" + subJobs.get(0).getJobState());
 						} catch (InterruptedException e) {
 						}
-					}
-					if (action == 1){
-						//self kill
-						stopJob();
 					}
 				}
 			}, jobName + "@watcher");
@@ -158,6 +170,18 @@ public abstract class FelucaJob {
 		}
 	}
 
+	/**
+	 * invoke by {@link JobManager}
+	 * override this method on the leaf of job-tree;
+	 * you must make sure the stop action take effect in  finite duration
+	 */
+	public void stopJob(){
+		this.state = JobState.STOPPING;
+		for(FelucaJob job : subJobs){
+			job.stopJob();
+		}
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -182,17 +206,7 @@ public abstract class FelucaJob {
 	}
 
 
-	/**
-	 * invoke by {@link JobManager}
-	 * implement this method on the leaf of job-tree;
-	 */
-	public void stopJob(){
-		this.state = JobState.STOPPING;
-		for(FelucaJob job : subJobs){
-			job.stopJob();
-		}
-		this.state = JobState.INTERRUPTED;
-	}
+
 
 	public synchronized void setJobState(JobState state){
 		this.state = state;
