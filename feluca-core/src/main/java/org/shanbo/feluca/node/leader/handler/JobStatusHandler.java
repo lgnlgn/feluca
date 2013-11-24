@@ -54,7 +54,7 @@ public class JobStatusHandler extends RequestHandler{
 				json.put("running_job", JSONObject.parse(jobString));
 			else
 				json.put("running_job", jobString);
-			HttpResponseUtil.setResponse(resp, "feluca job status", json.toString());
+			HttpResponseUtil.setResponse(resp, "feluca job status", json);
 		}
 	}
 

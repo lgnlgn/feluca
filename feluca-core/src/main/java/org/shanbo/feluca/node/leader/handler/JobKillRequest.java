@@ -11,7 +11,6 @@ public class JobKillRequest extends RequestHandler{
 	
 	public JobKillRequest(RoleModule module) {
 		super(module);
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getPath() {

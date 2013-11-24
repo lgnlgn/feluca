@@ -9,6 +9,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class HttpResponseUtil {
@@ -63,23 +64,26 @@ public class HttpResponseUtil {
 	}
 	*/
 	
-	public static void setResponse( DefaultHttpResponse resp, String respHead, String respBody){
+	public static void setResponse( DefaultHttpResponse resp, Object respHead, Object respBody){
 		setResponse(resp, respHead, respBody, HttpResponseStatus.OK);
 	}
 	
-	public static void setResponse( DefaultHttpResponse resp, String respHead, String respBody, HttpResponseStatus status){
+	public static void setResponse( DefaultHttpResponse resp, Object respHead, Object respBody, HttpResponseStatus status){
 		resp.setStatus( status );
 		JSONObject json = new JSONObject();
-		if (respHead.startsWith("{") && respHead.endsWith("}")){
-			json.put(REQUEST, JSONObject.parse(respHead));
+		if (respHead instanceof JSONObject || respHead instanceof JSONArray){
+			json.put(REQUEST, respHead);
 		}else
-			json.put(REQUEST , respHead);
-		if (respBody.endsWith("}") && respBody.startsWith("{"))
-			json.put(RESPONSE, JSONObject.parse(respBody));
+			json.put(REQUEST , respHead.toString());
+		if (respBody instanceof JSONObject || respBody instanceof JSONArray)
+			json.put(RESPONSE, respBody);
 		else {
-			json.put(RESPONSE , respBody);
+			json.put(RESPONSE , respBody.toString());
 		}
 		
 		resp.setContent(ChannelBuffers.copiedBuffer( json.toString().getBytes()));
 	}
+	
+	
+	
 }

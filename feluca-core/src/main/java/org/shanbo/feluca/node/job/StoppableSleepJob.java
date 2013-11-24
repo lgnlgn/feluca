@@ -8,6 +8,11 @@ import org.shanbo.feluca.common.FelucaJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * job for test
+ * @author lgn
+ *
+ */
 public class StoppableSleepJob extends FelucaJob{
 	static Logger log = LoggerFactory.getLogger(StoppableSleepJob.class);
 	
@@ -19,7 +24,7 @@ public class StoppableSleepJob extends FelucaJob{
 
 		public Nap(){
 			this.jobName = "a nap";
-			loop= 4;
+			loop= 5;
 		}
 		
 		
@@ -43,7 +48,12 @@ public class StoppableSleepJob extends FelucaJob{
 			state = JobState.RUNNING;
 			sleeper = new Thread(new Runnable() {
 				public void run() {
-					for(int i = 0 ; i < loop && state != JobState.INTERRUPTED; i++){
+					for(int i = 0 ; i < loop ; i++){
+						if (state == JobState.INTERRUPTED){
+							log.debug(" interrupted!!!???  ");
+							appendMessage(" interrupted!!!???  " );
+							break;
+						}
 						try {
 							appendMessage("let me sleep(" + i + ")" + DEFUALT_SLEEP_MS);
 							Thread.sleep(DEFUALT_SLEEP_MS);
@@ -76,7 +86,6 @@ public class StoppableSleepJob extends FelucaJob{
 		super.init(prop);
 		Nap n = new Nap(); //a sequancial naps, without modify it's default parameters 
 		n.setLogPipe(logPipe);
-		
 		this.addSubJobs(n);
 		
 	}

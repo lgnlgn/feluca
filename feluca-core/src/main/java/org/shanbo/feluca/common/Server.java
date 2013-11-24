@@ -22,6 +22,7 @@ public abstract class Server {
 	public void start(){
 		try{
 			this.preStart();
+			//TODO create prefix dir path for node
 			ZKClient.get().registerEphemeralNode(zkRegisterPath(), getServerAddress());
 		}catch (Exception e) {
 			log.error("Server [" + this.getClass().getName() + "] start failed", e);

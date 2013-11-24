@@ -68,7 +68,6 @@ public class JobSubmitRequest extends RequestHandler{
 //			job = new DataDistributeJob(m.httpClient, m.getModuleAddress(), dataName);
 		}else if (jobName.equals("sleep")){
 			String ms = req.param("ms");
-//			job = new SleepingJob(new Integer(ms));
 			jobClz = StoppableSleepJob.class;
 			if (ms != null){
 				properties = new Properties();
@@ -80,13 +79,13 @@ public class JobSubmitRequest extends RequestHandler{
 		try {
 			submission = m.submitJob(jobClz, properties);
 			if (submission == true){
-				HttpResponseUtil.setResponse(resp, "start job : data", "\"job submited\"");
+				HttpResponseUtil.setResponse(resp, "start job : data", "job submited");
 			}else{
-				HttpResponseUtil.setResponse(resp, "start job : data", "\"submision failed, already running | Class init error\"");
+				HttpResponseUtil.setResponse(resp, "start job : data", "submision failed, a job already running ");
 			}
 		} catch (Exception e) {
 			log.error("submit job error", e);
-			HttpResponseUtil.setResponse(resp, "start job : data", "\"submision failed\"");
+			HttpResponseUtil.setResponse(resp, "start job : data", "submision failed  Class init error " );
 		} 
 
 	}

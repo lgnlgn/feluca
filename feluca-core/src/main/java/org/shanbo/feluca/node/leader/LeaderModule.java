@@ -20,6 +20,7 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaJob;
+import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.node.NodeRole;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.util.ZKClient;
@@ -33,8 +34,10 @@ public class LeaderModule extends RoleModule{
 	private volatile Map<String, String> workers;
 	private String dataDir;
 	public ClientBootstrap bootstrap;
-	public HttpClient httpClient;
-
+	public HttpClient actionClient;
+	
+	private DataClient dataClient;
+	
 	private ChildrenWatcher cw;
 
 	public LeaderModule() throws KeeperException, InterruptedException{
@@ -47,7 +50,7 @@ public class LeaderModule extends RoleModule{
 						Executors.newCachedThreadPool()));
 		
 	    ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager();
-	    httpClient = new DefaultHttpClient(mgr);
+	    actionClient = new DefaultHttpClient(mgr);
 		ZKClient.get().createIfNotExist(Constants.ZK_LEADER_PATH);
 		ZKClient.get().createIfNotExist(Constants.ZK_WORKER_PATH);
 		this.watchZookeeper();
@@ -55,11 +58,11 @@ public class LeaderModule extends RoleModule{
 	}
 
 	
-	public void addSlave(String hostPort){
+	private void addSlave(String hostPort){
 		this.workers.put(hostPort, "");
 	}
 	
-	public String removeSlave(String hostPort){
+	private String removeSlave(String hostPort){
 		return this.workers.remove(hostPort);
 	}
 	
@@ -85,14 +88,9 @@ public class LeaderModule extends RoleModule{
 		return jobManager.getCurrentJobState();
 	}
 	
-	public String getLatestJobStatus(int num){
-		JSONArray ja = jobManager.getLatestJobStates();
-		JSONArray jaa = new JSONArray();
-		int n = 0;
-		for(int i = ja.size()-1; i >= 0 && n < num; n++,i--){
-			jaa.add(ja.get(i));
-		}
-		return jaa.toString();
+	
+	public JSONArray getLatestJobStatus(int last){
+		return jobManager.getLatestJobStates(last);
 	}
 	
 

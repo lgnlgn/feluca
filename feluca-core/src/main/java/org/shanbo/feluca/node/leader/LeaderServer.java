@@ -19,7 +19,7 @@ import org.shanbo.feluca.util.ZKClient;
 import org.slf4j.LoggerFactory;
 
 public class LeaderServer extends BaseNioServer{
-
+	LeaderModule module;
 	Handlers handlers = new Handlers();
 	final BaseChannelHandler channel = new LeaderNettyChannel(handlers);
 
@@ -76,17 +76,19 @@ public class LeaderServer extends BaseNioServer{
 	@Override
 	public void preStart() throws Exception {
 		ZKClient.get().createIfNotExist(Constants.ZK_CHROOT);
-		ZKClient.get().createIfNotExist(Constants.ZK_LEADER_PATH);
-		LeaderModule module = new LeaderModule();
+		ZKClient.get().createIfNotExist(zkRegisterPath());
+		module = new LeaderModule();
 		this.addHandler(new JobSubmitRequest(module));
 		this.addHandler(new JobStatusHandler(module));
 		this.addHandler(new ClusterStatusRequest(module));
-		module.register(zkRegisterPath(), getServerAddress());
+		module.init(zkRegisterPath(), getServerAddress());
 		super.preStart();
 	}
 
 	@Override
 	public void postStop() throws Exception {
+		module.shutdown();
 		super.postStop();
+		
 	}
 }

@@ -43,7 +43,9 @@ public abstract class FelucaJob {
 		INTERRUPTED
 	}
 
-
+	public static class JobInfo{
+		
+	}
 
 	public FelucaJob(){
 		this.properties = new Properties();
@@ -137,12 +139,11 @@ public abstract class FelucaJob {
 		this.state = JobState.RUNNING;
 		if (this.subJobs.size() > 0){
 			subJobWatcher = new Thread(new Runnable() {
-
 				public void run() {
 					int action = 0;
 					long tStart = System.currentTimeMillis();
 					while( true){
-						JobState currentState = checkAllSubJobState();
+						JobState subjobState = checkAllSubJobState();
 						long elapse = System.currentTimeMillis() - tStart;
 						if (action == 0 && ttl > 0 && elapse > ttl){
 							stopJob();
@@ -151,15 +152,21 @@ public abstract class FelucaJob {
 							//then wait for JobState.FINISHED
 						}
 						//check stop action
-						if (currentState == JobState.FINISHED){
+						if (subjobState == JobState.FINISHED){
 							finishTime = System.currentTimeMillis();
 							log.debug("sub jobs finished");
+							state = JobState.FINISHED;
+							break;
+						}else if (subjobState == JobState.INTERRUPTED){
+							finishTime = System.currentTimeMillis();
+							log.debug("sub jobs interrupted");
+							state = JobState.INTERRUPTED;
 							break;
 						}
 						try {
 							Thread.sleep(1000);
 							log.debug("checking~~~~" + subJobs.get(0).getJobState());
-							System.out.println("checking~~~~" + subJobs.get(0).getJobState());
+//							System.out.println("checking~~~~" + subJobs.get(0).getJobState());
 						} catch (InterruptedException e) {
 						}
 					}
@@ -191,12 +198,23 @@ public abstract class FelucaJob {
 		for(FelucaJob subJob: subJobs){
 			currentStates.add(subJob.getJobState());
 		}
+		int allStates = 0;
 		for(JobState state : currentStates){
-			if (state != JobState.FINISHED){
-				return JobState.RUNNING;
+			if (state == JobState.FINISHED){
+				allStates |= 0x1;
+			}else if (state == JobState.INTERRUPTED){
+				allStates |= 0x2;
+			}else {
+				allStates |= 0x4;
 			}
 		}
-		return JobState.FINISHED;
+		if (allStates <= 1)
+			return JobState.FINISHED;
+		else if (allStates <= 3){
+			return JobState.INTERRUPTED;
+		}else {
+			return JobState.RUNNING;
+		}
 	}
 
 	protected void gatherInfoFromSubJobs(){
