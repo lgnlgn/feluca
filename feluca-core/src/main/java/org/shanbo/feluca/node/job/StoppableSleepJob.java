@@ -22,16 +22,12 @@ public class StoppableSleepJob extends FelucaJob{
 		int loop = 10;
 		Thread sleeper;
 
-		public Nap(){
+		public Nap(Properties prop){
+			super(prop);
 			this.jobName = "a nap";
 			loop= 5;
 		}
-		
-		
-		@Override
-		public void init(Properties prop) {
-			
-		}
+
 
 		@Override
 		protected String getAllLog() {
@@ -44,7 +40,6 @@ public class StoppableSleepJob extends FelucaJob{
 		}
 
 		public void startJob(){
-			init(properties);
 			state = JobState.RUNNING;
 			sleeper = new Thread(new Runnable() {
 				public void run() {
@@ -61,7 +56,8 @@ public class StoppableSleepJob extends FelucaJob{
 						} catch (InterruptedException e) {
 						}
 					}
-					state = JobState.FINISHED;
+					if (state != JobState.INTERRUPTED)
+						state = JobState.FINISHED;
 				}
 			});
 			sleeper.setDaemon(true);
@@ -70,8 +66,12 @@ public class StoppableSleepJob extends FelucaJob{
 		
 	}
 
-	public StoppableSleepJob(){
+	public StoppableSleepJob(Properties prop){
+		super(prop);
 		this.jobName = "sleepjob";
+		Nap n = new Nap(null); //a sequancial naps, without modify it's default parameters 
+		n.setLogPipe(logPipe);
+		this.addSubJobs(n);
 	}
 	
 	/**
@@ -79,14 +79,6 @@ public class StoppableSleepJob extends FelucaJob{
 	 */
 	protected String getAllLog() {
 		return StringUtils.join(this.logPipe.iterator(), "");
-		
-	}
-
-	public void init(Properties prop) {
-		super.init(prop);
-		Nap n = new Nap(); //a sequancial naps, without modify it's default parameters 
-		n.setLogPipe(logPipe);
-		this.addSubJobs(n);
 		
 	}
 

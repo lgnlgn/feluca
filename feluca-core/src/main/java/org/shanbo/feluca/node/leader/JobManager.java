@@ -124,17 +124,16 @@ public class JobManager{
 	 * @return
 	 * @throws Exception
 	 */
-	public synchronized boolean asynRunJob(Class<? extends FelucaJob> jobClz, Properties conf) throws Exception{
+	public synchronized String asynRunJob(Class<? extends FelucaJob> jobClz, Properties conf) throws Exception{
 
 		if (isJobSlotFree()){
-			Constructor<? extends FelucaJob> constructor = jobClz.getConstructor();
-			FelucaJob job = constructor.newInstance();
-			job.init(conf);
+			Constructor<? extends FelucaJob> constructor = jobClz.getConstructor(Properties.class);
+			FelucaJob job = constructor.newInstance(conf);
 			this.asyncStartJob(job);
 			this.jobCounts.incrementAndGet();
-			return true;
+			return job.getJobName();
 		}else{
-			return false;
+			return null;
 		}
 	}
 

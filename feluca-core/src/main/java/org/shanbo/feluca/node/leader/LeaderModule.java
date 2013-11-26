@@ -1,11 +1,14 @@
 package org.shanbo.feluca.node.leader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+
+
 
 
 
@@ -27,6 +30,7 @@ import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 public class LeaderModule extends RoleModule{
 	
@@ -36,7 +40,6 @@ public class LeaderModule extends RoleModule{
 	public ClientBootstrap bootstrap;
 	public HttpClient actionClient;
 	
-	private DataClient dataClient;
 	
 	private ChildrenWatcher cw;
 
@@ -78,9 +81,14 @@ public class LeaderModule extends RoleModule{
 		return slaves;
 	}
 	
-	public boolean submitJob(Class<? extends FelucaJob> clz, Properties conf) throws Exception{
+	public boolean dataSetExist(String dataName){
+		return new File(dataDir + "/" + dataDir).isDirectory();
+	}
+	
+	
+	public String submitJob(Class<? extends FelucaJob> clz, Properties conf) throws Exception{
 		if (clz == null)
-			return false;
+			return null;
 		return this.jobManager.asynRunJob(clz, conf);
 	}
 	
@@ -129,12 +137,43 @@ public class LeaderModule extends RoleModule{
 //		return results.toString();
 //	}
 	
-
+	/**
+	 * TODO
+	 * @return
+	 */
+	public JSONObject localDataSet(){
+		return null;
+	}
+	
+	/**
+	 * TODO
+	 * @return
+	 */
+	public JSONObject localDataSetInfo(String dataName){
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public JSONObject gatherRemoteDataSet(){
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public JSONObject gatherRemoteDataSetInfo(String dataName){
+		return null;
+	}
+	
+	
 	
 	public ClientBootstrap getBootstrap(){
 		return this.bootstrap;
 	}
 	
 
-	
 }

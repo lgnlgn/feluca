@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public abstract class FelucaJob {
 	
-	static Logger log = LoggerFactory.getLogger(FelucaJob.class);
+	protected Logger log ;
 	
 	protected long startTime ;
 	protected long finishTime;
@@ -47,29 +47,24 @@ public abstract class FelucaJob {
 		
 	}
 
-	public FelucaJob(){
+	public FelucaJob(Properties prop){
 		this.properties = new Properties();
 		this.logCollector  = new ArrayList<String>(); //each job has it's own one
 		this.logPipe = new ArrayList<String>(); //you may need to share it with sub jobs
 		this.startTime = System.currentTimeMillis();
 		this.finishTime = startTime;
 		this.state = JobState.PENDING;
+		
+		this.properties.putAll(prop);
+		String expTime = prop.getProperty("job.ttl");
+		if(StringUtils.isNumeric(expTime)){
+			Integer t = Integer.parseInt(expTime);
+			this.ttl = t;
+		}
+		this.jobName = properties.getProperty("jobName", "felucaJob_" + System.currentTimeMillis());
+		this.log = LoggerFactory.getLogger(this.getClass());
 	}
 
-	/**
-	 * specify sub job!
-	 * @param prop
-	 */
-	public void init(Properties prop){
-		if (prop != null){
-			this.properties.putAll(prop);
-			String expTime = prop.getProperty("job.ttl");
-			if(StringUtils.isNumeric(expTime)){
-				Integer t = Integer.parseInt(expTime);
-				this.ttl = t;
-			}
-		}
-	}
 
 
 	public void setLogPipe(List<String> logCollector){
@@ -133,6 +128,10 @@ public abstract class FelucaJob {
 	public void startJob(){
 		//start all jobs
 		log.debug("subjobs:" + this.subJobs.size());
+		if (this.subJobs == null){ //no sub job , early return 
+			this.state = JobState.RUNNING;
+			return; 
+		}
 		for(FelucaJob subJob: this.subJobs){
 			subJob.startJob();
 		}

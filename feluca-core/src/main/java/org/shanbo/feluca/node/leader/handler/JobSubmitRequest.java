@@ -13,6 +13,7 @@ import org.shanbo.feluca.node.RequestHandler;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
+import org.shanbo.feluca.node.job.DataDispatchJob;
 import org.shanbo.feluca.node.job.StoppableSleepJob;
 import org.shanbo.feluca.node.leader.LeaderModule;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ public class JobSubmitRequest extends RequestHandler{
 
 	final static List<String> jobAllow = new ArrayList<String>();
 	static {
-//		jobAllow.add("data");
+		jobAllow.add("data");
 //		jobAllow.add("algorithm");
 		jobAllow.add("sleep");
 	}
@@ -58,14 +59,17 @@ public class JobSubmitRequest extends RequestHandler{
 		Class<? extends FelucaJob> jobClz = null;
 		Properties properties = null;
 		if (jobName.equals("data")){
-			String dataName = req.param("data");
+			String dataName = req.param("dataName");
 			if (dataName == null){
-				HttpResponseUtil.setResponse(resp, "start job : data", " require 'data' ");
+				HttpResponseUtil.setResponse(resp, "start job : data", " require 'dataName' ");
+				resp.setStatus(HttpResponseStatus.BAD_REQUEST);
+				return;
+			}else if (!m.dataSetExist(dataName)){
+				HttpResponseUtil.setResponse(resp, "start job : data", " dataName:[" + dataName+ "] not found! ");
 				resp.setStatus(HttpResponseStatus.BAD_REQUEST);
 				return;
 			}
-//			jobClz =
-//			job = new DataDistributeJob(m.httpClient, m.getModuleAddress(), dataName);
+			jobClz = DataDispatchJob.class;
 		}else if (jobName.equals("sleep")){
 			String ms = req.param("ms");
 			jobClz = StoppableSleepJob.class;
@@ -75,11 +79,11 @@ public class JobSubmitRequest extends RequestHandler{
 			}
 		}
 
-		boolean submission;
+		String submitJobName;
 		try {
-			submission = m.submitJob(jobClz, properties);
-			if (submission == true){
-				HttpResponseUtil.setResponse(resp, "start job : data", "job submited");
+			submitJobName = m.submitJob(jobClz, properties);
+			if (submitJobName != null){
+				HttpResponseUtil.setResponse(resp, "start job : data", "job submited:" + submitJobName);
 			}else{
 				HttpResponseUtil.setResponse(resp, "start job : data", "submision failed, a job already running ");
 			}
