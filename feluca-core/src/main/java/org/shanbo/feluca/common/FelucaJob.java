@@ -55,13 +55,15 @@ public abstract class FelucaJob {
 		this.finishTime = startTime;
 		this.state = JobState.PENDING;
 		
-		this.properties.putAll(prop);
-		String expTime = prop.getProperty("job.ttl");
-		if(StringUtils.isNumeric(expTime)){
-			Integer t = Integer.parseInt(expTime);
-			this.ttl = t;
+		if (prop != null){
+			this.properties.putAll(prop);
+			String expTime = prop.getProperty("job.ttl");
+			if(StringUtils.isNumeric(expTime)){
+				Integer t = Integer.parseInt(expTime);
+				this.ttl = t;
+			}
 		}
-		this.jobName = properties.getProperty("jobName", "felucaJob_" + System.currentTimeMillis());
+		this.jobName = properties.getProperty("jobName", "felucaJob_" + startTime);
 		this.log = LoggerFactory.getLogger(this.getClass());
 	}
 
@@ -163,7 +165,7 @@ public abstract class FelucaJob {
 							break;
 						}
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(200);
 							log.debug("checking~~~~" + subJobs.get(0).getJobState());
 //							System.out.println("checking~~~~" + subJobs.get(0).getJobState());
 						} catch (InterruptedException e) {

@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 
 
 
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -82,7 +84,7 @@ public class LeaderModule extends RoleModule{
 	}
 	
 	public boolean dataSetExist(String dataName){
-		return new File(dataDir + "/" + dataDir).isDirectory();
+		return new File(dataDir + "/" + dataName).isDirectory();
 	}
 	
 	
@@ -91,6 +93,14 @@ public class LeaderModule extends RoleModule{
 			return null;
 		return this.jobManager.asynRunJob(clz, conf);
 	}
+	
+	public String killJob(String jobName){
+		if (StringUtils.isBlank(jobName))
+			return "jobName empty!?";
+		return 
+			this.jobManager.killJob(jobName);
+	}
+	
 	
 	public String getJobStatus(){
 		return jobManager.getCurrentJobState();

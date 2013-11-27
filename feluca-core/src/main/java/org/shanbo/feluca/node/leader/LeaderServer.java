@@ -1,6 +1,5 @@
 package org.shanbo.feluca.node.leader;
 
-import org.apache.zookeeper.KeeperException;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
@@ -13,6 +12,7 @@ import org.shanbo.feluca.node.http.BaseNioServer;
 import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
 import org.shanbo.feluca.node.leader.handler.ClusterStatusRequest;
+import org.shanbo.feluca.node.leader.handler.JobKillRequest;
 import org.shanbo.feluca.node.leader.handler.JobStatusHandler;
 import org.shanbo.feluca.node.leader.handler.JobSubmitRequest;
 import org.shanbo.feluca.util.ZKClient;
@@ -58,7 +58,7 @@ public class LeaderServer extends BaseNioServer{
 
 
 				pipeline.addLast("decoder", new HttpRequestDecoder());
-				pipeline.addLast("chunk" , new org.jboss.netty.handler.codec.http.HttpChunkAggregator(8888888));
+//				pipeline.addLast("chunk" , new org.jboss.netty.handler.codec.http.HttpChunkAggregator(8888888));
 				pipeline.addLast("encoder", new HttpResponseEncoder());
 				pipeline.addLast("channel", channel);
 
@@ -81,6 +81,7 @@ public class LeaderServer extends BaseNioServer{
 		this.addHandler(new JobSubmitRequest(module));
 		this.addHandler(new JobStatusHandler(module));
 		this.addHandler(new ClusterStatusRequest(module));
+		this.addHandler(new JobKillRequest(module));
 		module.init(zkRegisterPath(), getServerAddress());
 		super.preStart();
 	}
@@ -89,6 +90,11 @@ public class LeaderServer extends BaseNioServer{
 	public void postStop() throws Exception {
 		module.shutdown();
 		super.postStop();
-		
 	}
+	
+	public static void main(String[] args) {
+		LeaderServer server = new LeaderServer();
+		server.start();
+	}
+	
 }

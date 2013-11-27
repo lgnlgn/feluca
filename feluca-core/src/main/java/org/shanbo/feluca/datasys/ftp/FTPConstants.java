@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.shanbo.feluca.common.FelucaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,8 @@ public class FTPConstants {
 		} catch (IOException e) {
 			log.warn("load default properties error~~~~~~",e);
 		}
-
+		if (!p.containsKey("ftpserver.user.admin.userpassword"))
+			throw new FelucaException("properties to bytes[] exception");
 		return p;
 	}
 	

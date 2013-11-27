@@ -1,22 +1,18 @@
 package org.shanbo.feluca.node.job;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaJob;
-import org.shanbo.feluca.common.FelucaJob.JobState;
 import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
 import org.shanbo.feluca.util.ElementPicker;
@@ -33,11 +29,9 @@ import com.alibaba.fastjson.JSONObject;
 public class DataDispatchJob extends FelucaJob{
 
 
-	private String dataDir;
+	private String fromDir;
 	static class DeliveryJob extends FelucaJob{
 
-		static final long FILESIZEMAX_ONELOOP = 88 * 1024* 1024;
-		static final long FILENUMMAX_ONELOOP = 6;
 
 		JSONObject ipFiles ; //
 		String dataName;
@@ -65,42 +59,43 @@ public class DataDispatchJob extends FelucaJob{
 				public void run() {
 					for(String ip : ipFiles.keySet()){
 						JSONArray files = ipFiles.getJSONArray(ip);
-						int num = 0;
-						long sizesum = 0;
+
 						DataClient dataClient = null;
 						try{
+							log.debug("open :" + ip + " dataclient");
 							dataClient = new DataFtpClient(ip.split(":")[0]);
 							dataClient.makeDirecotry(dataName);
 						}catch(IOException e){
-							log.error("data client IOException", e);
+							log.error("open :" + ip + " dataclient IOException", e);
+							appendMessage("open :" + ip + " dataclient IOException");
 							continue;
 						}
 						for(int i = 0 ; i < files.size(); i++){
 							String fileName = files.getString(i);
-							try{
-								RandomAccessFile fis = new RandomAccessFile(fileName, "r");
-								sizesum += fis.length();
-								num += 1;
-								fis.close();
-
-								if (num >= FILESIZEMAX_ONELOOP || sizesum >= FILESIZEMAX_ONELOOP){
-									if (state == JobState.INTERRUPTED){
-										dataClient.close();
-										return ;
-									}
-								}else{
-									dataClient.copyToRemote(dataName, new File(dataName + "/" + fileName));
+							File toCopy = new File(Constants.DATA_PATH + "/" + dataName + "/" + fileName);
+							try{							
+								if (state == JobState.INTERRUPTED){
+									log.debug("interrupted?????????????????????????????");
+									dataClient.close();
+									return ;
 								}
+								if (!toCopy.isFile()){
+									log.warn("it's that a directory? or it's been removed?");
+									continue;
+								}
+								//do copy task
+								dataClient.copyToRemote(dataName, toCopy);
+								log.debug(String.format("copy %s/%s to %s", dataName, fileName, ip));
+								appendMessage(String.format("copy %s/%s to %s", dataName, fileName, ip));
+	
 							}catch(IOException e){
 								log.error("delivery ioe", e);
-
 							}
 						}
 						dataClient.close();
 					}
 					state = JobState.FINISHED;
 				}
-
 			}, "delivery");
 			deliverer.setDaemon(true);
 			deliverer.start();
@@ -118,7 +113,7 @@ public class DataDispatchJob extends FelucaJob{
 
 	public DataDispatchJob(Properties prop) {
 		super(prop);
-		this.dataDir = prop.getProperty("dataDir", Constants.DATA_PATH);
+		this.fromDir = prop.getProperty("dataDir", Constants.DATA_PATH);
 		String dataName = prop.getProperty("dataName");
 		try {
 			Map<String, List<String>> taskDetail = allocateFiles(dataName);
@@ -142,7 +137,7 @@ public class DataDispatchJob extends FelucaJob{
 		List<String> nodes = ZKClient.get().getChildren(Constants.FDFS_ZK_ROOT);
 		if (nodes.isEmpty() || StringUtils.isBlank(dataName))
 			return Collections.emptyMap();
-		File dataSet = new File(this.dataDir + "/" + dataName);
+		File dataSet = new File(this.fromDir + "/" + dataName);
 		if (dataSet.exists() && dataSet.isDirectory()){
 			File[] segments = dataSet.listFiles();
 			Map<String, List<String>> resultMap = new HashMap<String, List<String>>();//(ip:list(filename))
@@ -167,6 +162,7 @@ public class DataDispatchJob extends FelucaJob{
 					resultMap.remove(node);
 				}
 			}
+			log.debug("show map:" + resultMap.toString());
 			return resultMap;
 		}else{
 			return Collections.emptyMap();

@@ -1,6 +1,5 @@
 package org.shanbo.feluca.node.leader;
 
-import java.util.List;
 import java.util.Set;
 
 import org.jboss.netty.channel.ChannelFuture;
@@ -49,7 +48,7 @@ public class LeaderNettyChannel extends BaseChannelHandler{
 			JSONArray ja = new JSONArray();
 			ja.addAll(handlerPaths);
 			HttpResponseUtil.setResponse(resp, "request path :" + path, 
-					JsonStringUtil.JSONFormatString("code",404, "available_path", ja),
+					JsonStringUtil.keyValuesToJson("code",404, "available_path", ja),
 					HttpResponseStatus.BAD_REQUEST	);
 		}else{
 			handler.handle(nhr, resp);

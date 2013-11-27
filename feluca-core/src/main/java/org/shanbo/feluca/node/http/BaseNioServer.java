@@ -2,7 +2,6 @@ package org.shanbo.feluca.node.http;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.util.concurrent.Executors;
 
 
@@ -28,8 +27,6 @@ import org.jboss.netty.handler.codec.serialization.ObjectDecoder;
 import org.jboss.netty.handler.codec.serialization.ObjectEncoder;
 
 import org.shanbo.feluca.common.Server;
-import org.shanbo.feluca.util.Config;
-import org.shanbo.feluca.util.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

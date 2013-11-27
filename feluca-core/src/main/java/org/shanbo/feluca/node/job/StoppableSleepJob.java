@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * job for test
+ * job for test module
  * @author lgn
  *
  */
@@ -25,7 +25,7 @@ public class StoppableSleepJob extends FelucaJob{
 		public Nap(Properties prop){
 			super(prop);
 			this.jobName = "a nap";
-			loop= 5;
+			loop= 6;
 		}
 
 
@@ -51,8 +51,8 @@ public class StoppableSleepJob extends FelucaJob{
 						}
 						try {
 							appendMessage("let me sleep(" + i + ")" + DEFUALT_SLEEP_MS);
-							Thread.sleep(DEFUALT_SLEEP_MS);
 							log.debug("let me sleep(" + i + ")" + DEFUALT_SLEEP_MS);
+							Thread.sleep(DEFUALT_SLEEP_MS);
 						} catch (InterruptedException e) {
 						}
 					}

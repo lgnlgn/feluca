@@ -11,7 +11,6 @@ public class FelucaMain {
 
 	public static void main(String[] args) {
 		//TODO
-		LeaderServer server = new LeaderServer();
-		server.start();
+
 	}
 }

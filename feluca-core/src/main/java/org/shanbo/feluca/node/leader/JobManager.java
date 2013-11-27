@@ -48,7 +48,7 @@ public class JobManager{
 					}else{
 					}
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						log.error("managerThread interrupted", e);
 					}
@@ -137,11 +137,16 @@ public class JobManager{
 		}
 	}
 
-	public synchronized void killJob(){
+	public synchronized String killJob(String jobName){
 		if (this.running == null || isJobSlotFree()){
-			;
+			return "no job running right now";
 		}else{
-			running.stopJob();
+			if (jobName.equals(this.running.getJobName())){
+				running.stopJob();
+				return "job interrupted, waiting for stop";
+			}
+			else
+				return "input jobName not equals to the running's; job stay running";
 		}
 	}
 

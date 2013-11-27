@@ -33,7 +33,7 @@ public class ClusterStatusRequest extends RequestHandler{
 		JSONObject json = new JSONObject();
 		json.put("leader", leaderAddress);
 		json.put("worker", slaves);
-		HttpResponseUtil.setResponse(resp, "cluster status", json.toString());
+		HttpResponseUtil.setResponse(resp, "cluster status", json);
 	}
 	
 }

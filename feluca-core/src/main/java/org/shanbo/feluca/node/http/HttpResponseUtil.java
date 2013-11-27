@@ -1,6 +1,11 @@
 package org.shanbo.feluca.node.http;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.nio.charset.Charset;
+
+
+
 
 
 
@@ -67,6 +72,15 @@ public class HttpResponseUtil {
 	public static void setResponse( DefaultHttpResponse resp, Object respHead, Object respBody){
 		setResponse(resp, respHead, respBody, HttpResponseStatus.OK);
 	}
+	
+	public static void setExceptionResponse(DefaultHttpResponse resp, Object respHead, String errorMsg, Throwable e){
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(byteStream);
+		e.printStackTrace(ps);
+		ps.close();
+		setResponse(resp, respHead, errorMsg + "\n" + byteStream.toString(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
+	}
+	
 	
 	public static void setResponse( DefaultHttpResponse resp, Object respHead, Object respBody, HttpResponseStatus status){
 		resp.setStatus( status );

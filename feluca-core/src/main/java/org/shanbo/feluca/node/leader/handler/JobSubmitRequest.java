@@ -1,5 +1,8 @@
 package org.shanbo.feluca.node.leader.handler;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +60,7 @@ public class JobSubmitRequest extends RequestHandler{
 		}
 		LeaderModule m = (LeaderModule)this.module;
 		Class<? extends FelucaJob> jobClz = null;
-		Properties properties = null;
+		Properties parameters = new Properties();
 		if (jobName.equals("data")){
 			String dataName = req.param("dataName");
 			if (dataName == null){
@@ -70,18 +73,19 @@ public class JobSubmitRequest extends RequestHandler{
 				return;
 			}
 			jobClz = DataDispatchJob.class;
+			parameters.put("dataName", dataName);
+			
 		}else if (jobName.equals("sleep")){
 			String ms = req.param("ms");
 			jobClz = StoppableSleepJob.class;
 			if (ms != null){
-				properties = new Properties();
-				properties.put("job.ttl", new Integer(ms));
+				parameters.put("job.ttl", new Integer(ms));
 			}
 		}
 
 		String submitJobName;
 		try {
-			submitJobName = m.submitJob(jobClz, properties);
+			submitJobName = m.submitJob(jobClz, parameters);
 			if (submitJobName != null){
 				HttpResponseUtil.setResponse(resp, "start job : data", "job submited:" + submitJobName);
 			}else{
@@ -89,7 +93,7 @@ public class JobSubmitRequest extends RequestHandler{
 			}
 		} catch (Exception e) {
 			log.error("submit job error", e);
-			HttpResponseUtil.setResponse(resp, "start job : data", "submision failed  Class init error " );
+			HttpResponseUtil.setExceptionResponse(resp, "start job : data" , "submision failed  Class init error \n", e );
 		} 
 
 	}

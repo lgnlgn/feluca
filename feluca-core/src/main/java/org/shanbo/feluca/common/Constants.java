@@ -42,8 +42,8 @@ public class Constants {
 	
 	public final static String DELETE_CLAUSE = "delete";
 	
-	public final static String DATA_PATH = Config.get().get("dataDir", "./data");
-	
+	public final static String DATA_PATH = Config.get().get("datadir", "./data");
+	public final static String WORKER_DATA_PATH = Config.get().get("workerdatadir", "./data2");
 	
 	public final static String ZK_WORKER_PATH = ZK_CHROOT + "/workers";
 	public final static String ZK_LEADER_PATH = ZK_CHROOT + "/leader";

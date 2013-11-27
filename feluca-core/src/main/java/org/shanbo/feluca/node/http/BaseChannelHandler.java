@@ -38,41 +38,6 @@ public class BaseChannelHandler extends SimpleChannelHandler {
 		this.handlers = handlers;
 	}
 
-	
-	public void messageReceived(ChannelHandlerContext ctx, final MessageEvent e)
-			throws Exception {
-		// common http request
-		HttpRequest req = (HttpRequest)e.getMessage();
-		NettyHttpRequest nhr = new NettyHttpRequest(req);
-		String path = nhr.path();
-
-		Handler handler = handlers.getHandler(path);
-		DefaultHttpResponse resp = new DefaultHttpResponse(req.getProtocolVersion(), HttpResponseStatus.OK);
-		if (handler == null){
-			HttpResponseUtil.setResponse(resp, "path :" + path, 
-					"\"path not found! current_path : " + this.handlers.handlers.keySet() + "\"",
-					HttpResponseStatus.BAD_REQUEST		);
-		}else{
-			handler.handle(nhr, resp);
-		}
-		
-		resp.setHeader(HttpHeaders.Names.CONTENT_TYPE, Strings.CONTENT_TYPE);
-		resp.setHeader("Content-Length", resp.getContent().readableBytes());
-
-		boolean close = !HttpHeaders.isKeepAlive(req);
-
-		resp.setHeader(HttpHeaders.Names.CONNECTION,
-				close ? HttpHeaders.Values.CLOSE
-						: HttpHeaders.Values.KEEP_ALIVE);
-		
-		ChannelFuture cf = e.getChannel().write(resp);
-
-		if (close) 
-			cf.addListener(ChannelFutureListener.CLOSE);
-		writeAccessLog(e.getChannel(), req, resp);
-	
-	}
-
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 			throws Exception {

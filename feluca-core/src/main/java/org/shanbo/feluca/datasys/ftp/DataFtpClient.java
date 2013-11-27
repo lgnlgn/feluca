@@ -68,14 +68,14 @@ public class DataFtpClient implements DataClient{
 
 	}
 
-	public boolean copyToRemote(String dataName, File file) throws IOException {
+	public boolean copyToRemote(String dataName, File toCopy) throws IOException {
 		boolean flag = false;
 		try{
 			ftpClient.enterLocalPassiveMode(); 
 			ftpClient.setFileTransferMode(FTP.STREAM_TRANSFER_MODE); 
-			InputStream input = new FileInputStream(file); 
+			InputStream input = new FileInputStream(toCopy); 
 			input = new BufferedInputStream(input);
-			flag = ftpClient.storeFile(dataName + "/" + file.getName(), input); 
+			flag = ftpClient.storeFile(dataName + "/" + toCopy.getName(), input); 
 			if (flag) { 
 				System.out.println("上传文件成功！"); 
 			} else { 
