@@ -52,4 +52,6 @@ public class Constants {
 	public final static String[] BLOCK_SUFFIXES = new String[]{	".data", ".sta", };
 	public final static String[] DATA_SUFFIXES = new String[]{".global"};
 	
+	public final static String leaderToWorkerText="feluca";
+	
 }
