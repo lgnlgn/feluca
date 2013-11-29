@@ -29,10 +29,13 @@ public abstract class ElementPicker<T> {
 
 		@Override
 		public synchronized T pick() {
+			
 			if (i >= list.size()){
 				i = 0;
 			}
-			return list.get(i);
+			int idx = i;
+			i+=1;
+			return list.get(idx);
 		}
 	}
 

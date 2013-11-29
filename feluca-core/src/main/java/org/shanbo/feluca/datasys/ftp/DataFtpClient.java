@@ -1,8 +1,10 @@
 package org.shanbo.feluca.datasys.ftp;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
@@ -25,6 +27,7 @@ import org.slf4j.LoggerFactory;
 public class DataFtpClient implements DataClient{
 	static Logger log = LoggerFactory.getLogger(DataFtpClient.class);
 	FTPClient ftpClient;
+	String ip;
 	int port = FTPConstants.PORT;
 
 	/**
@@ -34,6 +37,7 @@ public class DataFtpClient implements DataClient{
 	 * @throws IOException
 	 */
 	public DataFtpClient(String ip) throws SocketException, IOException{
+		this.ip = ip;
 		ftpClient = new FTPClient(); 
 		//		ftpClient.setControlEncoding("GBK"); 
 		ftpClient.setDefaultPort(port); 
@@ -41,7 +45,9 @@ public class DataFtpClient implements DataClient{
 		ftpClient.login(FTPConstants.LOGIN_USERNAME, FTPConstants.LOGIN_PASSWORD); 
 		int reply = ftpClient.getReplyCode(); 
 		ftpClient.setDataTimeout(120000); 
-
+		ftpClient.enterLocalPassiveMode();
+		ftpClient.setFileType(FTP.BINARY_FILE_TYPE); 
+		ftpClient.setBufferSize(64*1024);
 		if (!FTPReply.isPositiveCompletion(reply)) { 
 			ftpClient.disconnect(); 
 			log.error("FTP server refused connection."); 
@@ -71,8 +77,7 @@ public class DataFtpClient implements DataClient{
 	public boolean copyToRemote(String dataName, File toCopy) throws IOException {
 		boolean flag = false;
 		try{
-			ftpClient.enterLocalPassiveMode(); 
-			ftpClient.setFileTransferMode(FTP.STREAM_TRANSFER_MODE); 
+
 			InputStream input = new FileInputStream(toCopy); 
 			input = new BufferedInputStream(input);
 			flag = ftpClient.storeFile(dataName + "/" + toCopy.getName(), input); 
@@ -106,14 +111,40 @@ public class DataFtpClient implements DataClient{
 	}
 
 	public String showDataInfo(String dataName) throws IOException {
-		
+
 		return null;
 	}
 
-	
-	public boolean downFromRemote(String dataName) throws IOException {
-		// TODO Auto-generated method stub
-		return false;
+
+	public boolean downFromRemote(String remoteFileName, String localDires) throws IOException {
+
+		String strFilePath = localDires + "/" + remoteFileName;
+		File localFile = new File(localDires);
+		if(!localFile.exists() || !localFile.isDirectory())
+			localFile.mkdirs();
+		BufferedOutputStream outStream = null;  
+		boolean success = false;  
+		try {  
+			//	            ftpClient.changeWorkingDirectory(remoteDownLoadPath);  
+			outStream = new BufferedOutputStream(new FileOutputStream(  strFilePath));  
+			success = ftpClient.retrieveFile(remoteFileName, outStream);  
+			if (success == true) {  
+				return success;  
+			}  
+		} catch (IOException e) {  
+			log.error("down load file" + remoteFileName + " error" ,e);
+		} finally {  
+			if (null != outStream) {  
+				try {  
+					outStream.flush();  
+					outStream.close();  
+				} catch (IOException e) {  
+					e.printStackTrace();  
+				}  
+			}  
+		}  
+		return success;  
+
 	}
 
 	public void close() {
@@ -121,10 +152,17 @@ public class DataFtpClient implements DataClient{
 			ftpClient.logout();
 			ftpClient.disconnect(); 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 
 	}
 
+	public static void main(String[] args) throws SocketException, IOException {
+		DataFtpClient client = new DataFtpClient("10.249.9.205");
+		System.out.println("----");
+		long t = System.currentTimeMillis();
+		client.copyToRemote("aaa", new File("data/aaa/001.pdf"));
+		System.out.println("---" + (System.currentTimeMillis()-t));
+		client.close();
+	}
 }

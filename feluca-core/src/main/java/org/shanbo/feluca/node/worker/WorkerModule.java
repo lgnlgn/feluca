@@ -9,6 +9,11 @@ public class WorkerModule extends RoleModule{
 	private String dataDir; //
 	private volatile Map<String, String> workers;
 	
+	private WorkerJobManager manager;
+	
+	
+	
+	
 	public static void main(String[] args) throws IOException {
 		ProcessBuilder pb = new ProcessBuilder("java", "test1");
 		Process p = pb.start();

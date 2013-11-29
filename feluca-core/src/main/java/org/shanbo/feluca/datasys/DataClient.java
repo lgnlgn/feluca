@@ -25,12 +25,12 @@ public interface DataClient {
 	 * @return
 	 * @throws IOException
 	 */
-	public boolean copyToRemote(String destDataName, File toCopy) throws IOException;
+	public boolean copyToRemote(String destDir, File toCopy) throws IOException;
 	
 	public List<String> listData() throws IOException;
 	
 	public String showDataInfo(String dataName) throws IOException;
 	
-	public boolean downFromRemote(String dataName) throws IOException;
+	public boolean downFromRemote(String remoteFile, String localDir) throws IOException;
 	
 }
