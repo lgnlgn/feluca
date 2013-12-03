@@ -7,6 +7,8 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.datasys.DataServer;
+import org.shanbo.feluca.datasys.ftp.DataFtpServer;
 import org.shanbo.feluca.node.http.BaseChannelHandler;
 import org.shanbo.feluca.node.http.BaseNioServer;
 import org.shanbo.feluca.node.http.Handler;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 public class LeaderServer extends BaseNioServer{
 	LeaderModule module;
+	DataServer dataServer;
 	Handlers handlers = new Handlers();
 	final BaseChannelHandler channel = new LeaderNettyChannel(handlers);
 
@@ -84,14 +87,24 @@ public class LeaderServer extends BaseNioServer{
 		this.addHandler(new JobKillRequest(module));
 		module.init(zkRegisterPath(), getServerAddress());
 		super.preStart();
+		
+		ZKClient.get().createIfNotExist(Constants.FDFS_ZK_ROOT);
+		dataServer = new DataFtpServer();
+		dataServer.start();
+		
 	}
 
 	@Override
 	public void postStop() throws Exception {
 		module.shutdown();
 		super.postStop();
+		dataServer.stop();
 	}
 	
+	/**
+	 * test
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		LeaderServer server = new LeaderServer();
 		server.start();

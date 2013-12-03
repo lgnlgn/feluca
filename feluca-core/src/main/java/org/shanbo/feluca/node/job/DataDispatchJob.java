@@ -24,9 +24,11 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * TODO routing strategy , need broadcast 
+ * 
  * @author lgn
  *
  */
+@Deprecated
 public class DataDispatchJob extends FelucaJob{
 
 

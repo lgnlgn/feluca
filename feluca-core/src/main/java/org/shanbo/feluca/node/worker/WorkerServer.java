@@ -16,7 +16,7 @@ import org.shanbo.feluca.util.ZKClient;
 
 public class WorkerServer extends Server{
 	WorkerModule module;
-	DataServer dataServer;
+	
 	final Handlers handlers = new Handlers();
 	
 	BaseChannelHandler channel = new BaseChannelHandler(handlers);
@@ -66,16 +66,13 @@ public class WorkerServer extends Server{
 		module = new WorkerModule();
 		module.init(zkRegisterPath(), getServerAddress());
 		
-		ZKClient.get().createIfNotExist(Constants.FDFS_ZK_ROOT);
-		dataServer = new DataFtpServer();
-		dataServer.start();
+
 
 	}
 
 	@Override
 	public void postStop() throws Exception {
 		module.shutdown();
-		dataServer.stop();
 		
 	}
 	public static void main(String[] args) {
