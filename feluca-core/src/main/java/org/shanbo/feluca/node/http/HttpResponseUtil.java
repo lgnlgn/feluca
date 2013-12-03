@@ -1,18 +1,9 @@
 package org.shanbo.feluca.node.http;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.Charset;
-
-
-
-
-
-
-
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.shanbo.feluca.util.Strings;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -74,11 +65,8 @@ public class HttpResponseUtil {
 	}
 	
 	public static void setExceptionResponse(DefaultHttpResponse resp, Object respHead, String errorMsg, Throwable e){
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(byteStream);
-		e.printStackTrace(ps);
-		ps.close();
-		setResponse(resp, respHead, errorMsg + "\n" + byteStream.toString(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
+		String exception = Strings.exception2Str(e);
+		setResponse(resp, respHead, errorMsg + "\n" + exception, HttpResponseStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	

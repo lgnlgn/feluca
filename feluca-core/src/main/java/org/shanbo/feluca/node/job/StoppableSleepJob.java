@@ -46,11 +46,11 @@ public class StoppableSleepJob extends FelucaJob{
 					for(int i = 0 ; i < loop ; i++){
 						if (state == JobState.INTERRUPTED){
 							log.debug(" interrupted!!!???  ");
-							appendMessage(" interrupted!!!???  " );
+							logInfo(" interrupted!!!???  " );
 							break;
 						}
 						try {
-							appendMessage("let me sleep(" + i + ")" + DEFUALT_SLEEP_MS);
+							logInfo("let me sleep(" + i + ")" + DEFUALT_SLEEP_MS);
 							log.debug("let me sleep(" + i + ")" + DEFUALT_SLEEP_MS);
 							Thread.sleep(DEFUALT_SLEEP_MS);
 						} catch (InterruptedException e) {

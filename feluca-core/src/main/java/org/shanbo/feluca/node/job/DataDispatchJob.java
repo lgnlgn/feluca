@@ -15,6 +15,7 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaJob;
 import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
+import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.ElementPicker;
 import org.shanbo.feluca.util.ZKClient;
 
@@ -67,7 +68,7 @@ public class DataDispatchJob extends FelucaJob{
 							dataClient.makeDirecotry(dataName);
 						}catch(IOException e){
 							log.error("open :" + ip + " dataclient IOException", e);
-							appendMessage("open :" + ip + " dataclient IOException");
+							logError("open :" + ip + " dataclient IOException", e);
 							continue;
 						}
 						for(int i = 0 ; i < files.size(); i++){
@@ -86,7 +87,7 @@ public class DataDispatchJob extends FelucaJob{
 								//do copy task
 								dataClient.copyToRemote(dataName, toCopy);
 								log.debug(String.format("copy %s/%s to %s", dataName, fileName, ip));
-								appendMessage(String.format("copy %s/%s to %s", dataName, fileName, ip));
+								logInfo(String.format("copy %s/%s to %s", dataName, fileName, ip));
 	
 							}catch(IOException e){
 								log.error("delivery ioe", e);
@@ -106,7 +107,7 @@ public class DataDispatchJob extends FelucaJob{
 	private Properties generateProperties(String dataName,Map<String, List<String>> taskDetail){
 		Properties taskProperties = new Properties();
 		taskProperties.put("taskDetail", JSONObject.toJSONString(taskDetail));
-		taskProperties.put("jobName", "delivery_" + System.currentTimeMillis());
+		taskProperties.put(Constants.JOB_NAME, "delivery_" + DateUtil.getMsDateTimeFormat());
 		taskProperties.put("dataName", dataName);
 		return taskProperties;
 	}

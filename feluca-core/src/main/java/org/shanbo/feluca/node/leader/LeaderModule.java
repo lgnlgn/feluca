@@ -126,9 +126,6 @@ public class LeaderModule extends RoleModule{
 		ZKClient.get().watchChildren(Constants.ZK_WORKER_PATH, cw);
 	}
 	
-	public void addMessageToJob(String content){
-		this.jobManager.addMessageToJob(content);
-	}
 	
 	public List<String> yieldSlaves(){
 		List<String> a = new ArrayList<String>();

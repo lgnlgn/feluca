@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ftpserver.util.DateUtils;
+import org.shanbo.feluca.util.DateUtil;
+import org.shanbo.feluca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +21,16 @@ import com.alibaba.fastjson.JSONObject;
  */
 public abstract class FelucaJob {
 	
+	public static final String JOB_NAME = "jobName";
+	public static final String JOB_START_TIME = "jobStart";
+	public static final String TIME_TO_LIVE = "job.ttl";
+	
 	protected Logger log ;
 	
 	protected long startTime ;
 	protected long finishTime;
-	protected List<String> logCollector; //each job has it's own one
-	protected List<String> logPipe; //you may need to share it with sub jobs 
+	protected List<JobMessage> logCollector; //each job has it's own one
+	protected List<JobMessage> logPipe; //you may need to share it with sub jobs 
 	protected final Properties properties;
 	protected volatile JobState state;
 	protected int ttl = -1;	
@@ -43,33 +50,42 @@ public abstract class FelucaJob {
 		INTERRUPTED
 	}
 
-	public static class JobInfo{
+	public static class JobMessage{
+		String logType; //info warn error
+		String logContent;
+		long logTime;
+		
+		public JobMessage(String logType, String content, long ms){
+			this.logContent = content;
+			this.logTime = ms;
+			this.logType = logType;
+		}
 		
 	}
 
 	public FelucaJob(Properties prop){
 		this.properties = new Properties();
-		this.logCollector  = new ArrayList<String>(); //each job has it's own one
-		this.logPipe = new ArrayList<String>(); //you may need to share it with sub jobs
-		this.startTime = System.currentTimeMillis();
+		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
+		this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
+		this.startTime = DateUtil.getMsDateTimeFormat();
 		this.finishTime = startTime;
 		this.state = JobState.PENDING;
 		
 		if (prop != null){
 			this.properties.putAll(prop);
-			String expTime = prop.getProperty("job.ttl");
+			String expTime = prop.getProperty(TIME_TO_LIVE);
 			if(StringUtils.isNumeric(expTime)){
 				Integer t = Integer.parseInt(expTime);
 				this.ttl = t;
 			}
 		}
-		this.jobName = properties.getProperty("jobName", "felucaJob_" + startTime);
+		this.jobName = properties.getProperty(JOB_NAME, "felucaJob_" + startTime);
 		this.log = LoggerFactory.getLogger(this.getClass());
 	}
 
 
 
-	public void setLogPipe(List<String> logCollector){
+	public void setLogPipe(List<JobMessage> logCollector){
 		this.logPipe = logCollector;
 	}
 
@@ -96,7 +112,7 @@ public abstract class FelucaJob {
 
 	public final long getJobDuration(){
 		if (state == JobState.RUNNING){
-			return System.currentTimeMillis() - startTime;
+			return DateUtil.getMsDateTimeFormat() - startTime;
 		}else{
 			return finishTime - startTime;
 		}
@@ -104,23 +120,40 @@ public abstract class FelucaJob {
 
 	protected abstract String getAllLog();
 
-	public synchronized void appendMessage(String content){
+	public synchronized void logInfo(String content){
 		String line = content.endsWith("\n")?content:content+"\n";
-		logCollector.add(line);
+		JobMessage msg = new JobMessage(Strings.INFO, line, DateUtil.getMsDateTimeFormat());
+		logCollector.add(msg);
 		if (this.logPipe!= null){
-			logPipe.add(line);
+			logPipe.add(msg);
 		}
 	}
+	
+	public synchronized void logError(String errorHead, Throwable e){
+		String line = errorHead.endsWith("\n")?errorHead:errorHead+"\n";
+		JobMessage msg = new JobMessage(Strings.ERROR, line + Strings.exception2Str(e), DateUtil.getMsDateTimeFormat());
+		logCollector.add(msg);
+		if (this.logPipe!= null){
+			logPipe.add(msg);
+		}
+	}
+	
+	
 
-	public String getJobInfo(){
+	public String toString(){
+		return this.jobSnapshot().toJSONString();
+	}
+	
+	public JSONObject jobSnapshot(){
 		JSONObject json = new JSONObject();
-		json.put("jobName", this.getJobName());
-		json.put("jobCreate", startTime);
+		json.put(JOB_NAME, this.getJobName());
+		json.put(JOB_START_TIME, startTime);
 		json.put("jobDuration", getJobDuration());
 		json.put("jobState", this.getJobState().toString());
 		json.put("jobLog", this.getAllLog());
-		return json.toString();
+		return json;
 	}
+	
 
 	/**
 	 * invoke by {@link JobManager}
@@ -142,10 +175,10 @@ public abstract class FelucaJob {
 			subJobWatcher = new Thread(new Runnable() {
 				public void run() {
 					int action = 0;
-					long tStart = System.currentTimeMillis();
+					long tStart = DateUtil.getMsDateTimeFormat();
 					while( true){
 						JobState subjobState = checkAllSubJobState();
-						long elapse = System.currentTimeMillis() - tStart;
+						long elapse = DateUtil.getMsDateTimeFormat() - tStart;
 						if (action == 0 && ttl > 0 && elapse > ttl){
 							stopJob();
 							action = 1;
@@ -154,12 +187,12 @@ public abstract class FelucaJob {
 						}
 						//check stop action
 						if (subjobState == JobState.FINISHED){
-							finishTime = System.currentTimeMillis();
+							finishTime = DateUtil.getMsDateTimeFormat();
 							log.debug("sub jobs finished");
 							state = JobState.FINISHED;
 							break;
 						}else if (subjobState == JobState.INTERRUPTED){
-							finishTime = System.currentTimeMillis();
+							finishTime = DateUtil.getMsDateTimeFormat();
 							log.debug("sub jobs interrupted");
 							state = JobState.INTERRUPTED;
 							break;
@@ -218,11 +251,11 @@ public abstract class FelucaJob {
 		}
 	}
 
-	protected void gatherInfoFromSubJobs(){
-		for(FelucaJob subJob: subJobs){
-			appendMessage(String.format("%s log: %s ", subJob.getJobName(), subJob.getJobInfo()));
-		}
-	}
+//	protected void gatherInfoFromSubJobs(){
+//		for(FelucaJob subJob: subJobs){
+//			appendMessage(String.format("%s log: %s ", subJob.getJobName(), subJob.getJobInfo()));
+//		}
+//	}
 
 
 

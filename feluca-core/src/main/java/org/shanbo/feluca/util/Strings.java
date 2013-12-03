@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +20,9 @@ public class Strings {
 	
 	public static final String SPILT_COMMA = ",";
 	public static final String CONTENT_TYPE = "application/json; charset=UTF-8";
+	
+	public static final String INFO = "INFO";
+	public static final String ERROR = "ERROR";
 	
 	public static Map<String, String> parseMapStr(String s) {
 		Map<String, String> m = new HashMap<String, String>();
@@ -281,4 +285,13 @@ public class Strings {
 		}
 		return builder.substring(0, builder.length() - 2) +"]";
 	}
+	
+	public static String exception2Str(Throwable e){
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(byteStream);
+		e.printStackTrace(ps);
+		ps.close();
+		return byteStream.toString();
+	}
+	
 }

@@ -1,17 +1,16 @@
 package org.shanbo.feluca.node.leader;
 
 import java.lang.reflect.Constructor;
-import java.util.LinkedList;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.shanbo.feluca.common.FelucaJob;
 import org.shanbo.feluca.common.FelucaJob.JobState;
+import org.shanbo.feluca.common.LogStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -23,24 +22,13 @@ public class JobManager{
 
 	static Logger log = LoggerFactory.getLogger(JobManager.class);
 
-
-	public final static int REMAIN_STATES = 10;
-
 	private volatile FelucaJob running ; //allow only 1 job 
 
-
-	protected volatile boolean runningFlag = true; //
-	protected volatile boolean stoppingFlag = false;
-
-	private AtomicInteger jobCounts = new AtomicInteger(0);
-	private LinkedList<String> lastSeveralJobInfos;
-
+	private LogStorage logStorage = LogStorage.get();
 
 	private Thread managerThread; //regularly checked job's state
 
 	public JobManager(){
-
-		lastSeveralJobInfos = new LinkedList<String>();
 		this.managerThread = new Thread(new Runnable() {
 			public void run(){
 				while(true){
@@ -79,7 +67,7 @@ public class JobManager{
 			JobState s = running.getJobState();
 			log.debug("checking2 : " + s);
 			if (s == JobState.FINISHED || s == JobState.INTERRUPTED){
-				this.lastSeveralJobInfos.add(running.getJobInfo());
+				logStorage.storeJobLogs(this.running.jobSnapshot());
 				running = null;
 				return true;
 			}else{
@@ -93,25 +81,17 @@ public class JobManager{
 	}
 
 	public JSONArray getAllJobStates() {
-		return getLatestJobStates(this.lastSeveralJobInfos.size());
+		return getLatestJobStates(Integer.MAX_VALUE);
 	}
 
 	public JSONArray getLatestJobStates(int size) {
-		JSONArray ja = new JSONArray();
-		size = (size > this.lastSeveralJobInfos.size()) ? this.lastSeveralJobInfos.size():size;
-
-		for(int i = size-1; i >= 0 ; i-- ){
-			String info = lastSeveralJobInfos.get(i);
-			ja.add(JSONObject.parse(info));
-		}
-
-		return ja;
+		return logStorage.getLastJobInfos(size);
 	}
 
 
 	public String getCurrentJobState(){
 		if (!isJobSlotFree()){
-			return running.getJobInfo();
+			return running.toString();
 		}else{ //free
 			return "no job running";
 		}
@@ -130,7 +110,6 @@ public class JobManager{
 			Constructor<? extends FelucaJob> constructor = jobClz.getConstructor(Properties.class);
 			FelucaJob job = constructor.newInstance(conf);
 			this.asyncStartJob(job);
-			this.jobCounts.incrementAndGet();
 			return job.getJobName();
 		}else{
 			return null;
@@ -155,8 +134,5 @@ public class JobManager{
 		return null;
 	}
 
-	public void addMessageToJob(String content) {
-		running.appendMessage(content);
-	}
 }
 
