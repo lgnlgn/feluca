@@ -107,7 +107,7 @@ public class DataDispatchJob extends FelucaJob{
 	private Properties generateProperties(String dataName,Map<String, List<String>> taskDetail){
 		Properties taskProperties = new Properties();
 		taskProperties.put("taskDetail", JSONObject.toJSONString(taskDetail));
-		taskProperties.put(Constants.JOB_NAME, "delivery_" + DateUtil.getMsDateTimeFormat());
+		taskProperties.put(FelucaJob.JOB_NAME, "delivery_" + DateUtil.getMsDateTimeFormat());
 		taskProperties.put("dataName", dataName);
 		return taskProperties;
 	}
