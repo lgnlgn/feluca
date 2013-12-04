@@ -2,8 +2,18 @@ package org.shanbo.feluca.node.http;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -13,6 +23,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.shanbo.feluca.common.DistributedRequester;
+import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 /**
  * 
@@ -21,9 +32,31 @@ import org.shanbo.feluca.common.DistributedRequester;
  */
 public class HttpRequester implements DistributedRequester{
 
-	public List<String> request(Object action, List<String> audiences) {
-		// TODO Auto-generated method stub
-		return null;
+	public static class HttpClientCallable implements Callable<String>{
+		
+		String url ;
+		byte[] content;
+		public HttpClientCallable(String url, byte[] content){
+			this.url = url;
+		}
+		public String call() throws Exception {
+			ByteArrayEntity bae = new  ByteArrayEntity(content);
+			HttpPost post = new HttpPost(url);
+			post.setEntity(bae);
+			return HttpClientUtil.get().getHttpClient().execute(post, new BasicResponseHandler());
+		}
+		
+	}
+	
+	public List<String> request(String action, Object content, List<String> audiences) throws InterruptedException, ExecutionException {
+		if (audiences == null)
+			return Collections.emptyList();
+		byte[] bytes = content.toString().getBytes();
+		List<Callable<String>> toSend = new ArrayList<Callable<String>>();
+		for(String address : audiences){
+			toSend.add(new HttpClientCallable("http://" + address + "/" + StringUtils.strip(action, "/"), bytes));
+		}
+		return ConcurrentExecutor.execute(toSend);
 	}
 	
 	

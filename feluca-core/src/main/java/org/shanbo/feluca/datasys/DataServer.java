@@ -6,11 +6,11 @@ import org.shanbo.feluca.common.Server;
 public abstract  class DataServer extends Server{
 	
 	public final String zkRegisterPath(){
-		return Constants.FDFS_ZK_ROOT;
+		return Constants.Base.FDFS_ZK_ROOT;
 	}
 	
 	public final String serverName(){
-		return Constants.FDFS_SERVER_NAME;
+		return Constants.Base.FDFS_SERVER_NAME;
 	}
 	
 	public int defaultPort() {

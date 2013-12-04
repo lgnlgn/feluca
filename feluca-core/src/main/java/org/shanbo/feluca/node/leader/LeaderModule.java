@@ -8,24 +8,12 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
-
-
-
-
-
-
-
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.zookeeper.KeeperException;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaJob;
-import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.node.NodeRole;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.util.ZKClient;
@@ -40,7 +28,6 @@ public class LeaderModule extends RoleModule{
 	private volatile Map<String, String> workers;
 	private String dataDir;
 	public ClientBootstrap bootstrap;
-	public HttpClient actionClient;
 	
 	
 	private ChildrenWatcher cw;
@@ -48,16 +35,14 @@ public class LeaderModule extends RoleModule{
 	public LeaderModule() throws KeeperException, InterruptedException{
 		this.role = NodeRole.Leader;
 		workers = new ConcurrentHashMap<String, String>();
-		dataDir = Constants.DATA_DIR;
+		dataDir = Constants.Base.DATA_DIR;
 		bootstrap = new ClientBootstrap(
 				new NioClientSocketChannelFactory(
 						Executors.newCachedThreadPool(),
 						Executors.newCachedThreadPool()));
-		
-	    ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager();
-	    actionClient = new DefaultHttpClient(mgr);
-		ZKClient.get().createIfNotExist(Constants.ZK_LEADER_PATH);
-		ZKClient.get().createIfNotExist(Constants.ZK_WORKER_PATH);
+
+		ZKClient.get().createIfNotExist(Constants.Base.ZK_LEADER_PATH);
+		ZKClient.get().createIfNotExist(Constants.Base.ZK_WORKER_PATH);
 		this.watchZookeeper();
 		this.jobManager = new JobManager();
 	}
@@ -123,7 +108,7 @@ public class LeaderModule extends RoleModule{
 				addSlave(node);
 			}
 		};
-		ZKClient.get().watchChildren(Constants.ZK_WORKER_PATH, cw);
+		ZKClient.get().watchChildren(Constants.Base.ZK_WORKER_PATH, cw);
 	}
 	
 	

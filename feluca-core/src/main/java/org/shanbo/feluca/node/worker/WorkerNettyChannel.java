@@ -50,7 +50,7 @@ public class WorkerNettyChannel extends BaseChannelHandler{
 		}else {
 			if (req.getMethod().equals(HttpMethod.POST)){
 				String ciphertext = nhr.contentAsString();
-				if (CipherUtil.validatePassword(Constants.leaderToWorkerText, ciphertext))
+				if (CipherUtil.validatePassword(Constants.Network.leaderToWorkerText, ciphertext))
 					handler.handle(nhr, resp);
 				else{
 					HttpResponseUtil.setResponse(resp, "request path :" + path, 

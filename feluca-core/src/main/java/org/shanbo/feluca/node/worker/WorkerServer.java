@@ -7,8 +7,6 @@ import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.Server;
-import org.shanbo.feluca.datasys.DataServer;
-import org.shanbo.feluca.datasys.ftp.DataFtpServer;
 import org.shanbo.feluca.node.http.BaseChannelHandler;
 import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
@@ -33,7 +31,7 @@ public class WorkerServer extends Server{
 
 	@Override
 	public String zkRegisterPath() {
-		return Constants.ZK_WORKER_PATH;
+		return Constants.Base.ZK_WORKER_PATH;
 	}
 
 	public void addHandler(Handler... hander){
@@ -61,7 +59,7 @@ public class WorkerServer extends Server{
 	@Override
 	public void preStart() throws Exception {
 		
-		ZKClient.get().createIfNotExist(Constants.ZK_CHROOT);
+		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 		ZKClient.get().createIfNotExist(zkRegisterPath() );
 		module = new WorkerModule();
 		module.init(zkRegisterPath(), getServerAddress());

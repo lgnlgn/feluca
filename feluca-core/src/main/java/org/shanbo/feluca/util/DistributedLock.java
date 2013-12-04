@@ -38,7 +38,7 @@ import org.shanbo.feluca.common.Constants;
  */
 public class DistributedLock implements Lock, Watcher{
 	private ZooKeeper zk;
-	private String root = Constants.ZK_CHROOT + "/lock";//根
+	private String root = Constants.Base.ZK_CHROOT + "/lock";//根
 	private String lockName;//竞争资源的标志
 	private String waitNode;//等待前一个锁
 	private String myZnode;//当前锁

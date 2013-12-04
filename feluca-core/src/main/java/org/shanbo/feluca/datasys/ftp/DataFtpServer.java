@@ -11,7 +11,6 @@ import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.listener.ListenerFactory;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.datasys.DataServer;
-import org.shanbo.feluca.util.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ public class DataFtpServer extends DataServer{
 		ByteArrayOutputStream temp = new ByteArrayOutputStream();
 		this.port = port;
 
-		Properties p = FTPConstants.generateDefaultFtpProperties(Constants.WORKER_DATA_PATH);
+		Properties p = FTPConstants.generateDefaultFtpProperties(Constants.Base.WORKER_DATA_PATH);
 
 		try {
 			p.store(temp, "");

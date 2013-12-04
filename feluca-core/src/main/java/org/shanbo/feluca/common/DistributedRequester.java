@@ -1,6 +1,7 @@
 package org.shanbo.feluca.common;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public interface DistributedRequester {
 	
@@ -10,5 +11,5 @@ public interface DistributedRequester {
 	 * @param audiences
 	 * @return
 	 */
-	public List<String> request(Object action, List<String> audiences);
+	public List<String> request(String action, Object content, List<String> audiences) throws InterruptedException, ExecutionException;
 }
