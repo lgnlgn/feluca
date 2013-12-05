@@ -65,7 +65,7 @@ public class HttpResponseUtil {
 	}
 	
 	public static void setExceptionResponse(DefaultHttpResponse resp, Object respHead, String errorMsg, Throwable e){
-		String exception = Strings.exception2Str(e);
+		String exception = Strings.throwableToString(e);
 		setResponse(resp, respHead, errorMsg + "\n" + exception, HttpResponseStatus.INTERNAL_SERVER_ERROR);
 	}
 	

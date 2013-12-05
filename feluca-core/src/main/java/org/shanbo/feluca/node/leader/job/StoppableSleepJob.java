@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node.job;
+package org.shanbo.feluca.node.leader.job;
 
 
 import java.util.Properties;

@@ -16,9 +16,9 @@ import org.shanbo.feluca.node.RequestHandler;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
-import org.shanbo.feluca.node.job.DataDispatchJob;
-import org.shanbo.feluca.node.job.StoppableSleepJob;
 import org.shanbo.feluca.node.leader.LeaderModule;
+import org.shanbo.feluca.node.leader.job.DataDispatchJob;
+import org.shanbo.feluca.node.leader.job.StoppableSleepJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

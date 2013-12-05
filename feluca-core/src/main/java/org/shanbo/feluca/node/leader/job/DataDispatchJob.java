@@ -1,6 +1,7 @@
-package org.shanbo.feluca.node.job;
+package org.shanbo.feluca.node.leader.job;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,10 +13,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaJob;
+import org.shanbo.feluca.datasys.DataClient;
+import org.shanbo.feluca.datasys.ftp.DataFtpClient;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.ElementPicker;
 import org.shanbo.feluca.util.ZKClient;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -24,11 +28,14 @@ import com.alibaba.fastjson.JSONObject;
  * @author lgn
  *
  */
-public class WorkersDataPullJob extends FelucaJob{
+@Deprecated
+public class DataDispatchJob extends FelucaJob{
 
 
 	private String fromDir;
 	static class DeliveryJob extends FelucaJob{
+
+
 		JSONObject ipFiles ; //
 		String dataName;
 		Thread deliverer;
@@ -53,7 +60,43 @@ public class WorkersDataPullJob extends FelucaJob{
 			deliverer = new Thread(new Runnable() {
 
 				public void run() {
-					
+					for(String ip : ipFiles.keySet()){
+						JSONArray files = ipFiles.getJSONArray(ip);
+
+						DataClient dataClient = null;
+						try{
+							log.debug("open :" + ip + " dataclient");
+							dataClient = new DataFtpClient(ip.split(":")[0]);
+							dataClient.makeDirecotry(dataName);
+						}catch(IOException e){
+							log.error("open :" + ip + " dataclient IOException", e);
+							logError("open :" + ip + " dataclient IOException", e);
+							continue;
+						}
+						for(int i = 0 ; i < files.size(); i++){
+							String fileName = files.getString(i);
+							File toCopy = new File(Constants.Base.LEADER_DATASET_DIR + "/" + dataName + "/" + fileName);
+							try{							
+								if (state == JobState.INTERRUPTED){
+									log.debug("interrupted?????????????????????????????");
+									dataClient.close();
+									return ;
+								}
+								if (!toCopy.isFile()){
+									log.warn("it's that a directory? or it's been removed?");
+									continue;
+								}
+								//do copy task
+								dataClient.copyToRemote(dataName, toCopy);
+								log.debug(String.format("copy %s/%s to %s", dataName, fileName, ip));
+								logInfo(String.format("copy %s/%s to %s", dataName, fileName, ip));
+	
+							}catch(IOException e){
+								log.error("delivery ioe", e);
+							}
+						}
+						dataClient.close();
+					}
 					state = JobState.FINISHED;
 				}
 			}, "delivery");
@@ -71,9 +114,9 @@ public class WorkersDataPullJob extends FelucaJob{
 		return taskProperties;
 	}
 
-	public WorkersDataPullJob(Properties prop) {
+	public DataDispatchJob(Properties prop) {
 		super(prop);
-		this.fromDir = prop.getProperty("dataDir", Constants.Base.DATA_PATH);
+		this.fromDir = prop.getProperty("dataDir", Constants.Base.LEADER_DATASET_DIR);
 		String dataName = prop.getProperty("dataName");
 		try {
 			Map<String, List<String>> taskDetail = allocateFiles(dataName);

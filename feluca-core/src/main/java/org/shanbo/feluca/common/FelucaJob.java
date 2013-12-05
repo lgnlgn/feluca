@@ -47,7 +47,8 @@ public abstract class FelucaJob {
 		RUNNING,
 		STOPPING,
 		FINISHED,
-		INTERRUPTED
+		INTERRUPTED,
+		FAILED
 	}
 
 	public static class JobMessage{
@@ -131,7 +132,7 @@ public abstract class FelucaJob {
 	
 	public synchronized void logError(String errorHead, Throwable e){
 		String line = errorHead.endsWith("\n")?errorHead:errorHead+"\n";
-		JobMessage msg = new JobMessage(Strings.ERROR, line + Strings.exception2Str(e), DateUtil.getMsDateTimeFormat());
+		JobMessage msg = new JobMessage(Strings.ERROR, line + Strings.throwableToString(e), DateUtil.getMsDateTimeFormat());
 		logCollector.add(msg);
 		if (this.logPipe!= null){
 			logPipe.add(msg);
@@ -238,14 +239,18 @@ public abstract class FelucaJob {
 				allStates |= 0x1;
 			}else if (state == JobState.INTERRUPTED){
 				allStates |= 0x2;
-			}else {
+			}else if (state == JobState.FAILED){
 				allStates |= 0x4;
+			}else{
+				allStates |= 0x8;
 			}
 		}
-		if (allStates <= 1)
+		if (allStates <= 1){
 			return JobState.FINISHED;
-		else if (allStates <= 3){
+		}else if (allStates <= 3){
 			return JobState.INTERRUPTED;
+		}else if (allStates <= 5){
+			return JobState.FAILED;
 		}else {
 			return JobState.RUNNING;
 		}

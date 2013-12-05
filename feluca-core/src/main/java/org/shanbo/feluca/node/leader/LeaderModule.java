@@ -35,7 +35,7 @@ public class LeaderModule extends RoleModule{
 	public LeaderModule() throws KeeperException, InterruptedException{
 		this.role = NodeRole.Leader;
 		workers = new ConcurrentHashMap<String, String>();
-		dataDir = Constants.Base.DATA_DIR;
+		dataDir = Constants.Base.WORKER_DATASET_DIR;
 		bootstrap = new ClientBootstrap(
 				new NioClientSocketChannelFactory(
 						Executors.newCachedThreadPool(),

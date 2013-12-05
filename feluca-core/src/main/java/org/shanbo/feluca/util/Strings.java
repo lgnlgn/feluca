@@ -12,7 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
+
+import com.alibaba.fastjson.JSONObject;
 
 
 
@@ -23,6 +27,8 @@ public class Strings {
 	
 	public static final String INFO = "INFO";
 	public static final String ERROR = "ERROR";
+	
+	private static final String CIPHER_SIGNAL = "ciphertext";
 	
 	public static Map<String, String> parseMapStr(String s) {
 		Map<String, String> m = new HashMap<String, String>();
@@ -286,12 +292,42 @@ public class Strings {
 		return builder.substring(0, builder.length() - 2) +"]";
 	}
 	
-	public static String exception2Str(Throwable e){
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(byteStream);
-		e.printStackTrace(ps);
-		ps.close();
-		return byteStream.toString();
+	/**
+	 * require keyValues.length % 2 == 0, keyValues[i] is key, keyValues[i+1] is value!
+	 * @param keyValues
+	 * @return
+	 */
+	public static String keyValuesToJsonString(Object... keyValues){
+		return keyValuesToJson(keyValues).toJSONString();
 	}
 	
+	/**
+	 * require keyValues.length % 2 == 0, keyValues[i] is key, keyValues[i+1] is value!
+	 * @param keyValues
+	 * @return
+	 */
+	private static JSONObject keyValuesToJson(Object... keyValues){
+		JSONObject json = new JSONObject();
+		for(int i = 0 ; i < keyValues.length; i+=2){
+			json.put(keyValues[i].toString(), keyValues[i+1]);
+		}
+		return json;
+	}
+	
+	
+	public static String kvNetworkMsgFormat(Object... keyValues){
+		JSONObject bag = keyValuesToJson(keyValues);
+		bag.put(CIPHER_SIGNAL, CipherUtil.generatePassword(Constants.Network.leaderToWorkerText));
+		return bag.toJSONString();
+	}
+	
+	
+	public static boolean isNetworkMsg(String message){
+		JSONObject json = JSONObject.parseObject(message);
+		String cipherText = json.getString(CIPHER_SIGNAL);
+		if (StringUtils.isEmpty(cipherText)){
+			return false;
+		}
+		return CipherUtil.validatePassword(cipherText, Constants.Network.leaderToWorkerText);
+	}
 }
