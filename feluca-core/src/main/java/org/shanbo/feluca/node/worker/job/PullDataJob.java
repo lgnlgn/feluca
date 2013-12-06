@@ -1,6 +1,7 @@
 package org.shanbo.feluca.node.worker.job;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -8,33 +9,32 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
-import org.shanbo.feluca.common.FelucaJob;
 import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
+import org.shanbo.feluca.node.FelucaJob;
+import org.shanbo.feluca.node.FelucaTask;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
+import com.alibaba.fastjson.JSONObject;
+
 public class PullDataJob extends FelucaJob{
 
-	public static class Puller extends FelucaJob{
-
+	public static class PullTask extends FelucaTask{
 		String leaderAddress;
 		String[] blocks;
 		String dataName;
 		String dataDir;
-		public Puller(Properties prop) {
+		int finishedBlocks = 0;
+		public PullTask(JSONObject prop) {
 			super(prop);
-			blocks = prop.getProperty("blocks", "").split(",");
-			dataName = prop.getProperty("dataName");
-			dataDir = prop.getProperty("data");
+			blocks = prop.getString("blocks").split(",");
+			dataName = prop.getString("dataName");
+			dataDir = prop.getString("data");
 		}
 
 		@Override
-		protected String getAllLog() {
-			return null;
-		}
-
-		private boolean canJobRun(){
+		protected boolean canTaskRun() {
 			try {
 				List<String> leaderAddesses= ZKClient.get().getChildren(Constants.Base.ZK_LEADER_PATH);
 				if (leaderAddesses.isEmpty()){
@@ -54,19 +54,13 @@ public class PullDataJob extends FelucaJob{
 				return true;
 		}
 
-		public void stopJob(){
-			state = JobState.STOPPING;
-		}
+		@Override
+		protected StoppableRunning createStoppableTask() {
 
-		public void startJob(){
-			state = JobState.RUNNING;
-			ConcurrentExecutor.submit(new Runnable() {
-				public void run() {
-					int finishedBlocks = 0;
-					if (!canJobRun()){
-						state = JobState.FAILED;
-						logError("", new FelucaException("parameters maybe lost~~~"));
-					}
+			return new StoppableRunning() {
+
+				@Override
+				protected void runTask() {
 					DataClient dataClient = null;
 					try{
 						log.debug("open :" + leaderAddress + " dataclient");
@@ -77,7 +71,6 @@ public class PullDataJob extends FelucaJob{
 						logError("open :" + leaderAddress + " dataclient OR mkdir IOException", e);
 						state = JobState.FAILED;
 					}
-
 					for(String block : blocks){
 						if (state == JobState.STOPPING){
 							logInfo("interrupted!!!!!!!!!!!!!!!!");
@@ -97,24 +90,34 @@ public class PullDataJob extends FelucaJob{
 							logError("download " + blockFile + " failed", e);
 						}
 					}
-					if (state == JobState.STOPPING){
-						state = JobState.INTERRUPTED;
-					}else if (finishedBlocks == blocks.length){
-						state = JobState.FINISHED;
-					}else{
-						state = JobState.FAILED;
-					}
-
 				}
-			});
+
+				@Override
+				protected boolean isTaskSuccess() {
+					if (finishedBlocks == blocks.length){
+						return true;
+					}else {
+						return false;
+					}
+				}
+			};
+
+		}
+
+		@Override
+		protected String getAllLog() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	}
 
-	public PullDataJob(Properties prop) {
+
+
+	public PullDataJob(JSONObject prop) {
 		super(prop);
 		this.jobName = "pullingJob";
-		Puller puller = new Puller(prop);
+		PullTask puller = new PullTask(prop);
 		puller.setLogPipe(this.logPipe);
 		this.addSubJobs(puller);
 	}

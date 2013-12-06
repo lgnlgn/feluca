@@ -1,4 +1,4 @@
-package org.shanbo.feluca.common;
+package org.shanbo.feluca.node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ public abstract class FelucaJob {
 	
 	public static final String JOB_NAME = "jobName";
 	public static final String JOB_START_TIME = "jobStart";
+	public static final String JOB_DETAIL = "jobParameters";
 	public static final String TIME_TO_LIVE = "job.ttl";
 	
 	protected Logger log ;
@@ -64,7 +65,7 @@ public abstract class FelucaJob {
 		
 	}
 
-	public FelucaJob(Properties prop){
+	public FelucaJob(JSONObject prop){
 		this.properties = new Properties();
 		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
 		this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
@@ -74,7 +75,7 @@ public abstract class FelucaJob {
 		
 		if (prop != null){
 			this.properties.putAll(prop);
-			String expTime = prop.getProperty(TIME_TO_LIVE);
+			String expTime = prop.getString(TIME_TO_LIVE);
 			if(StringUtils.isNumeric(expTime)){
 				Integer t = Integer.parseInt(expTime);
 				this.ttl = t;

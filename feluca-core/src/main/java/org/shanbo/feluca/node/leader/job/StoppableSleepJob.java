@@ -4,9 +4,11 @@ package org.shanbo.feluca.node.leader.job;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.shanbo.feluca.common.FelucaJob;
+import org.shanbo.feluca.node.FelucaJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * job for test module
@@ -22,7 +24,7 @@ public class StoppableSleepJob extends FelucaJob{
 		int loop = 10;
 		Thread sleeper;
 
-		public Nap(Properties prop){
+		public Nap(JSONObject prop){
 			super(prop);
 			this.jobName = "a nap";
 			loop= 6;
@@ -66,7 +68,7 @@ public class StoppableSleepJob extends FelucaJob{
 		
 	}
 
-	public StoppableSleepJob(Properties prop){
+	public StoppableSleepJob(JSONObject prop){
 		super(prop);
 		this.jobName = "sleepjob";
 		Nap n = new Nap(null); //a sequancial naps, without modify it's default parameters 

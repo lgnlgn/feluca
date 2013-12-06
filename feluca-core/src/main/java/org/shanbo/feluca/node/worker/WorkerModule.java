@@ -4,37 +4,65 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
+import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.node.FelucaJob;
+import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
 
 public class WorkerModule extends RoleModule{
 	private String dataDir; //
-	private volatile Map<String, String> workers;
 	
-	private WorkerJobManager manager;
+	private JobManager jobManager;
+	
+	public WorkerModule(){
+		this.dataDir = Constants.Base.WORKER_DATASET_DIR;
+	}
 	
 	
+	/**
+	 * TODO
+	 * @param dataName
+	 * @return
+	 */
 	public List<String> listDataBlocks(String dataName){
 		return null;
 	}
-	
-	public String submitTask(Object task){
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<String> listDataSets(){
 		return null;
 	}
 	
-	public Object getJobStatus(){
-		return null;
+	
+	public String getJobStatus(){
+		return jobManager.getCurrentJobState();
 	}
 	
 	
-	public Object getTaskLog(String taskName){
-		return null;
+	public String submitJob(Class<? extends FelucaJob> clz, Properties conf) throws Exception{
+		if (clz == null)
+			return null;
+		return this.jobManager.asynRunJob(clz, conf);
 	}
+	
+	public String killJob(String jobName){
+		if (StringUtils.isBlank(jobName))
+			return "jobName empty!?";
+		return 
+			this.jobManager.killJob(jobName);
+	}
+	
 	
 	public static void main(String[] args) throws IOException {
 		ProcessBuilder pb = new ProcessBuilder("java", "test1");

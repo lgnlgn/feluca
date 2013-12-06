@@ -1,9 +1,10 @@
-package org.shanbo.feluca.common;
+package org.shanbo.feluca.node;
 
 import java.util.Properties;
 
-import org.shanbo.feluca.common.FelucaJob.JobState;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
+
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * task is a special kind of job, i.e. , leaf of the job tree;
@@ -11,12 +12,12 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
  *	@author shanbo.liang
  */
 public abstract class FelucaTask extends FelucaJob{
-
-	public FelucaTask(Properties prop) {
+	
+	public FelucaTask(JSONObject prop) {
 		super(prop);
 	}
 	
-	public abstract class StoppableTask implements Runnable{
+	public abstract class StoppableRunning implements Runnable{
 		
 		protected abstract void runTask(); 
 		
@@ -36,7 +37,7 @@ public abstract class FelucaTask extends FelucaJob{
 	
 	abstract protected boolean canTaskRun();
 	
-	abstract protected StoppableTask createStoppableTask();
+	abstract protected StoppableRunning createStoppableTask();
 		
 	public void stopJob(){
 		this.state = JobState.STOPPING;
@@ -47,4 +48,32 @@ public abstract class FelucaTask extends FelucaJob{
 		ConcurrentExecutor.submit(createStoppableTask());
 	}
 
+	
+	public static class LeaderSupervisorTask extends FelucaTask{
+
+		public LeaderSupervisorTask(JSONObject prop) {
+			super(prop);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		protected boolean canTaskRun() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		protected StoppableRunning createStoppableTask() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		protected String getAllLog() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
+	
 }

@@ -7,16 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.common.FelucaJob;
+import org.shanbo.feluca.node.FelucaJob;
+import org.shanbo.feluca.node.FelucaTask;
 import org.shanbo.feluca.util.DateUtil;
+import org.shanbo.feluca.util.DistributedRequester;
 import org.shanbo.feluca.util.ElementPicker;
+import org.shanbo.feluca.util.Strings;
 import org.shanbo.feluca.util.ZKClient;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Collections2;
 
 /**
  * TODO routing strategy , need broadcast 
@@ -26,58 +31,93 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class WorkersDataPullJob extends FelucaJob{
 
-
 	private String fromDir;
-	static class DeliveryJob extends FelucaJob{
-		JSONObject ipFiles ; //
-		String dataName;
-		Thread deliverer;
-		public DeliveryJob(Properties prop) {
+
+	private static class PullTaskKeeper extends FelucaTask{
+
+		Map<String, List<String>> ipFiles;
+		String taskName;
+		public PullTaskKeeper(JSONObject prop) {
 			super(prop);
-			String taskDetail = prop.getProperty("taskDetail");
-			ipFiles = JSONObject.parseObject(taskDetail);
-			dataName = prop.getProperty("dataName");
+			
+		}
+
+		@Override
+		protected boolean canTaskRun() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		protected StoppableRunning createStoppableTask() {
+			return  new StoppableRunning() {
+				
+				
+				
+				@Override
+				protected void runTask() {
+					try {
+						DistributedRequester.get().broadcast("/job?jobName=PullData", 
+								Strings.kvNetworkMsgFormat(FelucaJob.JOB_DETAIL, ipFiles, FelucaJob.JOB_NAME, taskName), 
+								new ArrayList<String>(ipFiles.keySet()) );					 
+					} catch (Exception e) {
+						logError("send job failed?!!  we are going to stop", e);
+						try {
+							DistributedRequester.get().broadcast("/kill?jobName=" + taskName, 
+									Strings.kvNetworkMsgFormat(FelucaJob.JOB_DETAIL, ""), 
+									new ArrayList<String>(ipFiles.keySet()) );
+						} catch (Exception e1) {
+							logError("stop job failed?!! ", e1);
+						} 	
+					}
+					while(true){
+						if (state == JobState.STOPPING){
+							try {
+								DistributedRequester.get().broadcast("/kill?jobName=" + taskName, 
+										Strings.kvNetworkMsgFormat(FelucaJob.JOB_DETAIL, ""), 
+										new ArrayList<String>(ipFiles.keySet()) );
+								
+							} catch (Exception e) {
+								logError("stop job failed?!! ", e);
+							}
+						}
+						//TODO 
+					}
+				}
+				
+				@Override
+				protected boolean isTaskSuccess() {
+					// TODO Auto-generated method stub
+					return false;
+				}
+			};
 		}
 
 		@Override
 		protected String getAllLog() {
-			return StringUtils.join(this.logCollector.iterator(), "");
+			// TODO Auto-generated method stub
+			return null;
 		}
-
-		public void stopJob() {
-			state = JobState.INTERRUPTED;
-		}
-
-		public void startJob(){
-			state = JobState.RUNNING;
-			deliverer = new Thread(new Runnable() {
-
-				public void run() {
-					
-					state = JobState.FINISHED;
-				}
-			}, "delivery");
-			deliverer.setDaemon(true);
-			deliverer.start();
-		}
+		
 	}
-
-
-	private Properties generateProperties(String dataName,Map<String, List<String>> taskDetail){
-		Properties taskProperties = new Properties();
-		taskProperties.put("taskDetail", JSONObject.toJSONString(taskDetail));
-		taskProperties.put(FelucaJob.JOB_NAME, "delivery_" + DateUtil.getMsDateTimeFormat());
-		taskProperties.put("dataName", dataName);
-		return taskProperties;
+	
+	
+	public JSONObject generateConf(String dataName,Map<String, List<String>> taskDetail){
+		JSONObject jo = new JSONObject();
+		jo.put("taskDetail", taskDetail);
+		jo.put(FelucaJob.JOB_NAME, "delivery_" + DateUtil.getMsDateTimeFormat());
+		jo.put("dataName", dataName);
+		return jo;
 	}
-
-	public WorkersDataPullJob(Properties prop) {
+	
+	
+	public WorkersDataPullJob(JSONObject prop) {
 		super(prop);
-		this.fromDir = prop.getProperty("dataDir", Constants.Base.WORKER_DATASET_DIR);
-		String dataName = prop.getProperty("dataName");
+		this.fromDir = prop.getString("dataDir");
+		String dataName = prop.getString("dataName");
 		try {
 			Map<String, List<String>> taskDetail = allocateFiles(dataName);
-			Properties subJobProperties = generateProperties(dataName, taskDetail);
+			JSONObject subJobProperties = generateConf(dataName, taskDetail);
 			FelucaJob delivery = new DeliveryJob(subJobProperties);
 			delivery.setLogPipe(logPipe); 
 			this.addSubJobs(delivery);

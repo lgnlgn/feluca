@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -22,7 +23,7 @@ import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.shanbo.feluca.common.DistributedRequester;
+import org.shanbo.feluca.util.DistributedRequester;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 /**
@@ -30,7 +31,7 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
  *  @Description: TODO
  *	@author shanbo.liang
  */
-public class HttpRequester implements DistributedRequester{
+public class HttpRequester extends DistributedRequester{
 
 	public static class HttpClientCallable implements Callable<String>{
 		
@@ -48,7 +49,7 @@ public class HttpRequester implements DistributedRequester{
 		
 	}
 	
-	public List<String> request(String action, Object content, List<String> audiences) throws InterruptedException, ExecutionException {
+	public List<String> broadcast(String action, Object content, List<String> audiences) throws InterruptedException, ExecutionException {
 		if (audiences == null)
 			return Collections.emptyList();
 		byte[] bytes = content.toString().getBytes();
@@ -56,7 +57,13 @@ public class HttpRequester implements DistributedRequester{
 		for(String address : audiences){
 			toSend.add(new HttpClientCallable("http://" + address + "/" + StringUtils.strip(action, "/"), bytes));
 		}
-		return ConcurrentExecutor.execute(toSend);
+		return request(toSend);
+	}
+
+	@Override
+	public List<String> request(List<Callable<String>> callables)
+			throws InterruptedException, ExecutionException {
+		return ConcurrentExecutor.execute(callables);
 	}
 	
 	

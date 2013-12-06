@@ -12,9 +12,9 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.common.FelucaJob;
 import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
+import org.shanbo.feluca.node.FelucaJob;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.ElementPicker;
 import org.shanbo.feluca.util.ZKClient;
@@ -39,11 +39,12 @@ public class DataDispatchJob extends FelucaJob{
 		JSONObject ipFiles ; //
 		String dataName;
 		Thread deliverer;
-		public DeliveryJob(Properties prop) {
+		public DeliveryJob(JSONObject prop) {
 			super(prop);
-			String taskDetail = prop.getProperty("taskDetail");
+			
+			String taskDetail = prop.getString("taskDetail");
 			ipFiles = JSONObject.parseObject(taskDetail);
-			dataName = prop.getProperty("dataName");
+			dataName = prop.getString("dataName");
 		}
 
 		@Override
@@ -113,14 +114,23 @@ public class DataDispatchJob extends FelucaJob{
 		taskProperties.put("dataName", dataName);
 		return taskProperties;
 	}
+	
+	public JSONObject generateConf(String dataName,Map<String, List<String>> taskDetail){
+		JSONObject jo = new JSONObject();
+		jo.put("taskDetail", taskDetail);
+		jo.put(FelucaJob.JOB_NAME, "delivery_" + DateUtil.getMsDateTimeFormat());
+		jo.put("dataName", dataName);
+		return jo;
+	}
+	
 
-	public DataDispatchJob(Properties prop) {
+	public DataDispatchJob(JSONObject prop) {
 		super(prop);
-		this.fromDir = prop.getProperty("dataDir", Constants.Base.LEADER_DATASET_DIR);
-		String dataName = prop.getProperty("dataName");
+		this.fromDir = prop.getString("dataDir");
+		String dataName = prop.getString("dataName");
 		try {
 			Map<String, List<String>> taskDetail = allocateFiles(dataName);
-			Properties subJobProperties = generateProperties(dataName, taskDetail);
+			JSONObject subJobProperties = generateConf(dataName, taskDetail);
 			FelucaJob delivery = new DeliveryJob(subJobProperties);
 			delivery.setLogPipe(logPipe); 
 			this.addSubJobs(delivery);

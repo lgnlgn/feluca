@@ -49,12 +49,12 @@ public class WorkerNettyChannel extends BaseChannelHandler{
 					HttpResponseStatus.BAD_REQUEST	);
 		}else {
 			if (req.getMethod().equals(HttpMethod.POST)){
-				String ciphertext = nhr.contentAsString();
-				if (CipherUtil.validatePassword(Constants.Network.leaderToWorkerText, ciphertext))
+				String action = nhr.contentAsString();
+				if (Strings.isNetworkMsg(action))
 					handler.handle(nhr, resp);
 				else{
 					HttpResponseUtil.setResponse(resp, "request path :" + path, 
-							JsonStringUtil.keyValuesToJson("code",404, "ciphertext error", ciphertext),
+							JsonStringUtil.keyValuesToJson("code",404, "ciphertext error", action),
 							HttpResponseStatus.BAD_REQUEST	);
 				}
 

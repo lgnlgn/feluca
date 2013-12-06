@@ -1,16 +1,16 @@
-package org.shanbo.feluca.node.leader;
+package org.shanbo.feluca.node;
 
 import java.lang.reflect.Constructor;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.shanbo.feluca.common.FelucaJob;
-import org.shanbo.feluca.common.FelucaJob.JobState;
 import org.shanbo.feluca.common.LogStorage;
+import org.shanbo.feluca.node.FelucaJob.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -88,6 +88,10 @@ public class JobManager{
 		return logStorage.getLastJobInfos(size);
 	}
 
+	public JSONObject searchJobInfo(String jobName){
+		return this.logStorage.searchJobInfo(jobName);
+	}
+	
 
 	public String getCurrentJobState(){
 		if (!isJobSlotFree()){
@@ -127,11 +131,6 @@ public class JobManager{
 			else
 				return "input jobName not equals to the running's; job stay running";
 		}
-	}
-
-	public String toString(){
-		//TODO
-		return null;
 	}
 
 }
