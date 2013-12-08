@@ -29,7 +29,7 @@ import com.google.common.collect.Collections2;
  * @author lgn
  *
  */
-public class WorkersDataPullJob extends FelucaJob{
+public class DistributedJob extends FelucaJob{
 
 	private String fromDir;
 
@@ -111,21 +111,9 @@ public class WorkersDataPullJob extends FelucaJob{
 	}
 	
 	
-	public WorkersDataPullJob(JSONObject prop) {
+	public DistributedJob(JSONObject prop) {
 		super(prop);
-		this.fromDir = prop.getString("dataDir");
-		String dataName = prop.getString("dataName");
-		try {
-			Map<String, List<String>> taskDetail = allocateFiles(dataName);
-			JSONObject subJobProperties = generateConf(dataName, taskDetail);
-			FelucaJob delivery = new DeliveryJob(subJobProperties);
-			delivery.setLogPipe(logPipe); 
-			this.addSubJobs(delivery);
-		} catch (InterruptedException e) {
-			log.error("taskDetail fetch InterruptedException" ,e);
-		} catch (KeeperException e) {
-			log.error("taskDetail fetch KeeperException" ,e);
-		}
+
 	}
 
 	public String getAllLog() {
