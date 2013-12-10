@@ -14,9 +14,13 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.entity.StringEntity;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -162,6 +166,9 @@ public class Strings {
 			return "" + (char) i;
 	}
 
+
+	
+	
 	public final static void exec(String command, String dir, StringBuilder ret) {
 		final String[] COMMAND_INTERPRETER = { "/bin/sh", "-c" };
 		final long MAX_PROCESS_RUNNING_TIME = 30 * 1000; // 30 seconds
@@ -307,7 +314,7 @@ public class Strings {
 	 * @param keyValues
 	 * @return
 	 */
-	private static JSONObject keyValuesToJson(Object... keyValues){
+	public static JSONObject keyValuesToJson(Object... keyValues){
 		JSONObject json = new JSONObject();
 		for(int i = 0 ; i < keyValues.length; i+=2){
 			json.put(keyValues[i].toString(), keyValues[i+1]);
@@ -322,6 +329,18 @@ public class Strings {
 		return bag.toJSONString();
 	}
 	
+	/**
+	 *  make sure it's a json
+	 * @param original
+	 * @return a new json format object 
+	 */
+	public static String addNetworkCipherText(Object original){
+		JSONObject json;
+		json = JSONObject.parseObject(original.toString());
+		json.put(CIPHER_SIGNAL, CipherUtil.generatePassword(Constants.Network.leaderToWorkerText));
+		return json.toJSONString();
+	}
+	
 	
 	public static boolean isNetworkMsg(String message){
 		JSONObject json = JSONObject.parseObject(message);
@@ -330,6 +349,29 @@ public class Strings {
 			return false;
 		}
 		return CipherUtil.validatePassword(cipherText, Constants.Network.leaderToWorkerText);
+	}
+	
+	/**
+	 * make sure the content is a string.
+	 * @param response
+	 * @return
+	 */
+	public static String httpclientResponseToString(HttpResponse response){
+		JSONObject json = new JSONObject();
+		json.put("code", response.getStatusLine().getStatusCode());
+		HttpEntity entity = response.getEntity();
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			entity.writeTo(os);
+		} catch (IOException e1) {
+		}
+		String contentString = new String(os.toByteArray());
+		try{
+			json.put("content", JSONObject.parseObject(contentString));
+		}catch(JSONException e){
+			json.put("content", contentString);
+		}
+		return json.toJSONString();
 	}
 	
 }

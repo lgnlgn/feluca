@@ -1,12 +1,14 @@
 package org.shanbo.feluca.node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.ftpserver.util.DateUtils;
 import org.shanbo.feluca.util.DateUtil;
+import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,7 @@ public abstract class FelucaJob {
 	protected long finishTime;
 	protected List<JobMessage> logCollector; //each job has it's own one
 	protected List<JobMessage> logPipe; //you may need to share it with sub jobs 
-	protected final Properties properties;
+	protected final JSONObject properties;
 	protected volatile JobState state;
 	protected int ttl = -1;	
 
@@ -42,6 +44,12 @@ public abstract class FelucaJob {
 
 	protected Thread subJobWatcher; //determine job state by subjobs
 
+	static HashMap<String, JobState> jobStateMap = new HashMap<String, FelucaJob.JobState>();
+	static {
+		for(JobState js : JobState.values()){
+			jobStateMap.put(js.toString(), js);
+		}
+	}
 
 	public static enum JobState{
 		PENDING,
@@ -66,7 +74,7 @@ public abstract class FelucaJob {
 	}
 
 	public FelucaJob(JSONObject prop){
-		this.properties = new Properties();
+		this.properties = new JSONObject();
 		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
 		this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
 		this.startTime = DateUtil.getMsDateTimeFormat();
@@ -81,7 +89,7 @@ public abstract class FelucaJob {
 				this.ttl = t;
 			}
 		}
-		this.jobName = properties.getProperty(JOB_NAME, "felucaJob_" + startTime);
+		this.jobName = JSONUtil.getJson(properties, JOB_NAME, "felucaJob_" + startTime);
 		this.log = LoggerFactory.getLogger(this.getClass());
 	}
 
@@ -198,6 +206,11 @@ public abstract class FelucaJob {
 							log.debug("sub jobs interrupted");
 							state = JobState.INTERRUPTED;
 							break;
+						}else if (subjobState == JobState.FAILED){
+							finishTime = DateUtil.getMsDateTimeFormat();
+							log.debug("sub jobs faild");
+							state = JobState.FAILED;
+							break;
 						}
 						try {
 							Thread.sleep(200);
@@ -225,15 +238,7 @@ public abstract class FelucaJob {
 		}
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	protected JobState checkAllSubJobState(){
-		List<JobState> currentStates = new ArrayList<FelucaJob.JobState>(subJobs.size());
-		for(FelucaJob subJob: subJobs){
-			currentStates.add(subJob.getJobState());
-		}
+	public static JobState checkAllSubJobState(List<JobState> currentStates){
 		int allStates = 0;
 		for(JobState state : currentStates){
 			if (state == JobState.FINISHED){
@@ -256,6 +261,18 @@ public abstract class FelucaJob {
 			return JobState.RUNNING;
 		}
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected JobState checkAllSubJobState(){
+		List<JobState> currentStates = new ArrayList<FelucaJob.JobState>(subJobs.size());
+		for(FelucaJob subJob: subJobs){
+			currentStates.add(subJob.getJobState());
+		}
+		return checkAllSubJobState(currentStates);
+	}
 
 //	protected void gatherInfoFromSubJobs(){
 //		for(FelucaJob subJob: subJobs){
@@ -274,4 +291,11 @@ public abstract class FelucaJob {
 		return this.state;
 	}
 
+	public static JobState parseText(String text){
+		if(StringUtils.isBlank(text))
+			return null;
+		return jobStateMap.get(text);
+	}
+	
+	
 }

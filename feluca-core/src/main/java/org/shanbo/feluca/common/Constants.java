@@ -9,8 +9,10 @@ public class Constants {
 		public final static String LEADER_REPOSITORY =  Config.get().get("datadir", "./leader_repo");
 		public final static String WORKER_REPOSITORY =  Config.get().get("datadir", "./worder_repo");
 		
-		public final static String LEADER_DATASET_DIR = LEADER_REPOSITORY + "/data";
-		public final static String WORKER_DATASET_DIR = WORKER_REPOSITORY + "/data";
+		public final static String DATA_DIR = "/data";
+		
+		public final static String LEADER_DATASET_DIR = LEADER_REPOSITORY + DATA_DIR;
+		public final static String WORKER_DATASET_DIR = WORKER_REPOSITORY + DATA_DIR;
 		
 		public final static String ZK_CHROOT = "/feluca";
 		public final static String ZK_WORKER_PATH = ZK_CHROOT + "/workers";

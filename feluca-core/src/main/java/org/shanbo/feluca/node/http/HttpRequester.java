@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
@@ -24,6 +25,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.shanbo.feluca.util.DistributedRequester;
+import org.shanbo.feluca.util.Strings;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 /**
@@ -39,14 +41,19 @@ public class HttpRequester extends DistributedRequester{
 		byte[] content;
 		public HttpClientCallable(String url, byte[] content){
 			this.url = url;
+			this.content = content;
 		}
 		public String call() throws Exception {
 			ByteArrayEntity bae = new  ByteArrayEntity(content);
 			HttpPost post = new HttpPost(url);
 			post.setEntity(bae);
-			return HttpClientUtil.get().getHttpClient().execute(post, new BasicResponseHandler());
+			try{
+				HttpResponse response = HttpClientUtil.get().getHttpClient().execute(post);
+				return Strings.httpclientResponseToString(response);
+			}catch(Exception e){
+				return "{\"code\":500, \"content\":\"" + Strings.throwableToString(e) + "\"}";
+			}
 		}
-		
 	}
 	
 	public List<String> broadcast(String action, Object content, List<String> audiences) throws InterruptedException, ExecutionException {

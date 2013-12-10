@@ -11,14 +11,11 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.http.BaseChannelHandler;
 import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
-import org.shanbo.feluca.util.CipherUtil;
-import org.shanbo.feluca.util.JsonStringUtil;
 import org.shanbo.feluca.util.Strings;
 
 import com.alibaba.fastjson.JSONArray;
@@ -45,7 +42,7 @@ public class WorkerNettyChannel extends BaseChannelHandler{
 			JSONArray ja = new JSONArray();
 			ja.addAll(handlerPaths);
 			HttpResponseUtil.setResponse(resp, "request path :" + path, 
-					JsonStringUtil.keyValuesToJson("code",404, "available_path", ja),
+					Strings.keyValuesToJson("code",404, "available_path", ja),
 					HttpResponseStatus.BAD_REQUEST	);
 		}else {
 			if (req.getMethod().equals(HttpMethod.POST)){
@@ -54,13 +51,13 @@ public class WorkerNettyChannel extends BaseChannelHandler{
 					handler.handle(nhr, resp);
 				else{
 					HttpResponseUtil.setResponse(resp, "request path :" + path, 
-							JsonStringUtil.keyValuesToJson("code",404, "ciphertext error", action),
+							Strings.keyValuesToJson("code",404, "ciphertext error", action),
 							HttpResponseStatus.BAD_REQUEST	);
 				}
 
 			}else{
 				HttpResponseUtil.setResponse(resp, "request path :" + path, 
-						JsonStringUtil.keyValuesToJson("code",404, "allow http method", "POST"),
+						Strings.keyValuesToJson("code",404, "allow http method", "POST"),
 						HttpResponseStatus.BAD_REQUEST	);
 			}
 		}

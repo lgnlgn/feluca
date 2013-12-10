@@ -97,7 +97,7 @@ public class JobManager{
 		if (!isJobSlotFree()){
 			return running.toString();
 		}else{ //free
-			return "no job running";
+			return "{\"jobState\":\"" + JobState.FINISHED.toString()+ "\"}";
 		}
 	}
 

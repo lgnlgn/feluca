@@ -15,7 +15,6 @@ import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
-import org.shanbo.feluca.util.JsonStringUtil;
 import org.shanbo.feluca.util.Strings;
 
 import com.alibaba.fastjson.JSONArray;
@@ -48,8 +47,8 @@ public class LeaderNettyChannel extends BaseChannelHandler{
 			JSONArray ja = new JSONArray();
 			ja.addAll(handlerPaths);
 			HttpResponseUtil.setResponse(resp, "request path :" + path, 
-					JsonStringUtil.keyValuesToJson("code",404, "available_path", ja),
-					HttpResponseStatus.BAD_REQUEST	);
+					Strings.keyValuesToJson("code",404, "available_path", ja),
+					HttpResponseStatus.NOT_FOUND);
 		}else{
 			handler.handle(nhr, resp);
 		}
