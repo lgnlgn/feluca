@@ -17,6 +17,8 @@ import org.shanbo.feluca.node.FelucaJob;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
 
+import com.alibaba.fastjson.JSONObject;
+
 public class WorkerModule extends RoleModule{
 	private String dataDir; //
 	
@@ -49,8 +51,12 @@ public class WorkerModule extends RoleModule{
 		return jobManager.getCurrentJobState();
 	}
 	
+	public JSONObject searchJobInfo(String jobName){
+		return this.jobManager.searchJobInfo(jobName);
+	}
 	
-	public String submitJob(Class<? extends FelucaJob> clz, Properties conf) throws Exception{
+	
+	public String submitJob(Class<? extends FelucaJob> clz, JSONObject conf) throws Exception{
 		if (clz == null)
 			return null;
 		return this.jobManager.asynRunJob(clz, conf);

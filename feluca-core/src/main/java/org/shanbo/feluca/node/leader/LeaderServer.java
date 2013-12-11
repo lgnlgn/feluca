@@ -13,10 +13,10 @@ import org.shanbo.feluca.node.http.BaseChannelHandler;
 import org.shanbo.feluca.node.http.BaseNioServer;
 import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
-import org.shanbo.feluca.node.leader.handler.ClusterStatusRequest;
-import org.shanbo.feluca.node.leader.handler.JobKillRequest;
-import org.shanbo.feluca.node.leader.handler.JobStatusHandler;
-import org.shanbo.feluca.node.leader.handler.JobSubmitRequest;
+import org.shanbo.feluca.node.request.ClusterStatusRequest;
+import org.shanbo.feluca.node.request.JobKillRequest;
+import org.shanbo.feluca.node.request.JobStatusHandler;
+import org.shanbo.feluca.node.request.JobSubmitRequest;
 import org.shanbo.feluca.util.ZKClient;
 import org.slf4j.LoggerFactory;
 

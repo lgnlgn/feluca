@@ -1,7 +1,8 @@
-package org.shanbo.feluca.node;
+package org.shanbo.feluca.node.request;
 
 
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.Handler;
 
 /**
@@ -10,12 +11,12 @@ import org.shanbo.feluca.node.http.Handler;
  * @author shanbo.liang
  *
  */
-public abstract class RequestHandler implements Handler{
+public abstract class BasicRequest implements Handler{
 	
 	protected RoleModule module;
 	// for distributed request
 	
-	public RequestHandler(RoleModule module){
+	public BasicRequest(RoleModule module){
 		this.module = module;
 
 	}

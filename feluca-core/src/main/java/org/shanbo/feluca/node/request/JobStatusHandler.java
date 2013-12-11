@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node.leader.handler;
+package org.shanbo.feluca.node.request;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,9 +11,11 @@ import java.util.Map;
 
 
 
+
+
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.shanbo.feluca.node.RequestHandler;
+import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
 import org.shanbo.feluca.node.leader.LeaderModule;
@@ -26,7 +28,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author lgn-mop
  *
  */
-public class JobStatusHandler extends RequestHandler{
+public class JobStatusHandler extends BasicRequest{
 
 	public final static String PATH = "/jobstatus";
 	
@@ -40,21 +42,21 @@ public class JobStatusHandler extends RequestHandler{
 
 	public void handle(NettyHttpRequest request, DefaultHttpResponse resp) {
 		String jobs = request.param("last"); //default 5
+		String jobName = request.param("name");
 		LeaderModule m = ((LeaderModule)module);
-		if (jobs != null){
+		if (jobName != null){
+			JSONObject searchJobInfo = m.searchJobInfo(jobName);
+			if (searchJobInfo == null){
+				HttpResponseUtil.setResponse(resp, " query job :" + jobName, JobManager.JOB_NOT_FOUND);
+			}else{
+				HttpResponseUtil.setResponse(resp, " query job :" + jobName, searchJobInfo);
+			}
+		}else if (jobs != null){
 			int num = new Integer(jobs);
-			HttpResponseUtil.setResponse(resp, "latest jobs", m.getLatestJobStatus(num));
+			HttpResponseUtil.setResponse(resp, "latest jobs", m.getLatestJobStates(num));
 		}else{
-			JSONObject json = new JSONObject();
-			JSONArray ja = new JSONArray();
-			ja.addAll(m.yieldSlaves());
-			json.put("live_slaves", ja);
 			String jobString = m.getJobStatus();
-			if (jobString.startsWith("{") && jobString.endsWith("}"))
-				json.put("running_job", JSONObject.parse(jobString));
-			else
-				json.put("running_job", jobString);
-			HttpResponseUtil.setResponse(resp, "feluca job status", json);
+			HttpResponseUtil.setResponse(resp, "feluca job status", jobString);
 		}
 	}
 

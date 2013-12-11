@@ -1,8 +1,7 @@
-package org.shanbo.feluca.node.leader.handler;
+package org.shanbo.feluca.node.request;
 
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.shanbo.feluca.node.RequestHandler;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
@@ -11,7 +10,7 @@ import org.shanbo.feluca.node.leader.LeaderModule;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-public class JobKillRequest extends RequestHandler{
+public class JobKillRequest extends BasicRequest{
 
 	public static String PATH = "/kill";
 	

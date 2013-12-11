@@ -20,6 +20,8 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class JobManager{
 
+	public final static String JOB_NOT_FOUND = "{\"jobState\":\"" + JobState.FINISHED.toString()+ "\"}";
+	
 	static Logger log = LoggerFactory.getLogger(JobManager.class);
 
 	private volatile FelucaJob running ; //allow only 1 job 
@@ -97,7 +99,7 @@ public class JobManager{
 		if (!isJobSlotFree()){
 			return running.toString();
 		}else{ //free
-			return "{\"jobState\":\"" + JobState.FINISHED.toString()+ "\"}";
+			return JOB_NOT_FOUND;
 		}
 	}
 
@@ -108,10 +110,10 @@ public class JobManager{
 	 * @return
 	 * @throws Exception
 	 */
-	public synchronized String asynRunJob(Class<? extends FelucaJob> jobClz, Properties conf) throws Exception{
+	public synchronized String asynRunJob(Class<? extends FelucaJob> jobClz, JSONObject conf) throws Exception{
 
 		if (isJobSlotFree()){
-			Constructor<? extends FelucaJob> constructor = jobClz.getConstructor(Properties.class);
+			Constructor<? extends FelucaJob> constructor = jobClz.getConstructor(JSONObject.class);
 			FelucaJob job = constructor.newInstance(conf);
 			this.asyncStartJob(job);
 			return job.getJobName();

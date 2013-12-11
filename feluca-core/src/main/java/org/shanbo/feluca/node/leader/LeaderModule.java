@@ -25,7 +25,8 @@ import com.alibaba.fastjson.JSONObject;
 
 public class LeaderModule extends RoleModule{
 	
-	private JobManager jobManager;
+	private JobManager distributeJobManager;
+	private JobManager localJobManager;
 	private volatile Map<String, String> workers;
 	private String dataDir;
 	public ClientBootstrap bootstrap;
@@ -45,7 +46,7 @@ public class LeaderModule extends RoleModule{
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_LEADER_PATH);
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_WORKER_PATH);
 		this.watchZookeeper();
-		this.jobManager = new JobManager();
+		this.distributeJobManager = new JobManager();
 	}
 
 	
@@ -74,30 +75,25 @@ public class LeaderModule extends RoleModule{
 	}
 	
 	
-	public String submitJob(Class<? extends FelucaJob> clz, Properties conf) throws Exception{
+	public String submitJob(Class<? extends FelucaJob> clz, JSONObject conf) throws Exception{
 		if (clz == null)
 			return null;
-		return this.jobManager.asynRunJob(clz, conf);
+		return this.distributeJobManager.asynRunJob(clz, conf);
 	}
 	
 	public String killJob(String jobName){
 		if (StringUtils.isBlank(jobName))
 			return "jobName empty!?";
 		return 
-			this.jobManager.killJob(jobName);
+			this.distributeJobManager.killJob(jobName);
 	}
 	
 	
 	public String getJobStatus(){
-		return jobManager.getCurrentJobState();
+		return distributeJobManager.getCurrentJobState();
 	}
 	
 	
-	public JSONArray getLatestJobStatus(int last){
-		return jobManager.getLatestJobStates(last);
-	}
-	
-
 	public void watchZookeeper(){
 		cw = new ChildrenWatcher() {
 			@Override
@@ -112,6 +108,13 @@ public class LeaderModule extends RoleModule{
 		ZKClient.get().watchChildren(Constants.Base.ZK_WORKER_PATH, cw);
 	}
 	
+	public JSONObject searchJobInfo(String jobName){
+		return this.distributeJobManager.searchJobInfo(jobName);
+	}
+	
+	public JSONArray getLatestJobStates(int size) {
+		return this.distributeJobManager.getLatestJobStates(size);
+	}
 	
 	public List<String> yieldSlaves(){
 		List<String> a = new ArrayList<String>();
@@ -119,16 +122,6 @@ public class LeaderModule extends RoleModule{
 		return a;
 	}
 	
-//	public String requestSlaves(AbstractDistributedChannelHandler tsReq) throws InterruptedException, ExecutionException{
-//		return this.requestSlaves(tsReq, 2000);
-//		List<String> slaves = yieldSlaves();
-//		List<Callable<String >> distributedReqs = new ArrayList<Callable<String >> ();
-//		for(String slaveAddr: slaves){
-//			distributedReqs.add(new HttpRequestCallable(httpClient, "http://" + slaveAddr + tsReq.requestSlaveUri()));
-//		}
-//		List<String> results = ConcurrentExecutor.execute(distributedReqs);
-//		return results.toString();
-//	}
 	
 	/**
 	 * TODO

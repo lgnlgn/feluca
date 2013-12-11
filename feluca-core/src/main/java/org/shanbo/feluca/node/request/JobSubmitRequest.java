@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node.leader.handler;
+package org.shanbo.feluca.node.request;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -12,7 +12,6 @@ import java.util.Properties;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.shanbo.feluca.node.FelucaJob;
-import org.shanbo.feluca.node.RequestHandler;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
@@ -22,13 +21,15 @@ import org.shanbo.feluca.node.leader.job.StoppableSleepJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSONObject;
+
 
 /**
  * 
  * @author shanbo.liang
  *
  */
-public class JobSubmitRequest extends RequestHandler{
+public class JobSubmitRequest extends BasicRequest{
 	
 	static Logger log = LoggerFactory.getLogger(JobSubmitRequest.class);
 	
@@ -52,7 +53,7 @@ public class JobSubmitRequest extends RequestHandler{
 
 	public void handle(NettyHttpRequest req, DefaultHttpResponse resp) {
 		String jobName = req.param("jobname");
-		
+		String jobType = req.param("jobtype");
 		if (!jobAllow.contains(jobName)){
 			HttpResponseUtil.setResponse(resp, "start job :" + jobName +" found by 'jobname'", " Only allowed:" + jobAllow);
 			resp.setStatus(HttpResponseStatus.BAD_REQUEST);
@@ -60,7 +61,7 @@ public class JobSubmitRequest extends RequestHandler{
 		}
 		LeaderModule m = (LeaderModule)this.module;
 		Class<? extends FelucaJob> jobClz = null;
-		Properties parameters = new Properties();
+		JSONObject parameters = new JSONObject();
 		if (jobName.equals("data")){
 			String dataName = req.param("dataName");
 			if (dataName == null){
