@@ -1,11 +1,9 @@
 package org.shanbo.feluca.node;
 
 import java.lang.reflect.Constructor;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.shanbo.feluca.common.LogStorage;
 import org.shanbo.feluca.node.FelucaJob.JobState;
+import org.shanbo.feluca.node.JobConductor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +28,9 @@ public class JobManager{
 
 	private Thread managerThread; //regularly checked job's state
 
+	
+	private JobConductor ticketSeller = new JobConductor();
+	
 	public JobManager(){
 		this.managerThread = new Thread(new Runnable() {
 			public void run(){

@@ -17,11 +17,11 @@ import com.alibaba.fastjson.JSONObject;
 
 
 /**
- * 
+ *  common job
  *  @Description: TODO
  *	@author shanbo.liang
  */
-public abstract class FelucaJob {
+public class FelucaJob {
 	
 	public static final String JOB_NAME = "jobName";
 	public static final String JOB_START_TIME = "jobStart";
@@ -40,7 +40,7 @@ public abstract class FelucaJob {
 
 	protected String jobName;
 
-	protected List<FelucaJob> subJobs;
+	protected List<FelucaTask> subJobs;
 
 	protected Thread subJobWatcher; //determine job state by subjobs
 
@@ -91,6 +91,11 @@ public abstract class FelucaJob {
 		}
 		this.jobName = JSONUtil.getJson(properties, JOB_NAME, "felucaJob_" + startTime);
 		this.log = LoggerFactory.getLogger(this.getClass());
+		String jobClass = prop.getString("jobClass");
+		if (jobClass != null){
+			FelucaTask felucaTask = new FelucaTask.SupervisorTask(prop);
+			addSubJobs(felucaTask);
+		}
 	}
 
 
@@ -99,11 +104,11 @@ public abstract class FelucaJob {
 		this.logPipe = logCollector;
 	}
 
-	public synchronized void addSubJobs(FelucaJob... subJobs){
+	public synchronized void addSubJobs(FelucaTask... subJobs){
 		if (this.subJobs == null){
-			this.subJobs = new ArrayList<FelucaJob>();
+			this.subJobs = new ArrayList<FelucaTask>();
 		}
-		for(FelucaJob subJob: subJobs)
+		for(FelucaTask subJob: subJobs)
 			this.subJobs.add(subJob);
 	}
 	
@@ -128,7 +133,9 @@ public abstract class FelucaJob {
 		}
 	}
 
-	protected abstract String getAllLog();
+	protected String getAllLog(){
+		return StringUtils.join(this.logPipe.iterator(), "\n");
+	}
 
 	public synchronized void logInfo(String content){
 		String line = content.endsWith("\n")?content:content+"\n";
@@ -295,6 +302,15 @@ public abstract class FelucaJob {
 		if(StringUtils.isBlank(text))
 			return null;
 		return jobStateMap.get(text);
+	}
+	
+	public static FelucaJob build(JSONObject conf){
+		return new FelucaJob(conf) {
+			protected String getAllLog() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
 	}
 	
 	

@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node.request;
+package org.shanbo.feluca.node.leader.request;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
 import org.shanbo.feluca.node.leader.LeaderModule;
+import org.shanbo.feluca.node.request.BasicRequest;
 
 import com.alibaba.fastjson.JSONObject;
 /**

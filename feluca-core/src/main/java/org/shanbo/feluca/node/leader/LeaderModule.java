@@ -4,19 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.KeeperException;
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.FelucaJob;
 import org.shanbo.feluca.node.JobManager;
-import org.shanbo.feluca.node.NodeRole;
 import org.shanbo.feluca.node.RoleModule;
+import org.shanbo.feluca.node.leader.job.JobChecker;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
 
@@ -29,24 +25,18 @@ public class LeaderModule extends RoleModule{
 	private JobManager localJobManager;
 	private volatile Map<String, String> workers;
 	private String dataDir;
-	public ClientBootstrap bootstrap;
-	
 	
 	private ChildrenWatcher cw;
 
 	public LeaderModule() throws KeeperException, InterruptedException{
-		this.role = NodeRole.Leader;
+
 		workers = new ConcurrentHashMap<String, String>();
 		dataDir = Constants.Base.WORKER_DATASET_DIR;
-		bootstrap = new ClientBootstrap(
-				new NioClientSocketChannelFactory(
-						Executors.newCachedThreadPool(),
-						Executors.newCachedThreadPool()));
-
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_LEADER_PATH);
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_WORKER_PATH);
 		this.watchZookeeper();
 		this.distributeJobManager = new JobManager();
+		this.localJobManager = new JobManager();
 	}
 
 	
@@ -75,24 +65,25 @@ public class LeaderModule extends RoleModule{
 	}
 	
 	
-	public String submitJob(Class<? extends FelucaJob> clz, JSONObject conf) throws Exception{
+	public String submitJob(Class<? extends FelucaJob> clz, JSONObject conf, boolean isLocal) throws Exception{
 		if (clz == null)
 			return null;
-		return this.distributeJobManager.asynRunJob(clz, conf);
+		if (isLocal)
+			return this.localJobManager.asynRunJob(clz, conf);
+		else
+			return this.distributeJobManager.asynRunJob(clz, conf);
 	}
 	
-	public String killJob(String jobName){
+
+	
+	public String killJob(String jobName, boolean isLocal){
 		if (StringUtils.isBlank(jobName))
 			return "jobName empty!?";
-		return 
-			this.distributeJobManager.killJob(jobName);
+		if (isLocal)
+			return this.localJobManager.killJob(jobName);
+		else 
+			return this.distributeJobManager.killJob(jobName);
 	}
-	
-	
-	public String getJobStatus(){
-		return distributeJobManager.getCurrentJobState();
-	}
-	
 	
 	public void watchZookeeper(){
 		cw = new ChildrenWatcher() {
@@ -108,11 +99,15 @@ public class LeaderModule extends RoleModule{
 		ZKClient.get().watchChildren(Constants.Base.ZK_WORKER_PATH, cw);
 	}
 	
-	public JSONObject searchJobInfo(String jobName){
+	public JSONObject searchJobInfo(String jobName, boolean isLocal){
+		if (isLocal)
+			return this.localJobManager.searchJobInfo(jobName);
 		return this.distributeJobManager.searchJobInfo(jobName);
 	}
 	
-	public JSONArray getLatestJobStates(int size) {
+	public JSONArray getLatestJobStates(int size ,boolean isLocal) {
+		if (isLocal)
+			return this.localJobManager.getLatestJobStates(size);
 		return this.distributeJobManager.getLatestJobStates(size);
 	}
 	
@@ -156,10 +151,4 @@ public class LeaderModule extends RoleModule{
 	}
 	
 	
-	
-	public ClientBootstrap getBootstrap(){
-		return this.bootstrap;
-	}
-	
-
 }
