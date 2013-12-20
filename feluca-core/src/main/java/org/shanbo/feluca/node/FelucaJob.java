@@ -89,7 +89,7 @@ public class FelucaJob {
 				this.ttl = t;
 			}
 		}
-		this.jobName = JSONUtil.getJson(properties, JOB_NAME, "felucaJob_" + startTime);
+		this.jobName = JSONUtil.getJson(properties, JOB_NAME, "felucaJob_" + startTime) + startTime;
 		this.log = LoggerFactory.getLogger(this.getClass());
 		String jobClass = prop.getString("jobClass");
 		if (jobClass != null){
