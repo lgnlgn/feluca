@@ -40,6 +40,10 @@ public abstract class FelucaTask extends FelucaJob{
 		ConcurrentExecutor.submit(createStoppableTask());
 	}
 
+	
+	protected final void createTasks(){;}
+	
+	
 	/**
 	 * default log
 	 */
@@ -48,7 +52,11 @@ public abstract class FelucaTask extends FelucaJob{
 	}
 	
 	
-
+	/**
+	 * 
+	 *  @Description TODO
+	 *	@author shanbo.liang
+	 */
 	public static class SupervisorTask extends FelucaTask{
 
 		JSONObject toSend = new JSONObject();
@@ -91,7 +99,7 @@ public abstract class FelucaTask extends FelucaJob{
 					return true;
 				}
 				
-				private JobState checkAllPulse(List<String> results){
+				private JobState checkAllPulses(List<String> results){
 					for(int i = 0 ; i < ips.size(); i++){
 						JSONObject jsonObject = JSONObject.parseObject(results.get(i));
 						StateBag stateBag = ipJobStatus.get(ips.get(i));
@@ -108,7 +116,7 @@ public abstract class FelucaTask extends FelucaJob{
 							currentStates.add(stateBag.jobState);
 						}
 					}
-					return FelucaJob.checkAllSubJobState(currentStates);
+					return FelucaJob.evaluateJobState(currentStates);
 				}
 				
 
@@ -135,7 +143,7 @@ public abstract class FelucaTask extends FelucaJob{
 							try {
 								List<String> currentWorkerStatus= DistributedRequester.get().broadcast("/jobStates" + taskName,
 										Strings.kvNetworkMsgFormat("",""), ips);
-								JobState workerState = checkAllPulse(currentWorkerStatus);
+								JobState workerState = checkAllPulses(currentWorkerStatus);
 								long elapse = DateUtil.getMsDateTimeFormat() - tStart;
 								if (action == 0 && ttl > 0 && elapse > ttl){
 									DistributedRequester.get().broadcast("/kill?jobName=" + taskName,
@@ -178,6 +186,12 @@ public abstract class FelucaTask extends FelucaJob{
 			return r;
 		}
 
+
+		@Override
+		protected boolean checkConfig(JSONObject para) {
+			return isLegal;
+		
+		}
 
 	}
 

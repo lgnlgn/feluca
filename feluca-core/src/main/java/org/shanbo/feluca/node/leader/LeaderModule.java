@@ -12,7 +12,6 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.FelucaJob;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
-import org.shanbo.feluca.node.leader.job.JobChecker;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
 
