@@ -12,8 +12,8 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
-import org.shanbo.feluca.node.FelucaJob;
-import org.shanbo.feluca.node.FelucaTask;
+import org.shanbo.feluca.node.job.FelucaJob;
+import org.shanbo.feluca.node.job.FelucaSubJob;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
@@ -22,7 +22,7 @@ import com.alibaba.fastjson.JSONObject;
 
 public class PullDataJob extends FelucaJob{
 
-	private  static  class PullTask extends FelucaTask{
+	private  static  class PullTask extends FelucaSubJob{
 
 		String fdfs ;
 		String dataName;

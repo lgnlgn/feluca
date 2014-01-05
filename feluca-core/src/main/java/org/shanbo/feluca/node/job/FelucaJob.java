@@ -1,9 +1,10 @@
-package org.shanbo.feluca.node;
+package org.shanbo.feluca.node.job;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.Strings;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public abstract class FelucaJob {
 	
 	protected String jobName;
 
-	protected List<List<FelucaTask>> subJobs;
+	protected List<List<FelucaSubJob>> subJobs;
 	protected List<List<JobState>> subJobStates;
 	protected int runningJobs = 0;
 	
@@ -177,7 +178,7 @@ public abstract class FelucaJob {
 	abstract protected void createTasks();
 
 	
-	private void startJobs(List<FelucaTask> subJobs){
+	private void startJobs(List<FelucaSubJob> subJobs){
 		for(FelucaJob subJob: subJobs){
 			subJob.startJob();
 		}
@@ -300,7 +301,7 @@ public abstract class FelucaJob {
 	 * 
 	 * @return
 	 */
-	protected List<JobState> checkAllSubJobState(List<FelucaTask> tasks){
+	protected List<JobState> checkAllSubJobState(List<FelucaSubJob> tasks){
 		List<JobState> currentStates = new ArrayList<FelucaJob.JobState>(tasks.size());
 		for(FelucaJob subJob: tasks){
 			currentStates.add(subJob.getJobState());

@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node;
+package org.shanbo.feluca.node.job;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
-import org.shanbo.feluca.node.FelucaJob.JobState;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.DistributedRequester;
@@ -21,12 +20,33 @@ import com.alibaba.fastjson.JSONObject;
  *  @Description TODO
  *	@author shanbo.liang
  */
-public abstract class FelucaTask extends FelucaJob{
+public abstract class FelucaSubJob extends FelucaJob{
 
-
-	public FelucaTask(JSONObject prop) {
+	private TaskExecutor taskExecutor;
+	
+	protected boolean canSubJobGo = false;
+	
+	public FelucaSubJob(JSONObject prop) {
 		super(prop);
+		init();
+		this.properties.putAll(taskExecutor.parseConfForSubJob());
 	}
+	
+	protected abstract void estimateEnvForTask();
+	protected abstract void setTaskExecutor();
+	
+	private void init(){
+		estimateEnvForTask();
+		setTaskExecutor();
+	}
+	
+	
+	
+	
+	public boolean canSubJobRun() {
+		return canSubJobGo;
+	}
+	
 
 	abstract protected Runnable createStoppableTask();
 
@@ -57,7 +77,7 @@ public abstract class FelucaTask extends FelucaJob{
 	 *  @Description TODO
 	 *	@author shanbo.liang
 	 */
-	public static class SupervisorTask extends FelucaTask{
+	public static class SupervisorTask extends FelucaSubJob{
 
 		JSONObject toSend = new JSONObject();
 		List<String> ips ;

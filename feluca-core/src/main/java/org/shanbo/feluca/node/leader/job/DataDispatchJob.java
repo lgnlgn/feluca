@@ -14,7 +14,7 @@ import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
-import org.shanbo.feluca.node.FelucaJob;
+import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.ElementPicker;
 import org.shanbo.feluca.util.ZKClient;

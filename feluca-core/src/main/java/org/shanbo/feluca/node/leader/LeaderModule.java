@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.node.FelucaJob;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
+import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
 

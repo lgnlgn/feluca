@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.shanbo.feluca.node.FelucaJob;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
+import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.node.worker.WorkerModule;
 import org.shanbo.feluca.node.worker.job.PullDataJob;
 

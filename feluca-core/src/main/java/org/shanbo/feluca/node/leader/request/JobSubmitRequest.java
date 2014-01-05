@@ -11,10 +11,10 @@ import java.util.Properties;
 
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.shanbo.feluca.node.FelucaJob;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
+import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.node.leader.LeaderModule;
 import org.shanbo.feluca.node.leader.job.DataDispatchJob;
 import org.shanbo.feluca.node.leader.job.StoppableSleepJob;

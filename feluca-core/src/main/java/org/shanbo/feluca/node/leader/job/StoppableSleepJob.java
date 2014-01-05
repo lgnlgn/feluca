@@ -4,7 +4,7 @@ package org.shanbo.feluca.node.leader.job;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.shanbo.feluca.node.FelucaJob;
+import org.shanbo.feluca.node.job.FelucaJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

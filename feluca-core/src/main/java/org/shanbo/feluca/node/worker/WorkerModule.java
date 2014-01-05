@@ -13,9 +13,9 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.node.FelucaJob;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
+import org.shanbo.feluca.node.job.FelucaJob;
 
 import com.alibaba.fastjson.JSONObject;
 
