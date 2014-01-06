@@ -33,11 +33,13 @@ public abstract class FelucaSubJob extends FelucaJob{
 	}
 	
 	protected abstract void estimateEnvForTask();
-	protected abstract void setTaskExecutor();
+
 	
 	private void init(){
+		String task = this.properties.getString("task");
+		this.taskExecutor = TASKS.get(task);
 		estimateEnvForTask();
-		setTaskExecutor();
+
 	}
 	
 	
@@ -70,6 +72,98 @@ public abstract class FelucaSubJob extends FelucaJob{
 	protected String getAllLog() {
 		return StringUtils.join(this.logPipe.iterator(), "");
 	}
+	
+	
+	public static class LocalSubJob extends FelucaSubJob{
+
+		public LocalSubJob(JSONObject prop) {
+			super(prop);
+		}
+
+		@Override
+		protected void estimateEnvForTask() {
+			
+		}
+
+		@Override
+		protected Runnable createStoppableTask() {
+			return null;
+		}
+
+		@Override
+		protected boolean checkConfig(JSONObject para) {
+			return false;
+		}
+		
+	}
+	
+	
+	/**
+	 *  Distributed subjobs are allow sequentially  processed;
+	 *  @Description TODO
+	 *	@author shanbo.liang
+	 */
+	public static class DistribSeqSubJob extends FelucaSubJob{
+
+		public DistribSeqSubJob(JSONObject prop) {
+			super(prop);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		protected void estimateEnvForTask() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected Runnable createStoppableTask() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		protected boolean checkConfig(JSONObject para) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+	}
+	
+	
+	/**
+	 * Distributed subjobs: 1. send action to all(maybe) workers; 2. start check worker job; 
+	 * example: file block download. 
+	 *  @Description TODO
+	 *	@author shanbo.liang
+	 */
+	public static class DistribSubJob extends FelucaSubJob{
+
+		public DistribSubJob(JSONObject prop) {
+			super(prop);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		protected void estimateEnvForTask() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected Runnable createStoppableTask() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		protected boolean checkConfig(JSONObject para) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+	}
+	
 	
 	
 	/**

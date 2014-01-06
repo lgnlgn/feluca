@@ -3,6 +3,8 @@ package org.shanbo.feluca.node.job;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.util.DateUtil;
@@ -20,6 +22,10 @@ import com.alibaba.fastjson.JSONObject;
  */
 public abstract class FelucaJob {
 
+	public static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
+	
+	
+	
 	public static final String JOB_NAME = "jobName";
 	public static final String JOB_START_TIME = "jobStart";
 	public static final String JOB_DETAIL = "jobParameters";
@@ -62,6 +68,10 @@ public abstract class FelucaJob {
 		FAILED
 	}
 
+	public static void addGlobalTask(TaskExecutor task){
+		TASKS.put(task.getTaskName(), task);
+	}
+	
 	public static class JobMessage{
 		String logType; //info warn error
 		String logContent;

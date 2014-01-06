@@ -6,4 +6,7 @@ public abstract class TaskExecutor {
 	public abstract JSONObject parseConfForTask();
 	
 	public abstract JSONObject parseConfForSubJob();
+	
+	public abstract String getTaskName();
+	
 }
