@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.StringUtils;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
+import org.shanbo.feluca.node.job.FelucaJob.JobState;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.DistributedRequester;
 import org.shanbo.feluca.util.Strings;
@@ -22,7 +23,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public abstract class FelucaSubJob extends FelucaJob{
 
-	private TaskExecutor taskExecutor;
+	protected TaskExecutor taskExecutor;
 	
 	protected boolean canSubJobGo = false;
 	
@@ -50,6 +51,10 @@ public abstract class FelucaSubJob extends FelucaJob{
 	}
 	
 
+	/**
+	 * include taskrun and supervision
+	 * @return
+	 */
 	abstract protected Runnable createStoppableTask();
 
 	public void stopJob(){
@@ -62,6 +67,9 @@ public abstract class FelucaSubJob extends FelucaJob{
 		ConcurrentExecutor.submit(createStoppableTask());
 	}
 
+	
+ 
+	
 	
 	protected final void createTasks(){;}
 	
@@ -80,6 +88,29 @@ public abstract class FelucaSubJob extends FelucaJob{
 			super(prop);
 		}
 
+		private void checkTask() {
+			int killed = 0;
+			while(true){
+				JobState taskState = taskExecutor.currentState();
+				if (taskState == JobState.INTERRUPTED){
+					this.state = JobState.INTERRUPTED;
+				}
+				if (state == JobState.STOPPING && killed == 0){
+					taskExecutor.kill();
+					killed = 1;
+				}else if (state == JobState.FINISHED || state == JobState.FAILED){
+					break;
+				}else if (state == JobState.INTERRUPTED){
+					break;
+				}
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+				}
+			}
+		} 
+		
+		
 		@Override
 		protected void estimateEnvForTask() {
 			
@@ -87,7 +118,13 @@ public abstract class FelucaSubJob extends FelucaJob{
 
 		@Override
 		protected Runnable createStoppableTask() {
-			return null;
+			return new Runnable() {
+				public void run() {
+					taskExecutor.execute();
+					state = JobState.RUNNING;
+					checkTask();					
+				}
+			};
 		}
 
 		@Override

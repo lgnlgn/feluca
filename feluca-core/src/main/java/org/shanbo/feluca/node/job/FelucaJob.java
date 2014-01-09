@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.Strings;
+import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ public abstract class FelucaJob {
 	protected boolean isLegal;
 	protected final long startTime ;
 	protected long finishTime;
-	protected List<JobMessage> logCollector; //each job has it's own one
+//	protected List<JobMessage> logCollector; //each job has it's own one
 	protected List<JobMessage> logPipe; //you may need to share it with sub jobs 
 	protected final JSONObject properties;
 	protected volatile JobState state;
@@ -89,7 +90,7 @@ public abstract class FelucaJob {
 		this.isLegal = this.checkConfig(prop);
 		
 		this.properties = new JSONObject();
-		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
+//		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
 		this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
 		this.startTime = DateUtil.getMsDateTimeFormat();
 		this.finishTime = startTime;
@@ -149,7 +150,7 @@ public abstract class FelucaJob {
 	public synchronized void logInfo(String content){
 		String line = content.endsWith("\n")?content:content+"\n";
 		JobMessage msg = new JobMessage(Strings.INFO, line, DateUtil.getMsDateTimeFormat());
-		logCollector.add(msg);
+//		logCollector.add(msg);
 		if (this.logPipe!= null){
 			logPipe.add(msg);
 		}
@@ -158,7 +159,7 @@ public abstract class FelucaJob {
 	public synchronized void logError(String errorHead, Throwable e){
 		String line = errorHead.endsWith("\n")?errorHead:errorHead+"\n";
 		JobMessage msg = new JobMessage(Strings.ERROR, line + Strings.throwableToString(e), DateUtil.getMsDateTimeFormat());
-		logCollector.add(msg);
+//		logCollector.add(msg);
 		if (this.logPipe!= null){
 			logPipe.add(msg);
 		}
@@ -194,6 +195,11 @@ public abstract class FelucaJob {
 		}
 	}
 
+	protected void checkSubJobs(){
+		
+	}
+	
+	
 	/**
 	 * invoke by {@link JobManager}
 	 * override this method on the leaf of job-tree;
@@ -207,9 +213,10 @@ public abstract class FelucaJob {
 			return; 
 		}
 		this.state = JobState.RUNNING;
-		startJobs(subJobs.get(runningJobs));
-		subJobWatcher = new Thread(new Runnable() {
+		
+		ConcurrentExecutor.submit(new Thread(new Runnable() {
 			public void run() {
+				startJobs(subJobs.get(runningJobs));
 				int action = 0;
 				long tStart = DateUtil.getMsDateTimeFormat();
 				JobState currentJobState = JobState.FINISHED;
@@ -259,9 +266,8 @@ public abstract class FelucaJob {
 					}
 				}
 			}
-		}, jobName + "@watcher");
-		subJobWatcher.setDaemon(true);
-		subJobWatcher.start();
+		}, jobName + "@watcher"));
+
 
 	}
 
