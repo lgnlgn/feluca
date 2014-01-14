@@ -13,6 +13,7 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -21,7 +22,7 @@ import com.alibaba.fastjson.JSONObject;
  *  @Description: TODO
  *	@author shanbo.liang
  */
-public abstract class FelucaJob {
+public class FelucaJob {
 
 	public static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
 	
@@ -34,12 +35,13 @@ public abstract class FelucaJob {
 
 	protected Logger log ;
 
-
+	protected TaskExecutor confParser;//only for parse 
+	
 	protected boolean isLegal;
 	protected final long startTime ;
 	protected long finishTime;
 //	protected List<JobMessage> logCollector; //each job has it's own one
-	protected List<JobMessage> logPipe; //you may need to share it with sub jobs 
+	protected List<JobMessage> logPipe ; //you may need to share it with sub jobs 
 	protected final JSONObject properties;
 	protected volatile JobState state;
 	protected int ttl = -1;	
@@ -86,9 +88,7 @@ public abstract class FelucaJob {
 
 	}
 
-	public FelucaJob(JSONObject prop){
-		this.isLegal = this.checkConfig(prop);
-		
+	public FelucaJob(JSONObject prop){	
 		this.properties = new JSONObject();
 //		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
 		this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
@@ -108,14 +108,29 @@ public abstract class FelucaJob {
 		}
 		//		this.jobName = JSONUtil.getJson(properties, JOB_NAME, "felucaJob_" + startTime) + startTime;
 		this.log = LoggerFactory.getLogger(this.getClass());
-		this.createTasks();
-		subJobStates = new ArrayList<List<JobState>>(this.subJobs.size());
+		this.confParser = TASKS.get(properties.get("task"));
+		this.generateSubJobs();
+		this.subJobStates = new ArrayList<List<JobState>>(this.subJobs.size());
 		for(int i = 0 ; i < subJobs.size(); i++){
 			subJobStates.add(new ArrayList<JobState>());
 		}
 	}
 
-
+	private boolean generateSubJobs(){
+		JSONArray subJobAllocation = confParser.parseConfForJob();
+		if (subJobAllocation == null)
+			return false;
+		this.subJobs = new ArrayList<List<FelucaSubJob>>(subJobAllocation.size());
+		for(int i = 0 ; i < subJobAllocation.size();i++){
+			JSONArray concurrentJobAllocation = subJobAllocation.getJSONArray(i);
+			List<FelucaSubJob> concurrentJobs = new ArrayList<FelucaSubJob>(concurrentJobAllocation.size());
+			this.subJobs.add(concurrentJobs);
+			for(int j = 0; j < concurrentJobAllocation.size(); j++){
+				concurrentJobs.add(FelucaSubJob.decideSubJob(concurrentJobAllocation.getJSONObject(j)));
+			}
+		}
+		return true;
+	}
 
 	public void setLogPipe(List<JobMessage> logCollector){
 		this.logPipe = logCollector;
@@ -165,7 +180,7 @@ public abstract class FelucaJob {
 		}
 	}
 
-	protected boolean isLegal() {
+	public boolean isLegal() {
 		return isLegal;
 	}
 
@@ -183,10 +198,6 @@ public abstract class FelucaJob {
 		return json;
 	}
 
-
-	abstract protected boolean checkConfig(JSONObject para);
-
-	abstract protected void createTasks();
 
 	
 	private void startJobs(List<FelucaSubJob> subJobs){
