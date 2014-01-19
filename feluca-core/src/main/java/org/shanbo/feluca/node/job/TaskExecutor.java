@@ -5,9 +5,14 @@ import org.shanbo.feluca.node.job.FelucaJob.JobState;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * execute task through running another process
+ * @author lgn
+ *
+ */
 public abstract class TaskExecutor {
 	
-	JobState state;
+	private JobState state;
 	
 	public abstract JSONObject parseConfForTask();
 	
@@ -20,6 +25,7 @@ public abstract class TaskExecutor {
 	public abstract void kill();
 	
 	public JobState currentState(){
+		//get state through Process
 		return  state;
 	}
 	

@@ -60,6 +60,7 @@ public class WorkerModule extends RoleModule{
 		if (clz == null)
 			return null;
 		return this.jobManager.asynRunJob(clz, conf);
+
 	}
 	
 	public String killJob(String jobName){

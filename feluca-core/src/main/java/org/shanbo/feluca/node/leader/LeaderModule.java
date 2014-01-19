@@ -84,7 +84,7 @@ public class LeaderModule extends RoleModule{
 			return this.distributeJobManager.killJob(jobName);
 	}
 	
-	public void watchZookeeper(){
+	private void watchZookeeper(){
 		cw = new ChildrenWatcher() {
 			@Override
 			public void nodeRemoved(String node) {

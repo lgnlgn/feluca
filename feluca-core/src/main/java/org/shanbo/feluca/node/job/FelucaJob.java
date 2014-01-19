@@ -158,7 +158,7 @@ public class FelucaJob {
 		}
 	}
 
-	protected String getAllLog(){
+	public String getAllLog(){
 		return StringUtils.join(this.logPipe.iterator(), "\n");
 	}
 
@@ -219,10 +219,6 @@ public class FelucaJob {
 	public void startJob(){
 		//start all jobs
 		log.debug("subjobs:" + this.subJobs.size());
-		if (this.subJobs == null){ //no sub job , early return 
-			this.state = JobState.RUNNING;
-			return; 
-		}
 		this.state = JobState.RUNNING;
 		
 		ConcurrentExecutor.submit(new Thread(new Runnable() {

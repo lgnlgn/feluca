@@ -19,7 +19,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class JobManager{
 
-	public final static String JOB_NOT_FOUND = "{\"jobState\":\"" + JobState.FINISHED.toString()+ "\"}";
+	public final static String JOB_NOT_FOUND = "{\"jobState\":\"null\"}";
 	
 	static Logger log = LoggerFactory.getLogger(JobManager.class);
 
@@ -115,8 +115,12 @@ public class JobManager{
 		if (isJobSlotFree()){
 			Constructor<? extends FelucaJob> constructor = jobClz.getConstructor(JSONObject.class);
 			FelucaJob job = constructor.newInstance(conf);
-			this.asyncStartJob(job);
-			return job.getJobName();
+			if (job.isLegal()){
+				this.asyncStartJob(job);
+				return job.getJobName();
+			}else{
+				return null;
+			}
 		}else{
 			return null;
 		}

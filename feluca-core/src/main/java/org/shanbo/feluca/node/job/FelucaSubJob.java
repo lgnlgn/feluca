@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public abstract class FelucaSubJob extends FelucaJob{
 
+	final static int CHECK_TASK_INTERVAL_MS = 100;
 	protected TaskExecutor taskExecutor;
 	
 	protected boolean canSubJobGo = false;
@@ -25,12 +26,11 @@ public abstract class FelucaSubJob extends FelucaJob{
 	protected void init(){
 		String task = this.properties.getString("task");
 		this.taskExecutor = TASKS.get(task);
-
 	}
 	
 
 	/**
-	 * include taskrun and supervision
+	 * you must include taskrun and supervision
 	 * @return
 	 */
 	public abstract  Runnable createStoppableTask();
@@ -46,14 +46,6 @@ public abstract class FelucaSubJob extends FelucaJob{
 	}
 
 	
-	/**
-	 * default log
-	 */
-	protected String getAllLog() {
-		return StringUtils.join(this.logPipe.iterator(), "");
-	}
-	
-	
 	public static FelucaSubJob decideSubJob(JSONObject parsedConf){
 		if (parsedConf.getString("type").equals("local")){
 			return new LocalSubJob(parsedConf.getJSONObject("conf"));
@@ -67,28 +59,84 @@ public abstract class FelucaSubJob extends FelucaJob{
 
 		public LocalSubJob(JSONObject prop) {
 			super(prop);
-			// TODO Auto-generated constructor stub
 		}
-
+				
 		@Override
 		public Runnable createStoppableTask() {
-			// TODO Auto-generated method stub
-			return null;
+			return new Runnable() {
+				public void run() {
+					taskExecutor.execute();
+					boolean killed = false;
+					while(true){
+						if (killed == false && state == JobState.STOPPING){
+							taskExecutor.kill();
+							killed = true;
+						}else{
+							state = taskExecutor.currentState();
+							if (state == JobState.FAILED || state== JobState.INTERRUPTED || state == JobState.FINISHED){
+								break;
+							}
+						}
+						try {
+							Thread.sleep(CHECK_TASK_INTERVAL_MS);
+						} catch (InterruptedException e) {
+							break;
+						}
+					}
+				}
+			};
 		}
 		
 	}
 	//TODO
 	public static class DistributeSubJob extends FelucaSubJob{
-
+		final static String WORKER_JOB_SUBMIT = "/job";
+		final static String WORKER_JOB_STATUS = "/jobstatus";
+		String address;
+		
+		private void startRemoteTask(){
+			//TODO
+		}
+		
+		
+		private void killRemoteTask(){
+			//TODO
+		}
+		
+		private JobState getRemoteTaskStatus(){
+			//TODO
+			return null;
+		}
+		
 		public DistributeSubJob(JSONObject prop) {
 			super(prop);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		public Runnable createStoppableTask() {
-			// TODO Auto-generated method stub
-			return null;
+			return new Runnable() {
+				
+				public void run() {
+					startRemoteTask();
+					boolean killed = false;
+					while(true){
+						if (killed == false && state == JobState.STOPPING){
+							killRemoteTask();
+							killed = true;
+						}else{
+							state = getRemoteTaskStatus();
+							if (state == JobState.FAILED || state== JobState.INTERRUPTED || state == JobState.FINISHED){
+								break;
+							}
+						}
+						try {
+							Thread.sleep(CHECK_TASK_INTERVAL_MS);
+						} catch (InterruptedException e) {
+							break;
+						}
+					}
+				}
+			};
 		}
 		
 	}
