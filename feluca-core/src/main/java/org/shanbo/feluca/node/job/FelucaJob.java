@@ -24,8 +24,8 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class FelucaJob {
 
-	public static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
-	
+	private static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
+	protected static Map<String, Class<? extends TaskExecutor>> TASK_CLASSES = new HashMap<String, Class<? extends TaskExecutor>>();
 	
 	
 	public static final String JOB_NAME = "jobName";
@@ -73,6 +73,7 @@ public class FelucaJob {
 
 	public static void addGlobalTask(TaskExecutor task){
 		TASKS.put(task.getTaskName(), task);
+		TASK_CLASSES.put(task.getTaskName(), task.getClass());
 	}
 	
 	public static class JobMessage{
@@ -117,9 +118,13 @@ public class FelucaJob {
 	}
 
 	private boolean generateSubJobs(){
-		JSONArray subJobAllocation = confParser.parseConfForJob();
-		if (subJobAllocation == null)
+		JSONArray subJobAllocation = confParser.parseConfForJob(properties.getJSONObject("param"));
+		if (subJobAllocation == null || subJobAllocation.size() == 0){
 			return false;
+		}else {
+			if (subJobAllocation.getJSONArray(0).size() == 0 || subJobAllocation.getJSONArray(0).getJSONObject(0).getString("task") == null)
+				return false;
+		}
 		this.subJobs = new ArrayList<List<FelucaSubJob>>(subJobAllocation.size());
 		for(int i = 0 ; i < subJobAllocation.size();i++){
 			JSONArray concurrentJobAllocation = subJobAllocation.getJSONArray(i);
@@ -206,9 +211,6 @@ public class FelucaJob {
 		}
 	}
 
-	protected void checkSubJobs(){
-		
-	}
 	
 	
 	/**
@@ -324,7 +326,7 @@ public class FelucaJob {
 	 * 
 	 * @return
 	 */
-	protected List<JobState> checkAllSubJobState(List<FelucaSubJob> tasks){
+	private List<JobState> checkAllSubJobState(List<FelucaSubJob> tasks){
 		List<JobState> currentStates = new ArrayList<FelucaJob.JobState>(tasks.size());
 		for(FelucaJob subJob: tasks){
 			currentStates.add(subJob.getJobState());
@@ -336,7 +338,7 @@ public class FelucaJob {
 		return this.state;
 	}
 
-	public static JobState parseText(String text){
+	public static JobState parseStateText(String text){
 		if(StringUtils.isBlank(text))
 			return null;
 		return jobStateMap.get(text);
