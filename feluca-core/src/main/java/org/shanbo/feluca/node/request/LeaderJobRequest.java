@@ -23,7 +23,7 @@ public class LeaderJobRequest extends BasicRequest{
 		return "/job";
 	}
 
-	
+
 	private void handleInfoRequest(NettyHttpRequest req, DefaultHttpResponse resp){
 		String numJobs = req.param("last", "5"); //default 5
 		String jobType = req.param(RoleModule.JOB_TYPE, RoleModule.JOB_LOCAL);
@@ -50,36 +50,25 @@ public class LeaderJobRequest extends BasicRequest{
 			}
 		}
 	}
-	
-	private  void handleJobSubmit(NettyHttpRequest req, DefaultHttpResponse resp){
-		String jobClass = req.param("jobClass");
-		String jobType = req.param(RoleModule.JOB_TYPE, RoleModule.JOB_LOCAL);
-		LeaderModule m = (LeaderModule)this.module;
 
-		if (!jobType.equalsIgnoreCase(RoleModule.JOB_LOCAL) || !jobType.equalsIgnoreCase(RoleModule.JOB_DISTRIB)){
-			HttpResponseUtil.setResponse(resp, "kill job action", "require 'jobType' == 'local' OR 'distrib'");
-			resp.setStatus(HttpResponseStatus.BAD_REQUEST);
-		}else{
-			boolean isLocal = jobType.equalsIgnoreCase("local")?true:false;
-			JSONObject parameters = new JSONObject();
-			parameters.put("jobClass", jobClass);
-			String jobName = jobClass + "_" + DateUtil.getMsDateTimeFormat();
-			parameters.put("jobName", jobName);
-			try {
-				String submitJob = m.submitJob(FelucaJob.class, parameters, isLocal);
-				HttpResponseUtil.setResponse(resp, 
-						Strings.keyValuesToJson("action", "submitJob", "isLocal", isLocal), 
-						Strings.keyValuesToJson("jobName", submitJob, "isLocal", isLocal));
-			} catch (Exception e) {
-				HttpResponseUtil.setExceptionResponse(resp, Strings.keyValuesToJson("action", "submitJob", "isLocal", isLocal), 
-						"submit error", e);
-			}
-			
-			
+	private  void handleJobSubmit(NettyHttpRequest req, DefaultHttpResponse resp){
+		LeaderModule m = (LeaderModule)this.module;
+		String content = req.contentAsString();
+		JSONObject parameters = new JSONObject();
+		try{
+			parameters.putAll(JSONObject.parseObject(content));
+			Boolean isLocal = parameters.getBoolean("isLocal");
+			String submitJob = m.submitJob(FelucaJob.class, parameters, isLocal);
+			HttpResponseUtil.setResponse(resp, 
+					Strings.keyValuesToJson("action", "submitJob", "isLocal", isLocal), 
+					Strings.keyValuesToJson("jobName", submitJob, "isLocal", isLocal));
+		} catch (Exception e) {
+			HttpResponseUtil.setExceptionResponse(resp, Strings.keyValuesToJson("action", "submitJob"), 
+					"submit error", e);
 		}
 	}
-	
-	
+
+
 	private void handleJobKill(NettyHttpRequest req, DefaultHttpResponse resp) {
 		String jobName = req.param("jobName"); //default 5
 		String jobType = req.param(RoleModule.JOB_TYPE, RoleModule.JOB_LOCAL);
@@ -87,7 +76,7 @@ public class LeaderJobRequest extends BasicRequest{
 		if (jobName == null ){
 			HttpResponseUtil.setResponse(resp, "kill job action", "require 'jobName'");
 			resp.setStatus(HttpResponseStatus.BAD_REQUEST);
-		
+
 		}else if (!jobType.equalsIgnoreCase(RoleModule.JOB_LOCAL) || !jobType.equalsIgnoreCase(RoleModule.JOB_DISTRIB)){
 			HttpResponseUtil.setResponse(resp, "kill job action", "require 'jobType' == 'local' OR 'distrib'");
 			resp.setStatus(HttpResponseStatus.BAD_REQUEST);
@@ -98,9 +87,9 @@ public class LeaderJobRequest extends BasicRequest{
 				HttpResponseUtil.setResponse(resp, "kill job [" + jobName + "]", m.killJob(jobName, false));
 			}
 		}
-	
+
 	}
-	
+
 	public void handle(NettyHttpRequest req, DefaultHttpResponse resp) {
 		String action = req.param("action","status");
 		if (action.equalsIgnoreCase("submit")){

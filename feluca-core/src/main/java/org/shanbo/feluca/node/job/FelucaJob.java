@@ -110,6 +110,7 @@ public class FelucaJob {
 		//		this.jobName = JSONUtil.getJson(properties, JOB_NAME, "felucaJob_" + startTime) + startTime;
 		this.log = LoggerFactory.getLogger(this.getClass());
 		this.confParser = TASKS.get(properties.get("task"));
+		this.jobName = this.confParser.getTaskName() + "_" + startTime;
 		this.generateSubJobs();
 		this.subJobStates = new ArrayList<List<JobState>>(this.subJobs.size());
 		for(int i = 0 ; i < subJobs.size(); i++){
@@ -170,7 +171,6 @@ public class FelucaJob {
 	public synchronized void logInfo(String content){
 		String line = content.endsWith("\n")?content:content+"\n";
 		JobMessage msg = new JobMessage(Strings.INFO, line, DateUtil.getMsDateTimeFormat());
-//		logCollector.add(msg);
 		if (this.logPipe!= null){
 			logPipe.add(msg);
 		}
@@ -179,7 +179,6 @@ public class FelucaJob {
 	public synchronized void logError(String errorHead, Throwable e){
 		String line = errorHead.endsWith("\n")?errorHead:errorHead+"\n";
 		JobMessage msg = new JobMessage(Strings.ERROR, line + Strings.throwableToString(e), DateUtil.getMsDateTimeFormat());
-//		logCollector.add(msg);
 		if (this.logPipe!= null){
 			logPipe.add(msg);
 		}
