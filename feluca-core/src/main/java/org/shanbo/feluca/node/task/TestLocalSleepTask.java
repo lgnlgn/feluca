@@ -16,9 +16,13 @@ public class TestLocalSleepTask extends TaskExecutor{
 	
 	private int sleepMs = 10000;
 	private int loops = 2;
+	
 	public TestLocalSleepTask(JSONObject conf) {
 		super(conf);
-		sleepMs = conf.getJSONObject("param").getInteger(SLEEP);
+		if (conf != null){
+			sleepMs = conf.getJSONObject("param").getInteger(SLEEP);
+			loops = conf.getJSONObject("param").getIntValue(LOOP);
+		}
 	}
 
 	
@@ -27,8 +31,8 @@ public class TestLocalSleepTask extends TaskExecutor{
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
 		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
 		JSONObject conf = baseConfTemplate(true);
-		conf.getJSONObject("param").put(SLEEP, "4000");
-		conf.getJSONObject("param").put(LOOP, "3");
+		conf.getJSONObject("param").put(SLEEP, "3000");
+		conf.getJSONObject("param").put(LOOP, "2");
 		if (param != null)
 			conf.getJSONObject("param").putAll(param); //using user-def's parameter
 		conf.put("task", this.getClass().getName()); //do not forget
@@ -47,16 +51,17 @@ public class TestLocalSleepTask extends TaskExecutor{
 		ConcurrentExecutor.submit(new Runnable() {
 			public void run() {
 				state = JobState.RUNNING;
+				System.out.println("----------run :" + taskID);
 				for(int i = 0 ; i < loops; i++){
 					if (state == JobState.STOPPING){
 						break;
 					}
 					try {
 						Thread.sleep(sleepMs);
-						
 					} catch (InterruptedException e) {
 					}
 				}
+				System.out.println("-----------awake~~~~~~~~~~~~");
 				if (state == JobState.STOPPING){
 					state = JobState.INTERRUPTED;
 				}else

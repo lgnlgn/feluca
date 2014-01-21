@@ -26,8 +26,8 @@ public class FelucaJob {
 
 	private static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
 	protected static Map<String, Class<? extends TaskExecutor>> TASK_CLASSES = new HashMap<String, Class<? extends TaskExecutor>>();
-	
-	
+
+
 	public static final String JOB_NAME = "jobName";
 	public static final String JOB_START_TIME = "jobStart";
 	public static final String JOB_DETAIL = "jobParameters";
@@ -36,22 +36,22 @@ public class FelucaJob {
 	protected Logger log ;
 
 	protected TaskExecutor confParser;//only for parse 
-	
+
 	protected boolean isLegal;
 	protected final long startTime ;
 	protected long finishTime;
-//	protected List<JobMessage> logCollector; //each job has it's own one
+	//	protected List<JobMessage> logCollector; //each job has it's own one
 	protected List<JobMessage> logPipe ; //you may need to share it with sub jobs 
 	protected final JSONObject properties;
 	protected volatile JobState state;
 	protected int ttl = -1;	
-	
+
 	protected String jobName;
 
 	protected List<List<FelucaSubJob>> subJobs;
 	protected List<List<JobState>> subJobStates;
 	protected int runningJobs = 0;
-	
+
 	protected Thread subJobWatcher; //determine job state by subjobs
 
 	static HashMap<String, JobState> jobStateMap = new HashMap<String, FelucaJob.JobState>();
@@ -61,7 +61,7 @@ public class FelucaJob {
 		}
 	}
 
-	
+
 	public static enum JobState{
 		PENDING,
 		RUNNING,
@@ -75,7 +75,7 @@ public class FelucaJob {
 		TASKS.put(task.getTaskName(), task);
 		TASK_CLASSES.put(task.getTaskName(), task.getClass());
 	}
-	
+
 	public static class JobMessage{
 		String logType; //info warn error
 		String logContent;
@@ -91,14 +91,12 @@ public class FelucaJob {
 
 	public FelucaJob(JSONObject prop){	
 		this.properties = new JSONObject();
-//		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
-		this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
+		//		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
+
 		this.startTime = DateUtil.getMsDateTimeFormat();
 		this.finishTime = startTime;
 		this.state = JobState.PENDING;
-		if (!isLegal){
-			return;
-		}
+
 		if (prop != null){
 			this.properties.putAll(prop);
 			String expTime = prop.getString(TIME_TO_LIVE);
@@ -110,11 +108,17 @@ public class FelucaJob {
 		//		this.jobName = JSONUtil.getJson(properties, JOB_NAME, "felucaJob_" + startTime) + startTime;
 		this.log = LoggerFactory.getLogger(this.getClass());
 		this.confParser = TASKS.get(properties.get("task"));
-		this.jobName = this.confParser.getTaskName() + "_" + startTime;
-		this.generateSubJobs();
-		this.subJobStates = new ArrayList<List<JobState>>(this.subJobs.size());
-		for(int i = 0 ; i < subJobs.size(); i++){
-			subJobStates.add(new ArrayList<JobState>());
+		try{
+			this.jobName = this.confParser.getTaskName() + "_" + startTime;
+			this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
+			this.generateSubJobs();
+			this.subJobStates = new ArrayList<List<JobState>>(this.subJobs.size());
+			for(int i = 0 ; i < subJobs.size(); i++){
+				subJobStates.add(new ArrayList<JobState>());
+			}
+			isLegal = true;
+		}catch(Exception e){
+			isLegal = false;
 		}
 	}
 
@@ -127,13 +131,18 @@ public class FelucaJob {
 				return false;
 		}
 		this.subJobs = new ArrayList<List<FelucaSubJob>>(subJobAllocation.size());
-		for(int i = 0 ; i < subJobAllocation.size();i++){
-			JSONArray concurrentJobAllocation = subJobAllocation.getJSONArray(i);
-			List<FelucaSubJob> concurrentJobs = new ArrayList<FelucaSubJob>(concurrentJobAllocation.size());
-			this.subJobs.add(concurrentJobs);
-			for(int j = 0; j < concurrentJobAllocation.size(); j++){
-				concurrentJobs.add(FelucaSubJob.decideSubJob(concurrentJobAllocation.getJSONObject(j)));
+		try{
+			for(int i = 0 ; i < subJobAllocation.size();i++){
+				JSONArray concurrentJobAllocation = subJobAllocation.getJSONArray(i);
+				List<FelucaSubJob> concurrentJobs = new ArrayList<FelucaSubJob>(concurrentJobAllocation.size());
+				this.subJobs.add(concurrentJobs);
+				for(int j = 0; j < concurrentJobAllocation.size(); j++){
+					concurrentJobs.add(FelucaSubJob.decideSubJob(concurrentJobAllocation.getJSONObject(j)));
+					concurrentJobs.get(concurrentJobs.size()-1).setParent(this);//share with Job
+				}
 			}
+		}catch(Exception e){
+			return false;
 		}
 		return true;
 	}
@@ -203,15 +212,15 @@ public class FelucaJob {
 	}
 
 
-	
+
 	private void startJobs(List<FelucaSubJob> subJobs){
-		for(FelucaJob subJob: subJobs){
+		for(FelucaSubJob subJob: subJobs){
 			subJob.startJob();
 		}
 	}
 
-	
-	
+
+
 	/**
 	 * invoke by {@link JobManager}
 	 * override this method on the leaf of job-tree;
@@ -221,25 +230,24 @@ public class FelucaJob {
 		//start all jobs
 		log.debug("subjobs:" + this.subJobs.size());
 		this.state = JobState.RUNNING;
-		
+
 		ConcurrentExecutor.submit(new Thread(new Runnable() {
 			public void run() {
-				startJobs(subJobs.get(runningJobs));
-				int action = 0;
+				boolean selfKilled = false;
 				long tStart = DateUtil.getMsDateTimeFormat();
-				JobState currentJobState = JobState.FINISHED;
+				JobState currentJobState = null;
 				startJobs(subJobs.get(runningJobs));
 				while (runningJobs < subJobs.size()){
 
 					List<JobState> tmp = checkAllSubJobState(subJobs.get(runningJobs));
 					subJobStates.set(runningJobs, tmp);
 					currentJobState = evaluateJobState(tmp);
-					
-				
+
+
 					long elapse = DateUtil.getMsDateTimeFormat() - tStart;
-					if (action == 0 && ttl > 0 && elapse > ttl){
+					if (selfKilled == false && ttl > 0 && elapse > ttl){
 						stopJob();
-						action = 1;
+						selfKilled = true;
 						log.debug("too long, kill job !");
 						//then wait for JobState.FINISHED
 					}
@@ -269,7 +277,7 @@ public class FelucaJob {
 					try {
 						Thread.sleep(200);
 						log.debug("checking~~~~" + currentJobState.toString());
-//						System.out.println("checking~~~~" + subJobs.get(0).getJobState());
+						//						System.out.println("checking~~~~" + subJobs.get(0).getJobState());
 					} catch (InterruptedException e) {
 					}
 				}
@@ -290,7 +298,7 @@ public class FelucaJob {
 		}else{
 			if (this.state != JobState.INTERRUPTED && this.state != JobState.FAILED){
 				this.state = JobState.STOPPING;
-				for(FelucaJob job : subJobs.get(runningJobs)){
+				for(FelucaSubJob job : subJobs.get(runningJobs)){
 					job.stopJob();
 				}
 			}
@@ -325,9 +333,9 @@ public class FelucaJob {
 	 * 
 	 * @return
 	 */
-	private List<JobState> checkAllSubJobState(List<FelucaSubJob> tasks){
-		List<JobState> currentStates = new ArrayList<FelucaJob.JobState>(tasks.size());
-		for(FelucaJob subJob: tasks){
+	private List<JobState> checkAllSubJobState(List<FelucaSubJob> subJobs){
+		List<JobState> currentStates = new ArrayList<FelucaJob.JobState>(subJobs.size());
+		for(FelucaSubJob subJob: subJobs){
 			currentStates.add(subJob.getJobState());
 		}
 		return currentStates;
@@ -338,7 +346,7 @@ public class FelucaJob {
 	}
 
 	public static JobState parseStateText(String text){
-		if(StringUtils.isBlank(text))
+		if(StringUtils.isBlank(text) || text.equals("null"))
 			return null;
 		return jobStateMap.get(text);
 	}

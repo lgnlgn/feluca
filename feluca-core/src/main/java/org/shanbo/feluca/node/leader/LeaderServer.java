@@ -13,8 +13,10 @@ import org.shanbo.feluca.node.http.BaseChannelHandler;
 import org.shanbo.feluca.node.http.BaseNioServer;
 import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
+import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.node.request.LeaderJobRequest;
 import org.shanbo.feluca.node.request.LeaderStatusRequest;
+import org.shanbo.feluca.node.task.TestLocalSleepTask;
 import org.shanbo.feluca.util.ZKClient;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +81,7 @@ public class LeaderServer extends BaseNioServer{
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 		ZKClient.get().createIfNotExist(zkRegisterPath());
 		module = new LeaderModule();
+		FelucaJob.addGlobalTask(new TestLocalSleepTask(null));
 		this.addHandler(new LeaderJobRequest(module));
 		this.addHandler(new LeaderStatusRequest(module));
 		module.init(zkRegisterPath(), getServerAddress());

@@ -26,14 +26,14 @@ public class LeaderJobRequest extends BasicRequest{
 
 	private void handleInfoRequest(NettyHttpRequest req, DefaultHttpResponse resp){
 		String numJobs = req.param("last", "5"); //default 5
-		String jobType = req.param(RoleModule.JOB_TYPE, RoleModule.JOB_LOCAL);
+		String jobType = req.param("isLocal", "true");
 		String jobName = req.param("name");
 		LeaderModule m = ((LeaderModule)module);
-		if (!jobType.equalsIgnoreCase(RoleModule.JOB_LOCAL) || !jobType.equalsIgnoreCase(RoleModule.JOB_DISTRIB)){
-			HttpResponseUtil.setResponse(resp, "kill job action", "require 'jobType' == 'local' OR 'distrib'");
+		if (!jobType.equalsIgnoreCase("true") && !jobType.equalsIgnoreCase("false")){
+			HttpResponseUtil.setResponse(resp, "info action", "require 'isLocal' == 'true' OR 'false'");
 			resp.setStatus(HttpResponseStatus.BAD_REQUEST);
 		}else{
-			boolean isLocal = jobType.equalsIgnoreCase("local")?true:false;
+			boolean isLocal = new Boolean(jobType.toLowerCase());
 			if (jobName != null){
 				JSONObject searchJobInfo = m.searchJobInfo(jobName, isLocal);
 				if (searchJobInfo == null){
@@ -91,7 +91,7 @@ public class LeaderJobRequest extends BasicRequest{
 	}
 
 	public void handle(NettyHttpRequest req, DefaultHttpResponse resp) {
-		String action = req.param("action","status");
+		String action = req.param("action","info");
 		if (action.equalsIgnoreCase("submit")){
 			this.handleJobSubmit(req, resp);
 		}else if (action.equalsIgnoreCase("info")) {

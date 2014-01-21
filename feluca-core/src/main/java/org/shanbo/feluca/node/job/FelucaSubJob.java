@@ -2,9 +2,14 @@ package org.shanbo.feluca.node.job;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.shanbo.feluca.node.job.FelucaJob.JobMessage;
+import org.shanbo.feluca.node.job.FelucaJob.JobState;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -13,11 +18,14 @@ import com.alibaba.fastjson.JSONObject;
  *  @Description TODO
  *	@author shanbo.liang
  */
-public abstract class FelucaSubJob extends FelucaJob{
+public abstract class FelucaSubJob{
 
 	final static int CHECK_TASK_INTERVAL_MS = 100;
 	protected TaskExecutor taskExecutor;
-
+	protected JobState state ;
+	protected Logger log ;
+	protected JSONObject properties = new JSONObject();
+	protected FelucaJob parentJob;
 	protected boolean canSubJobGo = false;
 
 	/**
@@ -25,10 +33,28 @@ public abstract class FelucaSubJob extends FelucaJob{
 	 * @param prop
 	 */
 	public FelucaSubJob(JSONObject prop) {
-		super(prop);
+		log = LoggerFactory.getLogger(this.getClass());
+		this.properties.putAll(prop);
 		init();
 	}
-
+	
+	public void setParent(FelucaJob parent){
+		this.parentJob = parent;
+	}
+	
+	public JobState getJobState(){
+		return state;
+	}
+	
+	public synchronized void logInfo(String content){
+		parentJob.logInfo(content);
+	}
+	
+	public synchronized void logError(String content, Throwable e){
+		parentJob.logError(content,e);
+	}
+	
+	
 	/**
 	 * through reflection 
 	 */
@@ -63,9 +89,9 @@ public abstract class FelucaSubJob extends FelucaJob{
 
 	public static FelucaSubJob decideSubJob(JSONObject parsedConf){
 		if (parsedConf.getString("type").equals("local")){
-			return new LocalSubJob(parsedConf.getJSONObject("conf"));
+			return new LocalSubJob(parsedConf);
 		}else{
-			return new DistributeSubJob(parsedConf.getJSONObject("conf"));
+			return new DistributeSubJob(parsedConf);
 		}
 	}
 
@@ -80,6 +106,7 @@ public abstract class FelucaSubJob extends FelucaJob{
 		public Runnable createStoppableTask() {
 			return new Runnable() {
 				public void run() {
+					System.out.println("taskExecutor----------run" );
 					taskExecutor.execute();
 					boolean killed = false;
 					while(true){
@@ -95,6 +122,7 @@ public abstract class FelucaSubJob extends FelucaJob{
 						try {
 							Thread.sleep(CHECK_TASK_INTERVAL_MS);
 						} catch (InterruptedException e) {
+							state = JobState.INTERRUPTED;
 							break;
 						}
 					}

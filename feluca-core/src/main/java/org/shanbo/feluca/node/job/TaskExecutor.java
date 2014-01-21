@@ -1,5 +1,6 @@
 package org.shanbo.feluca.node.job;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.shanbo.feluca.node.job.FelucaJob.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,12 @@ public abstract class TaskExecutor {
 	
 	protected JobState state;
 	protected Logger log ;
+	protected long taskID ;
 	public TaskExecutor(JSONObject conf) {
-		log = LoggerFactory.getLogger(this.getClass());
+		if (conf != null){
+			log = LoggerFactory.getLogger(this.getClass());
+			taskID = RandomUtils.nextLong();
+		}
 	}
 	
 	/**
