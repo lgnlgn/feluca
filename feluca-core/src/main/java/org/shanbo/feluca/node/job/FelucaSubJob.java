@@ -1,10 +1,13 @@
 package org.shanbo.feluca.node.job;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.ClientProtocolException;
+import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.FelucaJob.JobMessage;
 import org.shanbo.feluca.node.job.FelucaJob.JobState;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -68,7 +71,6 @@ public abstract class FelucaSubJob{
 			log.error("init error");
 		}
 	}
-
 
 	/**
 	 * you must include taskrun and supervision
@@ -138,14 +140,14 @@ public abstract class FelucaSubJob{
 	public static class DistributeSubJob extends FelucaSubJob{
 		final static String WORKER_JOB_PATH = "/job";
 		String address;
-
-		private void startRemoteTask(){
-			//TODO
+		String remoteJobName ;
+		private void startRemoteTask() throws ClientProtocolException, IOException{
+			remoteJobName = HttpClientUtil.get().doPost(address + WORKER_JOB_PATH + "?action=submit", properties.toJSONString());
 		}
 
 
-		private void killRemoteTask(){
-			//TODO
+		private void killRemoteTask() throws ClientProtocolException, IOException{
+			HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=kill&jobName=" + remoteJobName);
 		}
 
 		private JobState getRemoteTaskStatus(){
@@ -162,11 +164,19 @@ public abstract class FelucaSubJob{
 			return new Runnable() {
 
 				public void run() {
-					startRemoteTask();
+					try {
+						startRemoteTask();
+					} catch (Exception e1) {
+						
+					} 
 					boolean killed = false;
 					while(true){
 						if (killed == false && state == JobState.STOPPING){
-							killRemoteTask();
+							try {
+								killRemoteTask();
+							} catch (Exception e) {
+
+							}
 							killed = true;
 						}else{
 							state = getRemoteTaskStatus();

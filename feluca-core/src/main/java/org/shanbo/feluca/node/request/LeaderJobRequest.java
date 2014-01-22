@@ -27,7 +27,7 @@ public class LeaderJobRequest extends BasicRequest{
 	private void handleInfoRequest(NettyHttpRequest req, DefaultHttpResponse resp){
 		String numJobs = req.param("last", "5"); //default 5
 		String jobType = req.param("isLocal", "true");
-		String jobName = req.param("name");
+		String jobName = req.param("jobName");
 		LeaderModule m = ((LeaderModule)module);
 		if (!jobType.equalsIgnoreCase("true") && !jobType.equalsIgnoreCase("false")){
 			HttpResponseUtil.setResponse(resp, "info action", "require 'isLocal' == 'true' OR 'false'");
@@ -37,7 +37,7 @@ public class LeaderJobRequest extends BasicRequest{
 			if (jobName != null){
 				JSONObject searchJobInfo = m.searchJobInfo(jobName, isLocal);
 				if (searchJobInfo == null){
-					HttpResponseUtil.setResponse(resp, " query job :" + jobName, JobManager.JOB_NOT_FOUND);
+					HttpResponseUtil.setResponse(resp, " query job :" + jobName, "null");
 				}else{
 					HttpResponseUtil.setResponse(resp, " query job :" + jobName, searchJobInfo);
 				}
@@ -45,8 +45,7 @@ public class LeaderJobRequest extends BasicRequest{
 				int num = new Integer(numJobs);
 				HttpResponseUtil.setResponse(resp, "latest jobs", m.getLatestJobStates(num,isLocal));
 			}else{
-				String jobString = m.getLatestJobStates(1,isLocal).toJSONString();
-				HttpResponseUtil.setResponse(resp, "feluca job status", jobString);
+				HttpResponseUtil.setResponse(resp, "feluca job status", m.getLatestJobStates(1,isLocal));
 			}
 		}
 	}

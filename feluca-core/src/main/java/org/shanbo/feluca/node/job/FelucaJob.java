@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.Strings;
@@ -101,8 +103,8 @@ public class FelucaJob {
 		this.properties = new JSONObject();
 		//		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
 
-		this.startTime = DateUtil.getMsDateTimeFormat();
-		this.finishTime = startTime;
+		this.startTime = System.currentTimeMillis();
+		this.finishTime = System.currentTimeMillis();
 		this.state = JobState.PENDING;
 
 		if (prop != null){
@@ -117,7 +119,7 @@ public class FelucaJob {
 		this.log = LoggerFactory.getLogger(this.getClass());
 		this.confParser = TASKS.get(properties.get("task"));
 		try{
-			this.jobName = this.confParser.getTaskName() + "_" + startTime;
+			this.jobName = this.confParser.getTaskName() + "___" + new DateTime().toString(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss_SSS"));
 			this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
 			this.generateSubJobs();
 			this.subJobStates = new ArrayList<List<JobState>>(this.subJobs.size());
@@ -126,6 +128,7 @@ public class FelucaJob {
 			}
 			isLegal = true;
 		}catch(Exception e){
+			System.err.println(e);
 			isLegal = false;
 		}
 	}
@@ -175,7 +178,7 @@ public class FelucaJob {
 
 	public final long getJobDuration(){
 		if (state == JobState.RUNNING){
-			return DateUtil.getMsDateTimeFormat() - startTime;
+			return System.currentTimeMillis() - startTime;
 		}else{
 			return finishTime - startTime;
 		}
@@ -187,7 +190,7 @@ public class FelucaJob {
 
 	public synchronized void logInfo(String content){
 		String line = content.endsWith("\n")?content:content+"\n";
-		JobMessage msg = new JobMessage(Strings.INFO, line, DateUtil.getMsDateTimeFormat());
+		JobMessage msg = new JobMessage(Strings.INFO, line, System.currentTimeMillis());
 		if (this.logPipe!= null){
 			logPipe.add(msg);
 		}
@@ -195,7 +198,7 @@ public class FelucaJob {
 
 	public synchronized void logError(String errorHead, Throwable e){
 		String line = errorHead.endsWith("\n")?errorHead:errorHead+"\n";
-		JobMessage msg = new JobMessage(Strings.ERROR, line + Strings.throwableToString(e), DateUtil.getMsDateTimeFormat());
+		JobMessage msg = new JobMessage(Strings.ERROR, line + Strings.throwableToString(e), System.currentTimeMillis());
 		if (this.logPipe!= null){
 			logPipe.add(msg);
 		}
@@ -242,7 +245,7 @@ public class FelucaJob {
 		ConcurrentExecutor.submit(new Thread(new Runnable() {
 			public void run() {
 				boolean selfKilled = false;
-				long tStart = DateUtil.getMsDateTimeFormat();
+				long tStart = System.currentTimeMillis();
 				JobState currentJobState = null;
 				startJobs(subJobs.get(runningJobs));
 				while (runningJobs < subJobs.size()){
@@ -252,7 +255,7 @@ public class FelucaJob {
 					currentJobState = evaluateJobState(tmp);
 
 
-					long elapse = DateUtil.getMsDateTimeFormat() - tStart;
+					long elapse = System.currentTimeMillis() - tStart;
 					if (selfKilled == false && ttl > 0 && elapse > ttl){
 						stopJob();
 						selfKilled = true;
@@ -261,7 +264,7 @@ public class FelucaJob {
 					}
 					//check stop action
 					if (currentJobState == JobState.FINISHED){
-						finishTime = DateUtil.getMsDateTimeFormat();
+						finishTime = System.currentTimeMillis();
 						log.debug("sub jobs finished");
 						runningJobs +=1;
 						if (runningJobs >= subJobs.size()){
@@ -271,12 +274,12 @@ public class FelucaJob {
 							startJobs(subJobs.get(runningJobs));
 						}
 					}else if (currentJobState == JobState.INTERRUPTED){
-						finishTime = DateUtil.getMsDateTimeFormat();
+						finishTime = System.currentTimeMillis();
 						log.debug("sub jobs interrupted");
 						state = JobState.INTERRUPTED;
 						break;
 					}else if (currentJobState == JobState.FAILED){
-						finishTime = DateUtil.getMsDateTimeFormat();
+						finishTime = System.currentTimeMillis();
 						log.debug("sub jobs faild");
 						state = JobState.FAILED;
 						break;
@@ -284,7 +287,7 @@ public class FelucaJob {
 
 					try {
 						Thread.sleep(200);
-						log.debug("checking~~~~" + currentJobState.toString());
+						log.debug("checking~~~~" + currentJobState.toString() + " ->" + getJobDuration());
 						//						System.out.println("checking~~~~" + subJobs.get(0).getJobState());
 					} catch (InterruptedException e) {
 					}

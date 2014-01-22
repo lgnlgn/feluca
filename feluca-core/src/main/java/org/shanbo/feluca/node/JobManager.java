@@ -1,6 +1,8 @@
 package org.shanbo.feluca.node;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
+
 import org.shanbo.feluca.common.LogStorage;
 import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.node.job.FelucaJob.JobState;
@@ -19,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class JobManager{
 
-	public final static String JOB_NOT_FOUND = "{\"jobState\":\"null\"}";
+	public final static String JOB_NOT_FOUND = "null";
 	
 	static Logger log = LoggerFactory.getLogger(JobManager.class);
 
@@ -67,9 +69,9 @@ public class JobManager{
 			return true;
 		}else{
 			JobState s = running.getJobState();
-			log.debug("checking2 : " + s);
-			if (s == JobState.FINISHED || s == JobState.INTERRUPTED){
-				logStorage.storeJobLogs(this.running.jobSnapshot());
+			logStorage.storeJobLogs(this.running.jobSnapshot());
+			log.debug("checking by manager : " + s);
+			if (s == JobState.FINISHED || s == JobState.INTERRUPTED || s == JobState.FAILED){	
 				running = null;
 				return true;
 			}else{

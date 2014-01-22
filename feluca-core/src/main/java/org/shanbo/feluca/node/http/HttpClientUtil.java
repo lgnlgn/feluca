@@ -5,6 +5,9 @@ import java.io.IOException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -48,6 +51,19 @@ public class HttpClientUtil {
 
 	public String doGet(String encodedURL) throws ClientProtocolException, IOException{
 		return doGet(encodedURL, 3000, 5000);
+	}
+	
+	
+	public String doPost(String encodedURL, byte[] body,long connTimeOut, long soTimeOut) throws ClientProtocolException, IOException{
+		HttpPost post = new HttpPost(encodedURL);
+		post.getParams().setLongParameter(PROP_SO_TIMEOUT, soTimeOut);
+		post.getParams().setLongParameter(PROP_CONNECTION_TIMEOUT, connTimeOut);
+		post.setEntity(new ByteArrayEntity(body));
+		return client.execute(post, new BasicResponseHandler());
+	}
+	
+	public String doPost(String encodedURL, String body) throws ClientProtocolException, IOException{
+		return doPost(encodedURL, body.getBytes(), 3000, 5000);
 	}
 	
 	
