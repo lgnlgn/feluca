@@ -1,6 +1,7 @@
 package org.shanbo.feluca.node.leader;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,13 +65,18 @@ public class LeaderModule extends RoleModule{
 	}
 	
 	
-	public String submitJob(Class<? extends FelucaJob> clz, JSONObject conf, boolean isLocal) throws Exception{
-		if (clz == null)
+	public String submitJob(Class<? extends FelucaJob> clz, JSONObject conf) throws Exception{
+		Constructor<? extends FelucaJob> constructor = clz.getConstructor(JSONObject.class);
+		FelucaJob job = constructor.newInstance(conf);
+		if (job.isLegal()){
+			if (job.isLocal())
+				return this.localJobManager.asynRunJob(job);
+			else
+				return this.distributeJobManager.asynRunJob(job);
+		}else{
 			return null;
-		if (isLocal)
-			return this.localJobManager.asynRunJob(clz, conf);
-		else
-			return this.distributeJobManager.asynRunJob(clz, conf);
+		}
+		
 	}
 	
 

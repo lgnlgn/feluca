@@ -110,17 +110,11 @@ public class JobManager{
 	 * @return
 	 * @throws Exception
 	 */
-	public synchronized String asynRunJob(Class<? extends FelucaJob> jobClz, JSONObject conf) throws Exception{
+	public synchronized String asynRunJob(FelucaJob job) throws Exception{
 
 		if (isJobSlotFree()){
-			Constructor<? extends FelucaJob> constructor = jobClz.getConstructor(JSONObject.class);
-			FelucaJob job = constructor.newInstance(conf);
-			if (job.isLegal()){
-				this.asyncStartJob(job);
-				return job.getJobName();
-			}else{
-				return null;
-			}
+			this.asyncStartJob(job);
+			return job.getJobName();
 		}else{
 			return null;
 		}

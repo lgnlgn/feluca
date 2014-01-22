@@ -89,6 +89,14 @@ public class FelucaJob {
 
 	}
 
+	/**
+	 * check it after confirm isLegal()
+	 * @return
+	 */
+	public boolean isLocal(){
+		return this.confParser.isLocalJob();
+	}
+	
 	public FelucaJob(JSONObject prop){	
 		this.properties = new JSONObject();
 		//		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one

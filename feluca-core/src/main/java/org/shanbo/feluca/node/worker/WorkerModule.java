@@ -1,6 +1,7 @@
 package org.shanbo.feluca.node.worker;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -57,9 +58,11 @@ public class WorkerModule extends RoleModule{
 	
 	
 	public String submitJob(Class<? extends FelucaJob> clz, JSONObject conf) throws Exception{
-		if (clz == null)
-			return null;
-		return this.jobManager.asynRunJob(clz, conf);
+		Constructor<? extends FelucaJob> constructor = clz.getConstructor(JSONObject.class);
+		FelucaJob job = constructor.newInstance(conf);
+		if (job.isLegal())
+			return this.jobManager.asynRunJob(job);
+		return null;
 
 	}
 	

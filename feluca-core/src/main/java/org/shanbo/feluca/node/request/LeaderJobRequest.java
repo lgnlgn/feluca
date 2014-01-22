@@ -57,11 +57,12 @@ public class LeaderJobRequest extends BasicRequest{
 		JSONObject parameters = new JSONObject();
 		try{
 			parameters.putAll(JSONObject.parseObject(content));
-			Boolean isLocal = parameters.getBoolean("isLocal");
-			String submitJob = m.submitJob(FelucaJob.class, parameters, isLocal);
-			HttpResponseUtil.setResponse(resp, 
-					Strings.keyValuesToJson("action", "submitJob", "isLocal", isLocal), 
-					Strings.keyValuesToJson("jobName", submitJob, "isLocal", isLocal));
+			String submitJob = m.submitJob(FelucaJob.class, parameters);
+			if (submitJob == null){
+				HttpResponseUtil.setResponse(resp, "submitJob", "failed!");
+			}else{
+				HttpResponseUtil.setResponse(resp, "submitJob", submitJob);
+			}
 		} catch (Exception e) {
 			HttpResponseUtil.setExceptionResponse(resp, Strings.keyValuesToJson("action", "submitJob"), 
 					"submit error", e);
@@ -71,21 +72,13 @@ public class LeaderJobRequest extends BasicRequest{
 
 	private void handleJobKill(NettyHttpRequest req, DefaultHttpResponse resp) {
 		String jobName = req.param("jobName"); //default 5
-		String jobType = req.param(RoleModule.JOB_TYPE, RoleModule.JOB_LOCAL);
 		LeaderModule m = ((LeaderModule)module);
 		if (jobName == null ){
 			HttpResponseUtil.setResponse(resp, "kill job action", "require 'jobName'");
 			resp.setStatus(HttpResponseStatus.BAD_REQUEST);
-
-		}else if (!jobType.equalsIgnoreCase(RoleModule.JOB_LOCAL) || !jobType.equalsIgnoreCase(RoleModule.JOB_DISTRIB)){
-			HttpResponseUtil.setResponse(resp, "kill job action", "require 'jobType' == 'local' OR 'distrib'");
-			resp.setStatus(HttpResponseStatus.BAD_REQUEST);
 		}else{
-			if (jobType.equalsIgnoreCase("local"))
-				HttpResponseUtil.setResponse(resp, "kill job [" + jobName + "]", m.killJob(jobName, true));
-			else {
-				HttpResponseUtil.setResponse(resp, "kill job [" + jobName + "]", m.killJob(jobName, false));
-			}
+			JSONObject result = Strings.keyValuesToJson("local job",  m.killJob(jobName, true), "distrib job" ,  m.killJob(jobName, false));
+			HttpResponseUtil.setResponse(resp, "kill job [" + jobName + "]", result);
 		}
 
 	}

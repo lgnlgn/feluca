@@ -107,6 +107,7 @@ public abstract class FelucaSubJob{
 			return new Runnable() {
 				public void run() {
 					System.out.println("taskExecutor----------run" );
+
 					taskExecutor.execute();
 					boolean killed = false;
 					while(true){

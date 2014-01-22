@@ -22,8 +22,14 @@ public abstract class TaskExecutor {
 		if (conf != null){
 			log = LoggerFactory.getLogger(this.getClass());
 			taskID = RandomUtils.nextLong();
+			init(conf);
 		}
 	}
+	
+	
+	protected abstract void init(JSONObject initConf);
+	
+	protected abstract boolean isLocalJob();
 	
 	/**
 	 * <li>invoke by FelucaJob</li>
