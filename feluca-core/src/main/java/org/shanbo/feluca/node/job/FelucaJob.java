@@ -9,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.shanbo.feluca.node.JobManager;
+import org.shanbo.feluca.node.task.DistribSleepTask;
+import org.shanbo.feluca.node.task.TestLocalSleepTask;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.Strings;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -27,7 +29,6 @@ import com.alibaba.fastjson.JSONObject;
 public class FelucaJob {
 
 	private static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
-	protected static Map<String, Class<? extends TaskExecutor>> TASK_CLASSES = new HashMap<String, Class<? extends TaskExecutor>>();
 
 
 	public static final String JOB_NAME = "jobName";
@@ -56,11 +57,13 @@ public class FelucaJob {
 
 	protected Thread subJobWatcher; //determine job state by subjobs
 
-	static HashMap<String, JobState> jobStateMap = new HashMap<String, FelucaJob.JobState>();
+	private static HashMap<String, JobState> jobStateMap = new HashMap<String, FelucaJob.JobState>();
 	static {
 		for(JobState js : JobState.values()){
 			jobStateMap.put(js.toString(), js);
 		}
+		addTask(new TestLocalSleepTask(null));
+		addTask(new DistribSleepTask(null));
 	}
 
 
@@ -73,11 +76,10 @@ public class FelucaJob {
 		FAILED
 	}
 
-	public static void addGlobalTask(TaskExecutor task){
+	private static void addTask(TaskExecutor task){
 		TASKS.put(task.getTaskName(), task);
-		TASK_CLASSES.put(task.getTaskName(), task.getClass());
 	}
-
+	
 	public static class JobMessage{
 		String logType; //info warn error
 		String logContent;

@@ -10,10 +10,6 @@ import org.shanbo.feluca.util.ZKClient;
  *	@author shanbo.liang
  */
 public abstract class RoleModule {
-
-	public final static String JOB_TYPE = "jobType";
-	public final static String JOB_LOCAL = "local";
-	public final static String JOB_DISTRIB = "distrib";
 	
 	private String address;
 	private String moduleEphemeralNode;

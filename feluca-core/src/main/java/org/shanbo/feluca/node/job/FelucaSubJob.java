@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.FelucaJob.JobMessage;
 import org.shanbo.feluca.node.job.FelucaJob.JobState;
@@ -24,6 +25,8 @@ import com.alibaba.fastjson.JSONObject;
 public abstract class FelucaSubJob{
 
 	final static int CHECK_TASK_INTERVAL_MS = 100;
+	public final static String DISTRIBUTE_ADDRESS_KEY = "address";
+	
 	protected TaskExecutor taskExecutor;
 	protected JobState state ;
 	protected Logger log ;
@@ -38,7 +41,14 @@ public abstract class FelucaSubJob{
 	public FelucaSubJob(JSONObject prop) {
 		log = LoggerFactory.getLogger(this.getClass());
 		this.properties.putAll(prop);
-		init();
+		String taskClass = this.properties.getString("task");
+		try {
+			Class<? extends TaskExecutor> clz = (Class<? extends TaskExecutor>) Class.forName(taskClass);
+			Constructor<? extends TaskExecutor> constructor = clz.getConstructor(JSONObject.class);
+			taskExecutor = constructor.newInstance(this.properties);
+		} catch (Exception e) {
+			log.error("init error");
+		}
 	}
 	
 	public void setParent(FelucaJob parent){
@@ -62,21 +72,14 @@ public abstract class FelucaSubJob{
 	 * through reflection 
 	 */
 	protected void init(){
-		String taskClass = this.properties.getString("task");
-		try {
-			Class<? extends TaskExecutor> clz = (Class<? extends TaskExecutor>) Class.forName(taskClass);
-			Constructor<? extends TaskExecutor> constructor = clz.getConstructor(JSONObject.class);
-			taskExecutor = constructor.newInstance(this.properties);
-		} catch (Exception e) {
-			log.error("init error");
-		}
+
 	}
 
 	/**
 	 * you must include taskrun and supervision
 	 * @return
 	 */
-	public abstract  Runnable createStoppableTask();
+	protected abstract  Runnable createStoppableTask();
 
 	public void stopJob(){
 		if (state == JobState.RUNNING || state == JobState.PENDING)
@@ -139,24 +142,60 @@ public abstract class FelucaSubJob{
 	//TODO
 	public static class DistributeSubJob extends FelucaSubJob{
 		final static String WORKER_JOB_PATH = "/job";
+		
 		String address;
 		String remoteJobName ;
-		private void startRemoteTask() throws ClientProtocolException, IOException{
-			remoteJobName = HttpClientUtil.get().doPost(address + WORKER_JOB_PATH + "?action=submit", properties.toJSONString());
+		int retries = 2;
+		
+		private void startRemoteTask() throws Exception{
+			try{
+				remoteJobName = HttpClientUtil.get().doPost(address + WORKER_JOB_PATH + "?action=submit", properties.toJSONString());
+			}catch (Exception e){
+				Thread.sleep(2000);
+				remoteJobName = HttpClientUtil.get().doPost(address + WORKER_JOB_PATH + "?action=submit", properties.toJSONString());
+			}
 		}
 
 
-		private void killRemoteTask() throws ClientProtocolException, IOException{
-			HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=kill&jobName=" + remoteJobName);
+		private void killRemoteTask() throws Exception{
+			try{
+				HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=kill&jobName=" + remoteJobName);
+			}catch (Exception e){
+				Thread.sleep(2000);
+				HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=kill&jobName=" + remoteJobName);
+			}
 		}
 
 		private JobState getRemoteTaskStatus(){
-			//TODO
-			return null;
+			
+			try {
+				String remoteTaskResponse = HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName);
+				String jobStateString = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response").getString("jobState");
+				JobState state = FelucaJob.parseStateText(jobStateString);
+				if (state == null ){
+					retries -= 1;
+					if (retries < 0){
+						return JobState.FAILED;
+					}else{
+						return JobState.RUNNING;
+					}
+				}else{
+					retries = 2;
+				}
+				return state;
+			} catch (Exception e) {
+				retries -= 1;
+				if (retries < 0){
+					return JobState.FAILED;
+				}else{
+					return JobState.RUNNING;
+				}
+			}
 		}
 
 		public DistributeSubJob(JSONObject prop) {
 			super(prop);
+			this.address = "http://" + prop.getString(DISTRIBUTE_ADDRESS_KEY);
 		}
 
 		@Override
@@ -164,18 +203,23 @@ public abstract class FelucaSubJob{
 			return new Runnable() {
 
 				public void run() {
+					state = JobState.PENDING;
 					try {
 						startRemoteTask();
 					} catch (Exception e1) {
-						
-					} 
+						state = JobState.FAILED;
+						return;
+					}
+					state = JobState.RUNNING;
 					boolean killed = false;
 					while(true){
 						if (killed == false && state == JobState.STOPPING){
 							try {
 								killRemoteTask();
+								state = JobState.INTERRUPTED;
 							} catch (Exception e) {
-
+								state = JobState.FAILED;
+								return;
 							}
 							killed = true;
 						}else{
@@ -187,13 +231,19 @@ public abstract class FelucaSubJob{
 						try {
 							Thread.sleep(CHECK_TASK_INTERVAL_MS);
 						} catch (InterruptedException e) {
+							try {
+								killRemoteTask();
+								state = JobState.INTERRUPTED;
+							} catch (Exception e2) {
+								state = JobState.FAILED;
+								return;
+							}
 							break;
 						}
 					}
 				}
 			};
 		}
-
 	}
 
 

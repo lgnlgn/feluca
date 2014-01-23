@@ -23,42 +23,24 @@ public class LeaderModule extends RoleModule{
 	
 	private JobManager distributeJobManager;
 	private JobManager localJobManager;
-	private volatile Map<String, String> workers;
 	private String dataDir;
 	
-	private ChildrenWatcher cw;
 
 	public LeaderModule() throws KeeperException, InterruptedException{
-
-		workers = new ConcurrentHashMap<String, String>();
 		dataDir = Constants.Base.WORKER_DATASET_DIR;
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_LEADER_PATH);
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_WORKER_PATH);
-		this.watchZookeeper();
 		this.distributeJobManager = new JobManager();
 		this.localJobManager = new JobManager();
 	}
 
 	
-	private void addSlave(String hostPort){
-		this.workers.put(hostPort, "");
-	}
-	
-	private String removeSlave(String hostPort){
-		return this.workers.remove(hostPort);
-	}
+
 	
 	public String getDataDir(){
 		return this.dataDir;
 	}
 	
-	public Map<String, String> copySlave(){
-		Map<String, String> slaves = new ConcurrentHashMap<String, String>();
-		for(String slaveAddress : this.workers.keySet()){
-			slaves.put(slaveAddress, null);
-		}
-		return slaves;
-	}
 	
 	public boolean dataSetExist(String dataName){
 		return new File(dataDir + "/" + dataName).isDirectory();
@@ -90,19 +72,6 @@ public class LeaderModule extends RoleModule{
 			return this.distributeJobManager.killJob(jobName);
 	}
 	
-	private void watchZookeeper(){
-		cw = new ChildrenWatcher() {
-			@Override
-			public void nodeRemoved(String node) {
-				removeSlave(node);
-			}
-			@Override
-			public void nodeAdded(String node) {
-				addSlave(node);
-			}
-		};
-		ZKClient.get().watchChildren(Constants.Base.ZK_WORKER_PATH, cw);
-	}
 	
 	public JSONObject searchJobInfo(String jobName, boolean isLocal){
 		if (isLocal)
@@ -116,11 +85,6 @@ public class LeaderModule extends RoleModule{
 		return this.distributeJobManager.getLatestJobStates(size);
 	}
 	
-	public List<String> yieldSlaves(){
-		List<String> a = new ArrayList<String>();
-		a.addAll(this.workers.keySet());
-		return a;
-	}
 	
 	
 	/**

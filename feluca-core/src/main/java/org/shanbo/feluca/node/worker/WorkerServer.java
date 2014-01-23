@@ -10,6 +10,9 @@ import org.shanbo.feluca.common.Server;
 import org.shanbo.feluca.node.http.BaseChannelHandler;
 import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
+import org.shanbo.feluca.node.job.FelucaJob;
+import org.shanbo.feluca.node.request.WorkerJobRequest;
+import org.shanbo.feluca.node.request.WorkerStatusRequest;
 import org.shanbo.feluca.util.ZKClient;
 
 public class WorkerServer extends Server{
@@ -61,7 +64,12 @@ public class WorkerServer extends Server{
 		
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 		ZKClient.get().createIfNotExist(zkRegisterPath() );
+				
 		module = new WorkerModule();
+		
+		this.addHandler(new WorkerJobRequest(module));
+		this.addHandler(new WorkerStatusRequest(module));
+		
 		module.init(zkRegisterPath(), getServerAddress());
 		
 

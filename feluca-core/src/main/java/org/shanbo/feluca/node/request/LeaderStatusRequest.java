@@ -7,6 +7,7 @@ import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
 import org.shanbo.feluca.node.leader.LeaderModule;
+import org.shanbo.feluca.util.ClusterUtil;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -25,10 +26,10 @@ public class LeaderStatusRequest extends BasicRequest{
 		String type = req.param("type");
 		if (type.equalsIgnoreCase("cluster")){
 			String leaderAddress = module.getModuleAddress();
-			List<String> slaves = ((LeaderModule)module).yieldSlaves();
+			List<String> workers = ClusterUtil.getWorkerList();
 			JSONObject json = new JSONObject();
 			json.put("leader", leaderAddress);
-			json.put("worker", slaves);
+			json.put("worker", workers);
 			HttpResponseUtil.setResponse(resp, "cluster status", json);
 		}else if(type.equalsIgnoreCase("localdata")){
 			//TODO

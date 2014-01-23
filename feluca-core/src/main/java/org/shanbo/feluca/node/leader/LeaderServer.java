@@ -81,7 +81,6 @@ public class LeaderServer extends BaseNioServer{
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 		ZKClient.get().createIfNotExist(zkRegisterPath());
 		module = new LeaderModule();
-		FelucaJob.addGlobalTask(new TestLocalSleepTask(null));
 		this.addHandler(new LeaderJobRequest(module));
 		this.addHandler(new LeaderStatusRequest(module));
 		module.init(zkRegisterPath(), getServerAddress());

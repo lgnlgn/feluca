@@ -63,7 +63,6 @@ public class WorkerModule extends RoleModule{
 		if (job.isLegal())
 			return this.jobManager.asynRunJob(job);
 		return null;
-
 	}
 	
 	public String killJob(String jobName){

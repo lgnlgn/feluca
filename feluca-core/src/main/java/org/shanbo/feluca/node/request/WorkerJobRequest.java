@@ -31,14 +31,18 @@ public class WorkerJobRequest extends BasicRequest{
 		if (action.equals("submit")){
 			try {
 				String taskName =  m.submitJob(FelucaJob.class, conf);
+				if (taskName != null)
 				HttpResponseUtil.setResponse(resp, "submit task",taskName);
+				else {
+					HttpResponseUtil.setResponse(resp, "submit task", "failed");
+				}
 			} catch (Exception e) {
-				HttpResponseUtil.setResponse(resp, "submit task",null);
+				HttpResponseUtil.setExceptionResponse(resp, "submit task", "failed", e);
 			}
 		}else if (action.equals("kill")){
 			String taskName = req.param("taskName");
 			if (taskName == null){
-				HttpResponseUtil.setResponse(resp, "kill task", JobManager.JOB_NOT_FOUND);
+				HttpResponseUtil.setResponse(resp, "kill task", "null");
 			}else{
 				m.killJob(taskName);
 				HttpResponseUtil.setResponse(resp, "kill task : " + taskName,"action submitted!");
@@ -46,7 +50,7 @@ public class WorkerJobRequest extends BasicRequest{
 		}else if (action.equals("info")){
 			String taskName = req.param("taskName");
 			if (taskName == null){
-				HttpResponseUtil.setResponse(resp, "task status",JobManager.JOB_NOT_FOUND);
+				HttpResponseUtil.setResponse(resp, "task status","null");
 			}else{
 				HttpResponseUtil.setResponse(resp, "task status : "+ taskName, m.searchJobInfo(taskName) );
 			}

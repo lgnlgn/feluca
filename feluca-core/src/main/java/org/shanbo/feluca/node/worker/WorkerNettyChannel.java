@@ -45,21 +45,22 @@ public class WorkerNettyChannel extends BaseChannelHandler{
 					Strings.keyValuesToJson("code",404, "available_path", ja),
 					HttpResponseStatus.BAD_REQUEST	);
 		}else {
-			if (req.getMethod().equals(HttpMethod.POST)){
-				String action = nhr.contentAsString();
-				if (Strings.isNetworkMsg(action))
-					handler.handle(nhr, resp);
-				else{
-					HttpResponseUtil.setResponse(resp, "request path :" + path, 
-							Strings.keyValuesToJson("code",404, "ciphertext error", action),
-							HttpResponseStatus.BAD_REQUEST	);
-				}
-
-			}else{
-				HttpResponseUtil.setResponse(resp, "request path :" + path, 
-						Strings.keyValuesToJson("code",404, "allow http method", "POST"),
-						HttpResponseStatus.BAD_REQUEST	);
-			}
+			handler.handle(nhr, resp);
+//			if (req.getMethod().equals(HttpMethod.POST)){
+//				String action = nhr.contentAsString();
+//				if (Strings.isNetworkMsg(action))
+//					
+//				else{
+//					HttpResponseUtil.setResponse(resp, "request path :" + path, 
+//							Strings.keyValuesToJson("code",404, "ciphertext error", action),
+//							HttpResponseStatus.BAD_REQUEST	);
+//				}
+//
+//			}else{
+//				HttpResponseUtil.setResponse(resp, "request path :" + path, 
+//						Strings.keyValuesToJson("code",404, "allow http method", "POST"),
+//						HttpResponseStatus.BAD_REQUEST	);
+//			}
 		}
 		resp.setHeader(HttpHeaders.Names.CONTENT_TYPE, Strings.CONTENT_TYPE);
 		resp.setHeader("Content-Length", resp.getContent().readableBytes());

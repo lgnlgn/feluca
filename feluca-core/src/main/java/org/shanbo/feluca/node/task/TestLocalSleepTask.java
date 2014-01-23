@@ -10,9 +10,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class TestLocalSleepTask extends TaskExecutor{
-	private final static String SLEEP = "sleep";
+	public final static String SLEEP = "sleep";
 
-	private int sleepMs ;
+	protected int sleepMs ;
 	private Future<?> sleep;
 
 	public TestLocalSleepTask(JSONObject conf) {
@@ -40,7 +40,7 @@ public class TestLocalSleepTask extends TaskExecutor{
 
 	@Override
 	public String getTaskName() {
-		return "sleep";
+		return "lsleep";
 	}
 
 	@Override
