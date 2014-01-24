@@ -16,7 +16,9 @@ import org.shanbo.feluca.node.http.Handlers;
 import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.node.request.LeaderJobRequest;
 import org.shanbo.feluca.node.request.LeaderStatusRequest;
-import org.shanbo.feluca.node.task.TestLocalSleepTask;
+import org.shanbo.feluca.node.task.LocalSleepTask;
+import org.shanbo.feluca.util.ClusterUtil;
+import org.shanbo.feluca.util.GlobalInitializer;
 import org.shanbo.feluca.util.ZKClient;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,6 @@ public class LeaderServer extends BaseNioServer{
 
 	public LeaderServer(){
 		super();
-		log = LoggerFactory.getLogger(LeaderServer.class);
 	}
 
 	public int defaultPort()
@@ -78,13 +79,15 @@ public class LeaderServer extends BaseNioServer{
 
 	@Override
 	public void preStart() throws Exception {
+		GlobalInitializer.call();
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 		ZKClient.get().createIfNotExist(zkRegisterPath());
+
 		module = new LeaderModule();
 		this.addHandler(new LeaderJobRequest(module));
 		this.addHandler(new LeaderStatusRequest(module));
 		module.init(zkRegisterPath(), getServerAddress());
-		super.preStart();
+		super.preStart(); //start http server
 		
 		ZKClient.get().createIfNotExist(Constants.Base.FDFS_ZK_ROOT);
 		dataServer = new DataFtpServer();

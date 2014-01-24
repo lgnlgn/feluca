@@ -27,7 +27,7 @@ public class LeaderModule extends RoleModule{
 	
 
 	public LeaderModule() throws KeeperException, InterruptedException{
-		dataDir = Constants.Base.WORKER_DATASET_DIR;
+		dataDir = Constants.Base.LEADER_DATASET_DIR;
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_LEADER_PATH);
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_WORKER_PATH);
 		this.distributeJobManager = new JobManager();

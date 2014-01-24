@@ -2,20 +2,19 @@ package org.shanbo.feluca.node.task;
 
 import java.util.concurrent.Future;
 
-import org.shanbo.feluca.node.job.TaskExecutor;
 import org.shanbo.feluca.node.job.FelucaJob.JobState;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-public class TestLocalSleepTask extends TaskExecutor{
+public class LocalSleepTask extends TaskExecutor{
 	public final static String SLEEP = "sleep";
 
 	protected int sleepMs ;
 	private Future<?> sleep;
 
-	public TestLocalSleepTask(JSONObject conf) {
+	public LocalSleepTask(JSONObject conf) {
 		super(conf);
 	}
 
@@ -25,14 +24,15 @@ public class TestLocalSleepTask extends TaskExecutor{
 
 
 	@Override
-	public JSONArray parseConfForJob(JSONObject param) {
+	public JSONArray arrangeSubJob(JSONObject global) {
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
 		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-		JSONObject conf = baseConfTemplate(true);
+		JSONObject conf = reformNewConf(true);
 		conf.getJSONObject("param").put(SLEEP, "30000");
+		JSONObject param  = global.getJSONObject("param");
 		if (param != null)
 			conf.getJSONObject("param").putAll(param); //using user-def's parameter
-		conf.put("task", this.getClass().getName()); //do not forget
+		
 		concurrentLevel.add(conf);
 		subJobSteps.add(concurrentLevel);
 		return subJobSteps;
@@ -51,17 +51,20 @@ public class TestLocalSleepTask extends TaskExecutor{
 				System.out.println("----------run :" + taskID );
 				System.out.println("sleep:" + sleepMs );
 
+				//break this by cancel future; this is the only way,
+				//otherwise you will have to wait until it's stop
 				try {
 					Thread.sleep(sleepMs);
 				} catch (InterruptedException e) {
 					state = JobState.STOPPING;
 				}
 
-				System.out.println("-----------awake~~~~~~~~~~~~");
+				System.out.println("-----------awaking~~~~~~~~~~~~");
 				if (state == JobState.STOPPING){
 					state = JobState.INTERRUPTED;
 				}else
 					state = JobState.FINISHED;
+				System.out.println("-----------awake~~~~~~~~ " + state);
 			}
 		});
 	}
@@ -70,11 +73,10 @@ public class TestLocalSleepTask extends TaskExecutor{
 	public void kill() {
 		System.out.println("killing");
 		sleep.cancel(true);
-		state = JobState.STOPPING;
 	}
 
 	@Override
-	protected boolean isLocalJob() {
+	public boolean isLocalJob() {
 		return true;
 	}
 

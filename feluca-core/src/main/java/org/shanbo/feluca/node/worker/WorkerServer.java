@@ -2,25 +2,36 @@ package org.shanbo.feluca.node.worker;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.Server;
 import org.shanbo.feluca.node.http.BaseChannelHandler;
+import org.shanbo.feluca.node.http.BaseNioServer;
 import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
 import org.shanbo.feluca.node.job.FelucaJob;
+import org.shanbo.feluca.node.request.LeaderJobRequest;
 import org.shanbo.feluca.node.request.WorkerJobRequest;
 import org.shanbo.feluca.node.request.WorkerStatusRequest;
+import org.shanbo.feluca.util.ClusterUtil;
+import org.shanbo.feluca.util.GlobalInitializer;
 import org.shanbo.feluca.util.ZKClient;
+import org.slf4j.LoggerFactory;
 
-public class WorkerServer extends Server{
+public class WorkerServer extends BaseNioServer{
 	WorkerModule module;
 	
 	final Handlers handlers = new Handlers();
 	
-	BaseChannelHandler channel = new BaseChannelHandler(handlers);
+	BaseChannelHandler channel = new WorkerNettyChannel(handlers);
+	
+	public WorkerServer(){
+		super();
+	}
+	
 	
 	@Override
 	public String serverName() {
@@ -62,18 +73,17 @@ public class WorkerServer extends Server{
 	@Override
 	public void preStart() throws Exception {
 		
+		GlobalInitializer.call();
+		
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 		ZKClient.get().createIfNotExist(zkRegisterPath() );
-				
+		
 		module = new WorkerModule();
 		
 		this.addHandler(new WorkerJobRequest(module));
 		this.addHandler(new WorkerStatusRequest(module));
-		
+		super.preStart(); //start http server
 		module.init(zkRegisterPath(), getServerAddress());
-		
-
-
 	}
 
 	@Override
@@ -81,8 +91,15 @@ public class WorkerServer extends Server{
 		module.shutdown();
 		
 	}
+
+	@Override
+	protected ChannelUpstreamHandler finalChannelUpstreamHandler() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	public static void main(String[] args) {
 		WorkerServer server = new WorkerServer();
 		server.start();
 	}
+
 }

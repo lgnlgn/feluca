@@ -11,6 +11,7 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.FelucaJob.JobMessage;
 import org.shanbo.feluca.node.job.FelucaJob.JobState;
+import org.shanbo.feluca.node.task.TaskExecutor;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public abstract class FelucaSubJob{
 	public final static String DISTRIBUTE_ADDRESS_KEY = "address";
 	
 	protected TaskExecutor taskExecutor;
-	protected JobState state ;
+	protected volatile JobState state ;
 	protected Logger log ;
 	protected JSONObject properties = new JSONObject();
 	protected FelucaJob parentJob;
@@ -41,15 +42,9 @@ public abstract class FelucaSubJob{
 	public FelucaSubJob(JSONObject prop) {
 		log = LoggerFactory.getLogger(this.getClass());
 		this.properties.putAll(prop);
-		String taskClass = this.properties.getString("task");
-		try {
-			Class<? extends TaskExecutor> clz = (Class<? extends TaskExecutor>) Class.forName(taskClass);
-			Constructor<? extends TaskExecutor> constructor = clz.getConstructor(JSONObject.class);
-			taskExecutor = constructor.newInstance(this.properties);
-		} catch (Exception e) {
-			log.error("init error");
-		}
+		init(); //init taskExecutor
 	}
+		
 	
 	public void setParent(FelucaJob parent){
 		this.parentJob = parent;
@@ -71,9 +66,7 @@ public abstract class FelucaSubJob{
 	/**
 	 * through reflection 
 	 */
-	protected void init(){
-
-	}
+	abstract protected void init();
 
 	/**
 	 * you must include taskrun and supervision
@@ -120,8 +113,9 @@ public abstract class FelucaSubJob{
 							taskExecutor.kill();
 							killed = true;
 						}else{
-							state = taskExecutor.currentState();
-							if (state == JobState.FAILED || state== JobState.INTERRUPTED || state == JobState.FINISHED){
+							JobState s = taskExecutor.currentState();
+							if (s == JobState.FAILED || s== JobState.INTERRUPTED || s == JobState.FINISHED){
+								state = s;
 								break;
 							}
 						}
@@ -136,6 +130,19 @@ public abstract class FelucaSubJob{
 			};
 		}
 
+		@Override
+		protected void init() {
+			String taskClass = this.properties.getString("task");
+			try {
+				Class<? extends TaskExecutor> clz = (Class<? extends TaskExecutor>) Class.forName(taskClass);
+				Constructor<? extends TaskExecutor> constructor = clz.getConstructor(JSONObject.class);
+				taskExecutor = constructor.newInstance(this.properties);
+			} catch (Exception e) {
+				log.error("init error");
+			}
+			
+		}
+
 	}
 	
 	
@@ -148,11 +155,13 @@ public abstract class FelucaSubJob{
 		int retries = 2;
 		
 		private void startRemoteTask() throws Exception{
+			String url = address + WORKER_JOB_PATH + "?action=submit";
 			try{
-				remoteJobName = HttpClientUtil.get().doPost(address + WORKER_JOB_PATH + "?action=submit", properties.toJSONString());
+				this.properties.put("type", "local"); //send 'local' type job to worker
+				remoteJobName = JSONObject.parseObject(HttpClientUtil.get().doPost(url, properties.toString())).getString("response");
 			}catch (Exception e){
 				Thread.sleep(2000);
-				remoteJobName = HttpClientUtil.get().doPost(address + WORKER_JOB_PATH + "?action=submit", properties.toJSONString());
+				remoteJobName = JSONObject.parseObject(HttpClientUtil.get().doPost(url, properties.toString())).getString("response");
 			}
 		}
 
@@ -201,9 +210,9 @@ public abstract class FelucaSubJob{
 		@Override
 		public Runnable createStoppableTask() {
 			return new Runnable() {
-
 				public void run() {
 					state = JobState.PENDING;
+					System.out.println("....send job to worker:" + address );
 					try {
 						startRemoteTask();
 					} catch (Exception e1) {
@@ -223,11 +232,13 @@ public abstract class FelucaSubJob{
 							}
 							killed = true;
 						}else{
-							state = getRemoteTaskStatus();
-							if (state == JobState.FAILED || state== JobState.INTERRUPTED || state == JobState.FINISHED){
+							JobState s = getRemoteTaskStatus();
+							if (s == JobState.FAILED || s== JobState.INTERRUPTED || s == JobState.FINISHED){
+								state = s;
 								break;
 							}
 						}
+						log.debug("~~~~rpc~~~~ state => "  + state);
 						try {
 							Thread.sleep(CHECK_TASK_INTERVAL_MS);
 						} catch (InterruptedException e) {
@@ -244,145 +255,12 @@ public abstract class FelucaSubJob{
 				}
 			};
 		}
+
+
+		@Override
+		protected void init() {
+						
+		}
 	}
-
-
-	/**
-	 * 
-	 *  @Description TODO
-	 *	@author shanbo.liang
-	 */
-	//	public static class SupervisorTask extends FelucaSubJob{
-	//
-	//		JSONObject toSend = new JSONObject();
-	//		List<String> ips ;
-	//		Map<String, StateBag> ipJobStatus ;
-	//		String taskName ;
-	//		
-	//		public static class StateBag{
-	//			int retries = 1;
-	//			JobState jobState = null;
-	//			
-	//			public StateBag(JobState js){
-	//				this.jobState = js;
-	//			}
-	//			
-	//		}
-	//		
-	//		public SupervisorTask(JSONObject prop) {
-	//			super(prop);
-	//			toSend.putAll(prop);
-	//			taskName = toSend.getString("taskName");
-	//			this.ips.addAll(prop.getJSONObject("ipAction").keySet());
-	//			for(String ip : ips){
-	//				ipJobStatus.put(ip, new StateBag(JobState.PENDING));
-	//			}
-	//		}
-	//
-	//
-	//		public Runnable createStoppableTask() {
-	//
-	//			Runnable r = new Runnable() {			
-	//				
-	//				private boolean allSuccess(List<String> results){
-	//					for(String result : results){
-	//						JSONObject jsonObject = JSONObject.parseObject(result);
-	//						if (jsonObject.getIntValue("code") >= 400){
-	//							return false;
-	//						}
-	//					}
-	//					return true;
-	//				}
-	//				
-	//				private JobState checkAllPulses(List<String> results){
-	//					for(int i = 0 ; i < ips.size(); i++){
-	//						JSONObject jsonObject = JSONObject.parseObject(results.get(i));
-	//						StateBag stateBag = ipJobStatus.get(ips.get(i));
-	//						if (jsonObject.getIntValue("code") >= 400){
-	//							stateBag.retries -= 1;
-	//						}else{
-	//							String js = jsonObject.getJSONObject(HttpResponseUtil.RESPONSE).getString("jobState");
-	//							stateBag.jobState = FelucaJob.parseText(js);
-	//						}
-	//					}
-	//					List<JobState> currentStates = new ArrayList<FelucaJob.JobState>();
-	//					for(StateBag stateBag : ipJobStatus.values()){
-	//						if (stateBag.retries >= 0){
-	//							currentStates.add(stateBag.jobState);
-	//						}
-	//					}
-	//					return FelucaJob.evaluateJobState(currentStates);
-	//				}
-	//				
-	//
-	//				public void run() {
-	//					List<String> broadcast = Collections.emptyList();
-	//					try {
-	//						broadcast = DistributedRequester.get().broadcast(toSend.getString("taskPath"),
-	//									Strings.addNetworkCipherText(toSend), ips);
-	//					} catch (Exception e1) {
-	//					} 
-	//					if (allSuccess(broadcast)){
-	//						int action = 0;
-	//						long tStart = DateUtil.getMsDateTimeFormat();
-	//						while(true){
-	//							if (state == JobState.STOPPING){
-	//								try {
-	//									DistributedRequester.get().broadcast("/kill?jobName=" + taskName,
-	//											Strings.kvNetworkMsgFormat("",""), ips);
-	//									Thread.sleep(100);
-	//									continue;
-	//								} catch (Exception e) {
-	//								}
-	//							}
-	//							try {
-	//								List<String> currentWorkerStatus= DistributedRequester.get().broadcast("/jobStates" + taskName,
-	//										Strings.kvNetworkMsgFormat("",""), ips);
-	//								JobState workerState = checkAllPulses(currentWorkerStatus);
-	//								long elapse = DateUtil.getMsDateTimeFormat() - tStart;
-	//								if (action == 0 && ttl > 0 && elapse > ttl){
-	//									DistributedRequester.get().broadcast("/kill?jobName=" + taskName,
-	//											Strings.kvNetworkMsgFormat("",""), ips);
-	//									action = 1;
-	//									log.debug("too long, send kill job request to workers!");
-	//									//then wait for JobState.FINISHED
-	//								}
-	//								if (workerState == JobState.FINISHED){
-	//									finishTime = DateUtil.getMsDateTimeFormat();
-	//									log.debug("sub jobs finished");
-	//									state = JobState.FINISHED;
-	//									break;
-	//								}else if (workerState == JobState.INTERRUPTED){
-	//									finishTime = DateUtil.getMsDateTimeFormat();
-	//									log.debug("sub jobs interrupted");
-	//									state = JobState.INTERRUPTED;
-	//									break;
-	//								}else if (workerState == JobState.FAILED){
-	//									finishTime = DateUtil.getMsDateTimeFormat();
-	//									log.debug("sub jobs faild");
-	//									state = JobState.FAILED;
-	//									break;
-	//								}
-	//								log.debug("checking~~~~workers : " + workerState);
-	//								Thread.sleep(300);
-	//							}catch (Exception e) {
-	//							}
-	//							
-	//						}
-	//					}else{ //start worker job failed?????? 
-	//						try {
-	//							DistributedRequester.get().broadcast("/kill?jobName=" + taskName,
-	//									Strings.kvNetworkMsgFormat("",""), ips);
-	//						} catch (Exception e) {
-	//						} 
-	//					}
-	//				}
-	//			};
-	//			return r;
-	//		}
-	//
-	//
-	//
-	//	}
 
 }

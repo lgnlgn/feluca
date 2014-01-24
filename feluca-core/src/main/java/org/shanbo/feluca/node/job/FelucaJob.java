@@ -9,8 +9,10 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.shanbo.feluca.node.JobManager;
+import org.shanbo.feluca.node.job.FelucaSubJob.LocalSubJob;
 import org.shanbo.feluca.node.task.DistribSleepTask;
-import org.shanbo.feluca.node.task.TestLocalSleepTask;
+import org.shanbo.feluca.node.task.LocalSleepTask;
+import org.shanbo.feluca.node.task.TaskExecutor;
 import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.Strings;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -29,7 +31,7 @@ import com.alibaba.fastjson.JSONObject;
 public class FelucaJob {
 
 	private static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
-
+	final static int SUBJOB_CHECK_INTERVAL = 888;
 
 	public static final String JOB_NAME = "jobName";
 	public static final String JOB_START_TIME = "jobStart";
@@ -43,7 +45,7 @@ public class FelucaJob {
 	protected boolean isLegal;
 	protected final long startTime ;
 	protected long finishTime;
-	//	protected List<JobMessage> logCollector; //each job has it's own one
+
 	protected List<JobMessage> logPipe ; //you may need to share it with sub jobs 
 	protected final JSONObject properties;
 	protected volatile JobState state;
@@ -62,7 +64,7 @@ public class FelucaJob {
 		for(JobState js : JobState.values()){
 			jobStateMap.put(js.toString(), js);
 		}
-		addTask(new TestLocalSleepTask(null));
+		addTask(new LocalSleepTask(null));
 		addTask(new DistribSleepTask(null));
 	}
 
@@ -117,7 +119,6 @@ public class FelucaJob {
 				this.ttl = t;
 			}
 		}
-		//		this.jobName = JSONUtil.getJson(properties, JOB_NAME, "felucaJob_" + startTime) + startTime;
 		this.log = LoggerFactory.getLogger(this.getClass());
 		this.confParser = TASKS.get(properties.get("task"));
 		try{
@@ -130,13 +131,15 @@ public class FelucaJob {
 			}
 			isLegal = true;
 		}catch(Exception e){
-			System.err.println(e);
+			log.error("", e);
 			isLegal = false;
 		}
 	}
 
 	private boolean generateSubJobs(){
-		JSONArray subJobAllocation = confParser.parseConfForJob(properties.getJSONObject("param"));
+
+		JSONArray subJobAllocation = confParser.arrangeSubJob(properties);
+		
 		if (subJobAllocation == null || subJobAllocation.size() == 0){
 			return false;
 		}else {
@@ -150,7 +153,9 @@ public class FelucaJob {
 				List<FelucaSubJob> concurrentJobs = new ArrayList<FelucaSubJob>(concurrentJobAllocation.size());
 				this.subJobs.add(concurrentJobs);
 				for(int j = 0; j < concurrentJobAllocation.size(); j++){
-					concurrentJobs.add(FelucaSubJob.decideSubJob(concurrentJobAllocation.getJSONObject(j)));
+					concurrentJobs.add(
+							FelucaSubJob.decideSubJob(concurrentJobAllocation.getJSONObject(j))
+								);
 					concurrentJobs.get(concurrentJobs.size()-1).setParent(this);//share with Job
 				}
 			}
@@ -254,8 +259,9 @@ public class FelucaJob {
 
 					List<JobState> tmp = checkAllSubJobState(subJobs.get(runningJobs));
 					subJobStates.set(runningJobs, tmp);
-					currentJobState = evaluateJobState(tmp);
 
+					currentJobState = evaluateJobState(tmp);
+					log.debug("checking~~~~" + tmp + " -> " + currentJobState);
 
 					long elapse = System.currentTimeMillis() - tStart;
 					if (selfKilled == false && ttl > 0 && elapse > ttl){
@@ -288,9 +294,8 @@ public class FelucaJob {
 					}
 
 					try {
-						Thread.sleep(200);
-						log.debug("checking~~~~" + currentJobState.toString() + " ->" + getJobDuration());
-						//						System.out.println("checking~~~~" + subJobs.get(0).getJobState());
+						Thread.sleep(SUBJOB_CHECK_INTERVAL);
+//						log.debug("checking~~~~" + currentJobState.toString() + " ->" + getJobDuration());
 					} catch (InterruptedException e) {
 					}
 				}
@@ -335,7 +340,7 @@ public class FelucaJob {
 			return JobState.FINISHED;
 		}else if (allStates <= 3){
 			return JobState.INTERRUPTED;
-		}else if (allStates <= 5){
+		}else if (allStates <= 7){
 			return JobState.FAILED;
 		}else {
 			return JobState.RUNNING;

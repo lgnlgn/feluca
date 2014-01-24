@@ -18,6 +18,7 @@ import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.job.FelucaJob;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class WorkerModule extends RoleModule{
@@ -27,6 +28,7 @@ public class WorkerModule extends RoleModule{
 	
 	public WorkerModule(){
 		this.dataDir = Constants.Base.WORKER_DATASET_DIR;
+		this.jobManager = new JobManager();
 	}
 	
 	
@@ -70,6 +72,10 @@ public class WorkerModule extends RoleModule{
 			return "jobName empty!?";
 		return 
 			this.jobManager.killJob(jobName);
+	}
+	
+	public JSONArray getLatestJobStates() {
+		return this.jobManager.getLatestJobStates(1);
 	}
 	
 	

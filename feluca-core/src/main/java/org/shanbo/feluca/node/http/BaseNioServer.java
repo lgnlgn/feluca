@@ -44,7 +44,8 @@ public abstract class BaseNioServer extends Server {
 	protected ChannelFactory channelFactory = null;
 
 	public BaseNioServer() {
-
+		init();
+		
 	}
 
 	/**
