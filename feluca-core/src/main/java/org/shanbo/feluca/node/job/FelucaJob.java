@@ -9,11 +9,10 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.shanbo.feluca.node.JobManager;
-import org.shanbo.feluca.node.job.FelucaSubJob.LocalSubJob;
 import org.shanbo.feluca.node.task.DistribSleepTask;
+import org.shanbo.feluca.node.task.LocalMultiSleepTask;
 import org.shanbo.feluca.node.task.LocalSleepTask;
 import org.shanbo.feluca.node.task.TaskExecutor;
-import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.Strings;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
@@ -59,24 +58,16 @@ public class FelucaJob {
 
 	protected Thread subJobWatcher; //determine job state by subjobs
 
-	private static HashMap<String, JobState> jobStateMap = new HashMap<String, FelucaJob.JobState>();
+	private static HashMap<String, JobState> JOB_STATE_MAP = new HashMap<String, JobState>();
 	static {
 		for(JobState js : JobState.values()){
-			jobStateMap.put(js.toString(), js);
+			JOB_STATE_MAP.put(js.toString(), js);
 		}
 		addTask(new LocalSleepTask(null));
+		addTask(new LocalMultiSleepTask(null));
 		addTask(new DistribSleepTask(null));
 	}
 
-
-	public static enum JobState{
-		PENDING,
-		RUNNING,
-		STOPPING,
-		FINISHED,
-		INTERRUPTED,
-		FAILED
-	}
 
 	private static void addTask(TaskExecutor task){
 		TASKS.put(task.getTaskName(), task);
@@ -93,6 +84,10 @@ public class FelucaJob {
 			this.logType = logType;
 		}
 
+		public String toString(){
+			return logContent;
+		}
+		
 	}
 
 	/**
@@ -246,7 +241,7 @@ public class FelucaJob {
 	 */
 	public void startJob(){
 		//start all jobs
-		log.debug("subjobs:" + this.subJobs.size());
+		log.debug("subjobs : " + subJobs.toString());
 		this.state = JobState.RUNNING;
 
 		ConcurrentExecutor.submit(new Thread(new Runnable() {
@@ -273,12 +268,13 @@ public class FelucaJob {
 					//check stop action
 					if (currentJobState == JobState.FINISHED){
 						finishTime = System.currentTimeMillis();
-						log.debug("sub jobs finished");
+						log.debug("sub jobs finished---------");
 						runningJobs +=1;
 						if (runningJobs >= subJobs.size()){
 							state = JobState.FINISHED;
 							break;
 						}else{
+							log.debug("starting next step---------");
 							startJobs(subJobs.get(runningJobs));
 						}
 					}else if (currentJobState == JobState.INTERRUPTED){
@@ -352,7 +348,7 @@ public class FelucaJob {
 	 * @return
 	 */
 	private List<JobState> checkAllSubJobState(List<FelucaSubJob> subJobs){
-		List<JobState> currentStates = new ArrayList<FelucaJob.JobState>(subJobs.size());
+		List<JobState> currentStates = new ArrayList<JobState>(subJobs.size());
 		for(FelucaSubJob subJob: subJobs){
 			currentStates.add(subJob.getJobState());
 		}
@@ -366,7 +362,7 @@ public class FelucaJob {
 	public static JobState parseStateText(String text){
 		if(StringUtils.isBlank(text) || text.equals("null"))
 			return null;
-		return jobStateMap.get(text);
+		return JOB_STATE_MAP.get(text);
 	}
 
 

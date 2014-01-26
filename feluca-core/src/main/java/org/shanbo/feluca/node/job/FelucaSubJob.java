@@ -1,16 +1,9 @@
 package org.shanbo.feluca.node.job;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.ClientProtocolException;
-import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.http.HttpClientUtil;
-import org.shanbo.feluca.node.job.FelucaJob.JobMessage;
-import org.shanbo.feluca.node.job.FelucaJob.JobState;
+import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.node.task.TaskExecutor;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
@@ -27,7 +20,7 @@ public abstract class FelucaSubJob{
 
 	final static int CHECK_TASK_INTERVAL_MS = 100;
 	public final static String DISTRIBUTE_ADDRESS_KEY = "address";
-	
+
 	protected TaskExecutor taskExecutor;
 	protected volatile JobState state ;
 	protected Logger log ;
@@ -40,29 +33,30 @@ public abstract class FelucaSubJob{
 	 * @param prop
 	 */
 	public FelucaSubJob(JSONObject prop) {
+		state = JobState.PENDING;
 		log = LoggerFactory.getLogger(this.getClass());
 		this.properties.putAll(prop);
 		init(); //init taskExecutor
 	}
-		
-	
+
+
 	public void setParent(FelucaJob parent){
 		this.parentJob = parent;
 	}
-	
+
 	public JobState getJobState(){
 		return state;
 	}
-	
+
 	public synchronized void logInfo(String content){
 		parentJob.logInfo(content);
 	}
-	
+
 	public synchronized void logError(String content, Throwable e){
 		parentJob.logError(content,e);
 	}
-	
-	
+
+
 	/**
 	 * through reflection 
 	 */
@@ -104,8 +98,11 @@ public abstract class FelucaSubJob{
 		public Runnable createStoppableTask() {
 			return new Runnable() {
 				public void run() {
-					System.out.println("taskExecutor----------run" );
-
+					if (taskExecutor == null){ //initialization failed!!!!
+						state = JobState.FAILED;
+						return;
+					}
+					System.out.println("local taskExecutor----------run (say by LocalSubJob)" );
 					taskExecutor.execute();
 					boolean killed = false;
 					while(true){
@@ -126,7 +123,9 @@ public abstract class FelucaSubJob{
 							break;
 						}
 					}
+					logInfo(taskExecutor.getTaskFinalMessage());
 				}
+
 			};
 		}
 
@@ -134,26 +133,27 @@ public abstract class FelucaSubJob{
 		protected void init() {
 			String taskClass = this.properties.getString("task");
 			try {
+				@SuppressWarnings("unchecked")
 				Class<? extends TaskExecutor> clz = (Class<? extends TaskExecutor>) Class.forName(taskClass);
 				Constructor<? extends TaskExecutor> constructor = clz.getConstructor(JSONObject.class);
 				taskExecutor = constructor.newInstance(this.properties);
 			} catch (Exception e) {
 				log.error("init error");
 			}
-			
+
 		}
 
 	}
-	
-	
+
+
 	//TODO
 	public static class DistributeSubJob extends FelucaSubJob{
 		final static String WORKER_JOB_PATH = "/job";
-		
+
 		String address;
 		String remoteJobName ;
 		int retries = 2;
-		
+
 		private void startRemoteTask() throws Exception{
 			String url = address + WORKER_JOB_PATH + "?action=submit";
 			try{
@@ -162,6 +162,23 @@ public abstract class FelucaSubJob{
 			}catch (Exception e){
 				Thread.sleep(2000);
 				remoteJobName = JSONObject.parseObject(HttpClientUtil.get().doPost(url, properties.toString())).getString("response");
+			}
+		}
+
+		private String fetchRemoteTaskMessage(){
+			try{
+				String remoteTaskResponse = HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName);
+				String jobStateString = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response").getString("jobState");
+				return JSONObject.parseObject(jobStateString).getString("jobLog");
+			}catch (Exception e){
+				try{
+					Thread.sleep(2000);
+					String remoteTaskResponse = HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName);
+					String jobStateString = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response").getString("jobState");
+					return JSONObject.parseObject(jobStateString).getString("jobLog");
+				}catch( Exception e2){
+					return "lost remote task messge";
+				}
 			}
 		}
 
@@ -176,7 +193,7 @@ public abstract class FelucaSubJob{
 		}
 
 		private JobState getRemoteTaskStatus(){
-			
+
 			try {
 				String remoteTaskResponse = HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName);
 				String jobStateString = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response").getString("jobState");
@@ -212,10 +229,11 @@ public abstract class FelucaSubJob{
 			return new Runnable() {
 				public void run() {
 					state = JobState.PENDING;
-					System.out.println("....send job to worker:" + address );
+					System.out.println("DistributeSubJob ....send job to worker:" + address );
 					try {
 						startRemoteTask();
 					} catch (Exception e1) {
+						logError("send job to worker error! ", e1);
 						state = JobState.FAILED;
 						return;
 					}
@@ -227,6 +245,7 @@ public abstract class FelucaSubJob{
 								killRemoteTask();
 								state = JobState.INTERRUPTED;
 							} catch (Exception e) {
+								logError("loss connection with worker ", e);
 								state = JobState.FAILED;
 								return;
 							}
@@ -246,12 +265,14 @@ public abstract class FelucaSubJob{
 								killRemoteTask();
 								state = JobState.INTERRUPTED;
 							} catch (Exception e2) {
+								logError("killRemoteTask error ", e);
 								state = JobState.FAILED;
 								return;
 							}
 							break;
 						}
 					}
+					logInfo(fetchRemoteTaskMessage());
 				}
 			};
 		}
@@ -259,7 +280,7 @@ public abstract class FelucaSubJob{
 
 		@Override
 		protected void init() {
-						
+
 		}
 	}
 

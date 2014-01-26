@@ -31,6 +31,13 @@ public interface DataClient {
 	
 	public String showDataInfo(String dataName) throws IOException;
 	
+	/**
+	 * 
+	 * @param remoteFile include prefix dir. e.g.  aaa/bbb/ccc.dat
+	 * @param localDir  base_dir, you will finally get base_dir/aaa/bbb/ccc.dat 
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean downFromRemote(String remoteFile, String localDir) throws IOException;
 	
 }

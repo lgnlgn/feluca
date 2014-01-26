@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -117,11 +119,13 @@ public class DataFtpClient implements DataClient{
 
 
 	public boolean downFromRemote(String remoteFileName, String localDires) throws IOException {
-
+		String[] paths = remoteFileName.split("[/\\]+");
+		
+		File localDir = new File(localDires + "/" + StringUtils.join(Arrays.copyOfRange(paths, 0, paths.length-1)));
+		if(!localDir.exists() || !localDir.isDirectory())
+			localDir.mkdirs();
+		
 		String strFilePath = localDires + "/" + remoteFileName;
-		File localFile = new File(localDires);
-		if(!localFile.exists() || !localFile.isDirectory())
-			localFile.mkdirs();
 		BufferedOutputStream outStream = null;  
 		boolean success = false;  
 		try {  
@@ -139,7 +143,7 @@ public class DataFtpClient implements DataClient{
 					outStream.flush();  
 					outStream.close();  
 				} catch (IOException e) {  
-					e.printStackTrace();  
+					log.error("close client error",e);  
 				}  
 			}  
 		}  

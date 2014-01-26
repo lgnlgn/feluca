@@ -1,12 +1,8 @@
 package org.shanbo.feluca.node;
 
-import java.lang.reflect.Constructor;
-import java.util.List;
-
 import org.shanbo.feluca.common.LogStorage;
 import org.shanbo.feluca.node.job.FelucaJob;
-import org.shanbo.feluca.node.job.FelucaJob.JobState;
-import org.shanbo.feluca.node.JobConductor;
+import org.shanbo.feluca.node.job.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

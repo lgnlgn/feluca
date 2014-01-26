@@ -2,7 +2,7 @@ package org.shanbo.feluca.node.task;
 
 import java.util.concurrent.Future;
 
-import org.shanbo.feluca.node.job.FelucaJob.JobState;
+import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 import com.alibaba.fastjson.JSONArray;
@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 public class LocalSleepTask extends TaskExecutor{
 	public final static String SLEEP = "sleep";
 
+	String message = null;
 	protected int sleepMs ;
 	private Future<?> sleep;
 
@@ -22,21 +23,6 @@ public class LocalSleepTask extends TaskExecutor{
 		sleepMs = conf.getJSONObject("param").getInteger(SLEEP) == null?10000: conf.getJSONObject("param").getInteger(SLEEP);
 	}
 
-
-	@Override
-	public JSONArray arrangeSubJob(JSONObject global) {
-		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-		JSONObject conf = reformNewConf(true);
-		conf.getJSONObject("param").put(SLEEP, "30000");
-		JSONObject param  = global.getJSONObject("param");
-		if (param != null)
-			conf.getJSONObject("param").putAll(param); //using user-def's parameter
-		
-		concurrentLevel.add(conf);
-		subJobSteps.add(concurrentLevel);
-		return subJobSteps;
-	}
 
 	@Override
 	public String getTaskName() {
@@ -56,14 +42,18 @@ public class LocalSleepTask extends TaskExecutor{
 				try {
 					Thread.sleep(sleepMs);
 				} catch (InterruptedException e) {
+					
 					state = JobState.STOPPING;
 				}
 
 				System.out.println("-----------awaking~~~~~~~~~~~~");
 				if (state == JobState.STOPPING){
+					message = "break";
 					state = JobState.INTERRUPTED;
-				}else
+				}else{
+					message = "finish";
 					state = JobState.FINISHED;
+				}
 				System.out.println("-----------awake~~~~~~~~ " + state);
 			}
 		});
@@ -78,6 +68,33 @@ public class LocalSleepTask extends TaskExecutor{
 	@Override
 	public boolean isLocalJob() {
 		return true;
+	}
+
+	@Override
+	protected JSONArray localTypeSubJob(JSONObject global) {
+		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
+		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
+		JSONObject conf = reformNewConf(true);
+		conf.getJSONObject("param").put(SLEEP, "30000");
+		JSONObject param  = global.getJSONObject("param");
+		if (param != null)
+			conf.getJSONObject("param").putAll(param); //using user-def's parameter
+		
+		concurrentLevel.add(conf);
+		subJobSteps.add(concurrentLevel);
+		return subJobSteps;
+	}
+
+	@Override
+	protected JSONArray distribTypeSubJob(JSONObject global) {
+		//no need
+		return null;
+	}
+
+	@Override
+	public String getTaskFinalMessage() {
+		// TODO Auto-generated method stub
+		return message;
 	}
 
 }

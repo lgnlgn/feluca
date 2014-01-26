@@ -24,42 +24,25 @@ public class DistribSleepTask extends LocalSleepTask{
 	}
 
 	@Override
-	public JSONArray arrangeSubJob(JSONObject global) {
-		if ("local".equalsIgnoreCase(global.getString("type"))){ 
-			//become local sleep
-			JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-			JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-			JSONObject conf = reformNewConf(true);
-			conf.getJSONObject("param").put(SLEEP, DEFAULT_SLEEP);
+	public String getTaskName() {
+		return "dsleep";
+	}
+
+	@Override
+	protected JSONArray distribTypeSubJob(JSONObject global) {
+		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
+		JSONArray concurrentLevel = new JSONArray();// all worker
+		for(String worker : ClusterUtil.getWorkerList()){
+			JSONObject conf = reformNewConf(false);
+			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
 			JSONObject param  = global.getJSONObject("param");
 			if (param != null)
 				conf.getJSONObject("param").putAll(param); //using user-def's parameter
 			
 			concurrentLevel.add(conf);
-			subJobSteps.add(concurrentLevel);
-			return subJobSteps;
-		}else{
-			JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-			JSONArray concurrentLevel = new JSONArray();// all worker
-			for(String worker : ClusterUtil.getWorkerList()){
-				JSONObject conf = reformNewConf(false);
-				conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
-				conf.getJSONObject("param").put(SLEEP, DEFAULT_SLEEP);
-				JSONObject param  = global.getJSONObject("param");
-				if (param != null)
-					conf.getJSONObject("param").putAll(param); //using user-def's parameter
-				
-				concurrentLevel.add(conf);
-			}
-			subJobSteps.add(concurrentLevel);
-			return subJobSteps;
 		}
-
+		subJobSteps.add(concurrentLevel);
+		return subJobSteps;
 	}
-
-	@Override
-	public String getTaskName() {
-		return "dsleep";
-	}
-
+	
 }
