@@ -4,10 +4,33 @@ import org.shanbo.feluca.util.Config;
 
 
 public class Constants {
+	private static String LEADER_REPOSITORY ;
+	private static String WORKER_REPOSITORY ;
+	static{
+		String leaderRepo = Config.get().get("leader.repo");
+		if (leaderRepo == null){
+			LEADER_REPOSITORY = ClusterUtil.getProperties("leader.repo", "./leader_repo");
+		}else{
+			LEADER_REPOSITORY = leaderRepo;
+		}
+		String workerRepo = Config.get().get("leader.repo");
+		if (workerRepo == null){
+			WORKER_REPOSITORY = ClusterUtil.getProperties("worker.repo", "./worker_repo");
+		}else{
+			WORKER_REPOSITORY = workerRepo;
+		}
+		
+	}
 	
 	public static class Base{
-		public final static String LEADER_REPOSITORY =  Config.get().get("datadir", "./leader_repo");
-		public final static String WORKER_REPOSITORY =  Config.get().get("datadir", "./worder_repo");
+		
+		public static String getLeaderRepository(){
+			return Constants.LEADER_REPOSITORY;
+		}
+		
+		public static String getWorkerRepository(){
+			return Constants.WORKER_REPOSITORY;
+		}
 		
 		public final static String DATA_DIR = "/data";
 		

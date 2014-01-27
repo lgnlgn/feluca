@@ -32,7 +32,7 @@ public class DataFtpServer extends DataServer{
 		ByteArrayOutputStream temp = new ByteArrayOutputStream();
 		this.port = port;
 
-		Properties p = FTPConstants.generateDefaultFtpProperties(Constants.Base.WORKER_REPOSITORY);
+		Properties p = FTPConstants.generateDefaultFtpProperties(Constants.Base.getLeaderRepository());
 
 		try {
 			p.store(temp, "");

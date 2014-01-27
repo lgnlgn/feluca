@@ -3,11 +3,11 @@ package org.shanbo.feluca.node.request;
 import java.util.List;
 
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
 import org.shanbo.feluca.node.leader.LeaderModule;
-import org.shanbo.feluca.util.ClusterUtil;
 
 import com.alibaba.fastjson.JSONObject;
 

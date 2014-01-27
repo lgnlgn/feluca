@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.task.DistribSleepTask;
+import org.shanbo.feluca.node.task.FileDistributeTask;
 import org.shanbo.feluca.node.task.LocalMultiSleepTask;
 import org.shanbo.feluca.node.task.LocalSleepTask;
 import org.shanbo.feluca.node.task.TaskExecutor;
@@ -66,6 +67,7 @@ public class FelucaJob {
 		addTask(new LocalSleepTask(null));
 		addTask(new LocalMultiSleepTask(null));
 		addTask(new DistribSleepTask(null));
+		addTask(new FileDistributeTask(null));
 	}
 
 

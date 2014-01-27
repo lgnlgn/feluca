@@ -23,7 +23,6 @@ public class LeaderJobRequest extends BasicRequest{
 		return "/job";
 	}
 
-
 	private void handleInfoRequest(NettyHttpRequest req, DefaultHttpResponse resp){
 		String numJobs = req.param("last", "5"); //default 5
 		String jobType = req.param("isLocal", "true");

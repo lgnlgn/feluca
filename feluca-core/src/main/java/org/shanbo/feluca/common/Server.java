@@ -26,7 +26,7 @@ public abstract class Server {
 			ZKClient.get().registerEphemeralNode(zkRegisterPath(), getServerAddress());
 		}catch (Exception e) {
 			log.error("Server [" + this.getClass().getName() + "] start failed", e);
-			throw new FelucaException("Server [" + this.getClass().getName() + "] start failed");
+			throw new FelucaException("Server [" + this.getClass().getName() + "] start failed",e);
 		}
 		
 	}
@@ -61,9 +61,7 @@ public abstract class Server {
 			} catch (SocketException e) {
 			}
 			Config c = Config.get();
-			if (c.get(this.serverName() + ".bind-address") == null || c.get(this.serverName() + ".bind-port") == null){
-				System.out.println("YOURSERVER.bind-address OR port not set!!!! use default value");
-			}
+			
 			ip = c.get(this.serverName() + ".bind-address", myip);
 			port = c.getInt(this.serverName() + ".bind-port", defaultPort());
 		}

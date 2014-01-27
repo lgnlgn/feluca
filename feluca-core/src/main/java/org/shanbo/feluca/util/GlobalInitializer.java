@@ -1,5 +1,6 @@
 package org.shanbo.feluca.util;
 
+import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.FelucaException;
 
 public class GlobalInitializer {

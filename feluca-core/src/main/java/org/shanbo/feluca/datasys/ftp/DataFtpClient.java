@@ -17,6 +17,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.datasys.DataClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +120,7 @@ public class DataFtpClient implements DataClient{
 
 
 	public boolean downFromRemote(String remoteFileName, String localDires) throws IOException {
-		String[] paths = remoteFileName.split("[/\\]+");
+		String[] paths = remoteFileName.split("/+");
 		
 		File localDir = new File(localDires + "/" + StringUtils.join(Arrays.copyOfRange(paths, 0, paths.length-1)));
 		if(!localDir.exists() || !localDir.isDirectory())
@@ -162,11 +163,11 @@ public class DataFtpClient implements DataClient{
 	}
 
 	public static void main(String[] args) throws SocketException, IOException {
-		DataFtpClient client = new DataFtpClient("10.249.9.205");
+		DataFtpClient client = new DataFtpClient("10.249.9.252");
 		System.out.println("----");
 		long t = System.currentTimeMillis();
-		client.copyToRemote("aaa", new File("data/aaa/001.pdf"));
-		System.out.println("---" + (System.currentTimeMillis()-t));
+		client.downFromRemote("/data/Instructions_and_VPN_files.rar", Constants.Base.getWorkerRepository());
 		client.close();
+		System.out.println("----------");
 	}
 }

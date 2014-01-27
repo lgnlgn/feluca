@@ -1,7 +1,7 @@
 package org.shanbo.feluca.node.task;
 
+import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.node.job.FelucaSubJob;
-import org.shanbo.feluca.util.ClusterUtil;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

@@ -138,6 +138,7 @@ public abstract class FelucaSubJob{
 				Constructor<? extends TaskExecutor> constructor = clz.getConstructor(JSONObject.class);
 				taskExecutor = constructor.newInstance(this.properties);
 			} catch (Exception e) {
+				System.out.println(".? error??????????");
 				log.error("init error");
 			}
 
@@ -168,14 +169,14 @@ public abstract class FelucaSubJob{
 		private String fetchRemoteTaskMessage(){
 			try{
 				String remoteTaskResponse = HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName);
-				String jobStateString = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response").getString("jobState");
-				return JSONObject.parseObject(jobStateString).getString("jobLog");
+				JSONObject resp = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response");
+				return resp.getString("jobLog");
 			}catch (Exception e){
 				try{
 					Thread.sleep(2000);
 					String remoteTaskResponse = HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName);
-					String jobStateString = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response").getString("jobState");
-					return JSONObject.parseObject(jobStateString).getString("jobLog");
+					JSONObject resp = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response");
+					return resp.getString("jobLog");
 				}catch( Exception e2){
 					return "lost remote task messge";
 				}
@@ -193,7 +194,6 @@ public abstract class FelucaSubJob{
 		}
 
 		private JobState getRemoteTaskStatus(){
-
 			try {
 				String remoteTaskResponse = HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName);
 				String jobStateString = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response").getString("jobState");
@@ -232,6 +232,7 @@ public abstract class FelucaSubJob{
 					System.out.println("DistributeSubJob ....send job to worker:" + address );
 					try {
 						startRemoteTask();
+						logInfo("remote task:" + remoteJobName);
 					} catch (Exception e1) {
 						logError("send job to worker error! ", e1);
 						state = JobState.FAILED;
@@ -252,12 +253,13 @@ public abstract class FelucaSubJob{
 							killed = true;
 						}else{
 							JobState s = getRemoteTaskStatus();
+							log.debug("~~~~rpc~~~~ state => "  + s);
 							if (s == JobState.FAILED || s== JobState.INTERRUPTED || s == JobState.FINISHED){
+								logInfo(fetchRemoteTaskMessage());
 								state = s;
 								break;
 							}
 						}
-						log.debug("~~~~rpc~~~~ state => "  + state);
 						try {
 							Thread.sleep(CHECK_TASK_INTERVAL_MS);
 						} catch (InterruptedException e) {
@@ -272,15 +274,13 @@ public abstract class FelucaSubJob{
 							break;
 						}
 					}
-					logInfo(fetchRemoteTaskMessage());
+					
 				}
 			};
 		}
 
-
 		@Override
 		protected void init() {
-
 		}
 	}
 

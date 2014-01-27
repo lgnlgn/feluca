@@ -6,6 +6,7 @@ import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.datasys.DataServer;
 import org.shanbo.feluca.datasys.ftp.DataFtpServer;
@@ -17,7 +18,6 @@ import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.node.request.LeaderJobRequest;
 import org.shanbo.feluca.node.request.LeaderStatusRequest;
 import org.shanbo.feluca.node.task.LocalSleepTask;
-import org.shanbo.feluca.util.ClusterUtil;
 import org.shanbo.feluca.util.GlobalInitializer;
 import org.shanbo.feluca.util.ZKClient;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,6 @@ public class LeaderServer extends BaseNioServer{
 	@Override
 	public void preStart() throws Exception {
 		GlobalInitializer.call();
-		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 		ZKClient.get().createIfNotExist(zkRegisterPath());
 
 		module = new LeaderModule();

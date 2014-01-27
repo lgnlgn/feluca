@@ -3,13 +3,13 @@ package org.shanbo.feluca.node.task;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
 import org.shanbo.feluca.node.job.FelucaSubJob;
 import org.shanbo.feluca.node.job.JobState;
-import org.shanbo.feluca.util.ClusterUtil;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 import com.alibaba.fastjson.JSONArray;
@@ -35,6 +35,7 @@ public class FileDistributeTask extends TaskExecutor{
 		try {
 			ftpAddress = param.getString("ftpAddress")== null?ClusterUtil.getFDFSAddress(): param.getString("ftpAddress");
 			JSONArray files =  param.getJSONArray("files");
+			fileNames = new HashMap<String, Boolean>();
 			for(int i = 0; i < files.size();i++){
 				fileNames.put(files.getString(i), false);
 			}
@@ -64,6 +65,7 @@ public class FileDistributeTask extends TaskExecutor{
 				try {
 					client = new DataFtpClient(ftpAddress.split(":")[0]);
 				} catch (Exception e) {
+					System.out.println("...........client failed......................");
 					state = JobState.FAILED;
 					return;
 				}
@@ -72,14 +74,16 @@ public class FileDistributeTask extends TaskExecutor{
 						break;
 					}
 					try {
-						client.downFromRemote(fileName, Constants.Base.WORKER_REPOSITORY);
+						System.out.println("pulling " + fileName);
+						client.downFromRemote(fileName, Constants.Base.getWorkerRepository());
 						fileNames.put(fileName, true); //mark success
 					} catch (IOException e) {
 						log.error("downFromRemote error",e);
 					}
 				}
-				
-				System.out.println("-----------awaking~~~~~~~~~~~~");
+				if (client != null){
+					client.close();
+				}
 				if (state == JobState.STOPPING){
 					state = JobState.INTERRUPTED;
 				}else
