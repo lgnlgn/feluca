@@ -64,6 +64,7 @@ public class FileDistributeTask extends TaskExecutor{
 				DataClient client = null;
 				try {
 					client = new DataFtpClient(ftpAddress.split(":")[0]);
+					System.out.println("...........client opened......................");
 				} catch (Exception e) {
 					System.out.println("...........client failed......................");
 					state = JobState.FAILED;

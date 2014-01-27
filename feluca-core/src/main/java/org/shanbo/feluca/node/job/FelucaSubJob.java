@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 public abstract class FelucaSubJob{
 
-	final static int CHECK_TASK_INTERVAL_MS = 100;
+	final static int CHECK_TASK_INTERVAL_MS = 200;
 	public final static String DISTRIBUTE_ADDRESS_KEY = "address";
 
 	protected TaskExecutor taskExecutor;
@@ -195,8 +195,12 @@ public abstract class FelucaSubJob{
 
 		private JobState getRemoteTaskStatus(){
 			try {
-				String remoteTaskResponse = HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName);
-				String jobStateString = JSONObject.parseObject(remoteTaskResponse).getJSONObject("response").getString("jobState");
+				JSONObject remoteResult = JSONObject.parseObject(HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName));
+				if (remoteResult.containsValue("null")){ //remote task is not started yet
+					retries -= 1;
+					return JobState.RUNNING;
+				}
+				String jobStateString = remoteResult.getJSONObject("response").getString("jobState");
 				JobState state = FelucaJob.parseStateText(jobStateString);
 				if (state == null ){
 					retries -= 1;
@@ -232,7 +236,7 @@ public abstract class FelucaSubJob{
 					System.out.println("DistributeSubJob ....send job to worker:" + address );
 					try {
 						startRemoteTask();
-						logInfo("remote task:" + remoteJobName);
+						logInfo("remoteTask:" + remoteJobName);
 					} catch (Exception e1) {
 						logError("send job to worker error! ", e1);
 						state = JobState.FAILED;
@@ -241,6 +245,19 @@ public abstract class FelucaSubJob{
 					state = JobState.RUNNING;
 					boolean killed = false;
 					while(true){
+						try {
+							Thread.sleep(CHECK_TASK_INTERVAL_MS);
+						} catch (InterruptedException e) {
+							try {
+								killRemoteTask();
+								state = JobState.INTERRUPTED;
+							} catch (Exception e2) {
+								logError("killRemoteTask error ", e);
+								state = JobState.FAILED;
+								return;
+							}
+							break;
+						}
 						if (killed == false && state == JobState.STOPPING){
 							try {
 								killRemoteTask();
@@ -260,19 +277,7 @@ public abstract class FelucaSubJob{
 								break;
 							}
 						}
-						try {
-							Thread.sleep(CHECK_TASK_INTERVAL_MS);
-						} catch (InterruptedException e) {
-							try {
-								killRemoteTask();
-								state = JobState.INTERRUPTED;
-							} catch (Exception e2) {
-								logError("killRemoteTask error ", e);
-								state = JobState.FAILED;
-								return;
-							}
-							break;
-						}
+
 					}
 					
 				}
