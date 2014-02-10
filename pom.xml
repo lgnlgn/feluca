@@ -7,6 +7,7 @@
   <modules>
   	<module>feluca-core</module>
   	<module>feluca-sail</module>
+  	<module>feluca-paddle</module>
   </modules>
       <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
