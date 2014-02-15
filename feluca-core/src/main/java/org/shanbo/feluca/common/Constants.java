@@ -48,7 +48,7 @@ public class Constants {
 	
 	
 	public static class Algorithm{
-		
+		public final static String ZK_ALGO_CHROOT = Base.ZK_CHROOT + "/algorithm";
 	}
 	
 	
