@@ -1,35 +1,34 @@
 package org.shanbo.feluca.data;
 
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.shanbo.feluca.node.http.BaseChannelHandler;
-import org.shanbo.feluca.node.http.Handler;
-import org.shanbo.feluca.node.http.Handlers;
-import org.shanbo.feluca.node.http.NettyHttpRequest;
-import org.shanbo.feluca.node.leader.LeaderNettyChannel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 
 
 public class HttpStub {
 	
-	public BaseChannelHandler dataServerChannel(){
-		Handlers channelHandlers = new Handlers();
-		BaseChannelHandler channel = new LeaderNettyChannel(channelHandlers);
-		channelHandlers.addHandler(serverHandler());
-		return channel;
+	public SimpleChannelHandler modelServerChannel(){
+				
+		return new BytesChannelHandler();
 	}
 	
-	
-	public Handler serverHandler(){
-		return new Handler() {
-			
-			public void handle(NettyHttpRequest req, DefaultHttpResponse resp) {
-				// TODO Auto-generated method stub
+	static class BytesChannelHandler extends SimpleChannelHandler{
+		//TODO
+		public void messageReceived(ChannelHandlerContext ctx, final MessageEvent e){
+			HttpRequest req = (HttpRequest)e.getMessage();
+			String uri = req.getUri();
+			if (uri.equals("update")){
+				
+			}else if (uri.equals("fetch")){
+				
 			}
+		}
+		@Override
+		public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e){
 			
-			public String getPath() {
-				return null;
-			}
-		};
+		}
 	}
-	
 	
 }

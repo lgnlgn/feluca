@@ -7,4 +7,16 @@
     <relativePath>..</relativePath>
   </parent>
   <artifactId>feluca-sail</artifactId>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.shanbo</groupId>
+  		<artifactId>feluca-core</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>net.sf.trove4j</groupId>
+  		<artifactId>trove4j</artifactId>
+  		<version>3.0.3</version>
+  	</dependency>
+  </dependencies>
 </project>

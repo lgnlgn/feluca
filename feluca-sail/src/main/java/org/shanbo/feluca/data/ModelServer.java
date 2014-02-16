@@ -4,6 +4,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.shanbo.feluca.common.Constants;
@@ -22,7 +23,7 @@ public class ModelServer extends BaseNioServer{
 	
 	String zkPath = Constants.Algorithm.ZK_ALGO_CHROOT + "/test";
 	HttpStub stub = new HttpStub();
-	BaseChannelHandler channel ;
+	SimpleChannelHandler channel ;
 	
 	
 	
@@ -43,7 +44,7 @@ public class ModelServer extends BaseNioServer{
 
 	@Override
 	public void preStart() throws Exception {
-		channel = stub.dataServerChannel();
+		channel = stub.modelServerChannel();
 		
 	}
 
