@@ -5,7 +5,7 @@ public class ModelClient {
 	ModelDelegator cache;
 	
 	public void init(){
-		cache = new ModelDelegator();
+		cache = new ModelDelegator(1);
 	}
 	
 	public ModelClient(){

@@ -1,5 +1,9 @@
 package org.shanbo.feluca.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * cache a delta model within
  * @author shanbo.liang
@@ -8,11 +12,15 @@ package org.shanbo.feluca.data;
 public class ModelDelegator {
 	VectorSerDer serDer;
 	DistributeTools rpc;
-	BytesPark bytesPark;
+
 	
-	public ModelDelegator(){
+	public ModelDelegator(int blocks){
 		serDer = new VectorSerDer();
-		rpc = new DistributeTools(1);
+		BytesPark[] caches = new BytesPark[blocks];
+		for(int i = 0 ; i < blocks; i++){
+			caches[i] = new BytesPark();
+		}
+		rpc = new DistributeTools(caches);
 	}
 	
 	protected void dataSerialize(){
