@@ -22,7 +22,7 @@ import org.shanbo.feluca.node.leader.LeaderNettyChannel;
 public class ModelServer extends BaseNioServer{
 	
 	String zkPath = Constants.Algorithm.ZK_ALGO_CHROOT + "/test";
-	ModelInServer model ;
+	PartialModelInServer model ;
 	SimpleChannelHandler modelChannel;
 	
 	@Override

@@ -16,13 +16,13 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
 
-public class ModelInServer {
+public class PartialModelInServer {
 	
 	volatile float values[];//key value storage; since key=array_index, we need to use partitioner to convert id to index
 	Partitioner partitioner;
 	SimpleChannelHandler serverChannel;
 	
-	public ModelInServer(int allBlocks, int thisBlockId, int maxIds){
+	public PartialModelInServer(int allBlocks, int thisBlockId, int maxIds){
 		serverChannel = new BytesChannelHandler();
 		init(allBlocks, thisBlockId, maxIds);
 	}

@@ -1,35 +1,38 @@
 package org.shanbo.feluca.data;
 
-public class ModelClient {
+import java.util.concurrent.ExecutionException;
 
-	ModelDelegator cache;
+/**
+ * cache a delta model within
+ * @author shanbo.liang
+ *
+ */
+public class ModelClient {
 	
-	public void init(){
-		cache = new ModelDelegator(1);
+	DistributeTools rpc;
+	PartialModelInClient partialModel;
+	
+	public ModelClient(GlobalConfig conf){
+		partialModel = new PartialModelInClient(conf.nodes());
+		rpc = new DistributeTools(conf);
 	}
 	
-	public ModelClient(){
+	public void updateModel(int ids[]) throws InterruptedException, ExecutionException{
+		for(int i = 0 ; i < rpc.caches.length; i++){
+			rpc.caches[i].clear();
+		}
+		partialModel.partitionAndSerialize(ids, rpc.caches);
+		rpc.updateModel();
+	}
+	
+	public void fetchModel(int ids[]) throws InterruptedException, ExecutionException{
+		for(int i = 0 ; i < rpc.caches.length; i++){
+			rpc.caches[i].clear();
+		}
+		partialModel.partitionQueryIds(ids, rpc.caches);
+		rpc.fetchModelBack();
+		partialModel.deserializeFrom(rpc.caches);
+	}
 		
-	}
-	
-	public ModelDelegator getPartialModel(){
-		return cache;
-	}
-	
-	/**
-	 * upload
-	 */
-	public void updateModel(){
-		
-	}
-	
-	/**
-	 * download
-	 */
-	public void syncModel(){
-		
-	}
-	
-	
 	
 }

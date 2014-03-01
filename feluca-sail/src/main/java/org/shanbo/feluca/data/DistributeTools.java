@@ -25,7 +25,8 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 public class DistributeTools {
 	final HttpClient client ;
 	BytesPark[] caches ;
-
+	String[] address;
+	
 	class RequstCallable implements Callable<Void>{
 
 		String requestMark;
@@ -56,9 +57,14 @@ public class DistributeTools {
 	}
 
 
-	public DistributeTools(BytesPark[] caches){
+	public DistributeTools(GlobalConfig conf){
 		client = HttpClientBuilder.create().useSystemProperties().build();
-		this.caches = caches;
+		caches = new BytesPark[conf.nodes()];
+		address =new String[conf.nodes()];
+		for(int i = 0 ; i < conf.nodes(); i++){
+			caches[i] = new BytesPark();
+			address[i]= conf.getConfigByPart(i).getString("address");
+		}
 	}
 
 

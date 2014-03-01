@@ -8,7 +8,7 @@ import org.shanbo.feluca.common.FelucaException;
 import gnu.trove.iterator.TIntFloatIterator;
 import gnu.trove.map.hash.TIntFloatHashMap;
 
-public class ModelInClient {
+public class PartialModelInClient {
 
 	final static int MODEL_CLEAR_INTERVAL = 4;
 
@@ -17,7 +17,7 @@ public class ModelInClient {
 	Partitioner partitioner;
 	int numModelCleared = 0;
 	
-	public ModelInClient(int totalModelSegments){
+	public PartialModelInClient(int totalModelSegments){
 		partitioner = new Partitioner.HashPartitioner(totalModelSegments);
 	}
 	
