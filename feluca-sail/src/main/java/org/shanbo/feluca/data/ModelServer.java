@@ -22,10 +22,8 @@ import org.shanbo.feluca.node.leader.LeaderNettyChannel;
 public class ModelServer extends BaseNioServer{
 	
 	String zkPath = Constants.Algorithm.ZK_ALGO_CHROOT + "/test";
-	HttpStub stub = new HttpStub();
-	SimpleChannelHandler channel ;
-	
-	
+	ModelInServer model ;
+	SimpleChannelHandler modelChannel;
 	
 	@Override
 	public String serverName() {
@@ -44,7 +42,7 @@ public class ModelServer extends BaseNioServer{
 
 	@Override
 	public void preStart() throws Exception {
-		channel = stub.modelServerChannel();
+		modelChannel = model.getChannelForNetty();
 		
 	}
 
@@ -71,7 +69,7 @@ public class ModelServer extends BaseNioServer{
 				ChannelPipeline pipeline = Channels.pipeline();
 				pipeline.addLast("decoder", new HttpRequestDecoder());
 				pipeline.addLast("encoder", new HttpResponseEncoder());
-				pipeline.addLast("channel", channel);
+				pipeline.addLast("channel", modelChannel);
 
 				return pipeline;
 			}

@@ -1,8 +1,10 @@
 package org.shanbo.feluca.data;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -13,12 +15,18 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
+/**
+ * no need to set parameters for 
+ * @author lgn
+ *
+ */
 public class DistributeTools {
 	final HttpClient client ;
 	BytesPark[] caches ;
 
-	class RequstCallable implements Callable<Object>{
+	class RequstCallable implements Callable<Void>{
 
 		String requestMark;
 		BytesPark bytesPark;
@@ -27,9 +35,10 @@ public class DistributeTools {
 			this.requestMark = requestMark;
 		}
 
-		public Object call() throws Exception {
+		public Void call() throws Exception {
+			//TODO
 			HttpPost post = new HttpPost();
-			post.setEntity( new ByteArrayEntity(bytesPark.getBytes(), 0, bytesPark.arraySize()));
+			post.setEntity( new ByteArrayEntity(bytesPark.getArray(), 0, bytesPark.arraySize()));
 			HttpResponse response = client.execute(post);
 			final StatusLine statusLine = response.getStatusLine();
 			final HttpEntity entity = response.getEntity();
@@ -63,8 +72,22 @@ public class DistributeTools {
 	 * @param mark
 	 * @param body
 	 * @return
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	public void request(String requestMark){
-
+	public void fetchModelBack() throws InterruptedException, ExecutionException{
+		request("/fetch");
+	}
+	
+	public void updateModel() throws InterruptedException, ExecutionException{
+		request("/update");
+	}
+	
+	private void request(String path) throws InterruptedException, ExecutionException{
+		List<Callable<Void>> messageSend = new ArrayList<Callable<Void>>(caches.length);
+		for(int i = 0 ;i < caches.length;i++){
+			messageSend.add(new RequstCallable(path, caches[i]));
+		}
+		ConcurrentExecutor.execute(messageSend);
 	}
 }

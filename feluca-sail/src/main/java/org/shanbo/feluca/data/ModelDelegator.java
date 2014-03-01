@@ -1,8 +1,6 @@
 package org.shanbo.feluca.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * cache a delta model within
@@ -10,12 +8,12 @@ import java.util.List;
  *
  */
 public class ModelDelegator {
-	VectorSerDer serDer;
+	
 	DistributeTools rpc;
-
+	ModelInClient partialModel;
 	
 	public ModelDelegator(int blocks){
-		serDer = new VectorSerDer();
+		partialModel = new ModelInClient(blocks);
 		BytesPark[] caches = new BytesPark[blocks];
 		for(int i = 0 ; i < blocks; i++){
 			caches[i] = new BytesPark();
@@ -23,8 +21,21 @@ public class ModelDelegator {
 		rpc = new DistributeTools(caches);
 	}
 	
-	protected void dataSerialize(){
-		
+	public void updateModel(int ids[]) throws InterruptedException, ExecutionException{
+		for(int i = 0 ; i < rpc.caches.length; i++){
+			rpc.caches[i].clear();
+		}
+		partialModel.partitionAndSerialize(ids, rpc.caches);
+		rpc.updateModel();
+	}
+	
+	public void fetchModel(int ids[]) throws InterruptedException, ExecutionException{
+		for(int i = 0 ; i < rpc.caches.length; i++){
+			rpc.caches[i].clear();
+		}
+		partialModel.partitionQueryIds(ids, rpc.caches);
+		rpc.fetchModelBack();
+		partialModel.deserializeFrom(rpc.caches);
 	}
 	
 	protected void dataDeserialize(){
@@ -40,13 +51,7 @@ public class ModelDelegator {
 	}
 	
 	
-	public float getValueOfId(int id){
-		return 0f;
-	}
 	
-	public void setValueOfId(int id, float value){
-		
-	}
 	
 	
 }
