@@ -1,4 +1,4 @@
-package org.shanbo.feluca.data;
+package org.shanbo.feluca.model;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;

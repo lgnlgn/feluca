@@ -1,4 +1,4 @@
-package org.shanbo.feluca.data;
+package org.shanbo.feluca.model;
 
 import java.util.concurrent.ExecutionException;
 
@@ -34,5 +34,17 @@ public class ModelClient {
 		partialModel.deserializeFrom(rpc.caches);
 	}
 		
+	public float getById(int id){
+		return partialModel.getById(id);
+	}
 	
+	/**
+	 * set new value, not just delta
+	 * @param id
+	 * @param value
+	 * @return
+	 */
+	public void setValue(int id, float value){
+		partialModel.setValue(id, value);
+	}
 }

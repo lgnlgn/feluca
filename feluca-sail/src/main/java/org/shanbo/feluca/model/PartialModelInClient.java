@@ -1,4 +1,4 @@
-package org.shanbo.feluca.data;
+package org.shanbo.feluca.model;
 
 import java.util.List;
 import java.util.NoSuchElementException;
