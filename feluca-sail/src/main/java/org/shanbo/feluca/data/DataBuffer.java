@@ -1,8 +1,12 @@
 package org.shanbo.feluca.data;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.io.PatternFilenameFilter;
 
 public class DataBuffer implements Runnable{
 	final static int CACHE_SIZE = 32 * 1024*1024;
@@ -26,10 +30,16 @@ public class DataBuffer implements Runnable{
 		return blocks.get(currentBlock);
 	}
 	
-	public DataBuffer(String name){
-		//TODO
+	public DataBuffer(String dirName){
 		readingCache = new byte[CACHE_SIZE];
 		writingCache = new byte[CACHE_SIZE];
+		File dir = new File(dirName);
+		File[] listFiles = dir.listFiles(new PatternFilenameFilter(dirName + "\\.dat"));
+		blocks = new ArrayList<BlockStatus>(listFiles.length);
+		for(File dat : listFiles){
+			blocks.add(new BlockStatus(dat.getAbsolutePath()
+					.substring(0,dat.getAbsolutePath().length() - 4)));
+		}
 	}
 	
 	/**
@@ -82,7 +92,7 @@ public class DataBuffer implements Runnable{
 			//move to next block
 			currentBlock +=1;
 			if (currentBlock < blocks.size()){
-				in = new FileInputStream(getCurrentBlockStatus().blockPath);
+				in = new FileInputStream(getCurrentBlockStatus().block);
 			}else{
 				finished = true;
 			}
