@@ -16,10 +16,12 @@ public class DataBuffer implements Runnable{
 	int partOfBlock;
 	
 	byte[] readingCache ;
+	int readingLength;
 	byte[] writingCache;
-	
+	int writingLength;
 	FileInputStream in;
 	int currentBlock;
+	
 	
 	volatile boolean reading;  //control by reader, the writer need to monitor it
 	volatile boolean writingfinished; // flag for fetching process
@@ -30,11 +32,16 @@ public class DataBuffer implements Runnable{
 		return blocks.get(currentBlock);
 	}
 	
+	public int getCurrentBytesLength(){
+		return readingLength;
+	}
+	
+	
 	public DataBuffer(String dirName){
 		readingCache = new byte[CACHE_SIZE];
 		writingCache = new byte[CACHE_SIZE];
 		File dir = new File(dirName);
-		File[] listFiles = dir.listFiles(new PatternFilenameFilter(dirName + "\\.dat"));
+		File[] listFiles = dir.listFiles(new PatternFilenameFilter(dir.getName() + "_\\d+\\.dat"));
 		blocks = new ArrayList<BlockStatus>(listFiles.length);
 		for(File dat : listFiles){
 			blocks.add(new BlockStatus(dat.getAbsolutePath()
@@ -43,12 +50,12 @@ public class DataBuffer implements Runnable{
 	}
 	
 	/**
-	 * call by outside
+	 * call by outside, current 
 	 * @return
 	 */
 	synchronized byte[] getByteArrayRef(){
 		while(true){ //
-			if (written == true){
+			if (reading == true){
 				return readingCache;
 			}else{
 				//wait until
@@ -73,9 +80,13 @@ public class DataBuffer implements Runnable{
 	 */
 	private void switchCache(){
 		//TODO
-		byte[] tmp = readingCache;
+		byte[] tmpCache = readingCache;
 		readingCache = writingCache;
-		writingCache = tmp;
+		writingCache = tmpCache;
+		
+		readingLength = writingLength;
+		writingLength = 0;
+		
 		reading = true;      // close for the writer
 		written = false; 
 		if (writingfinished){
@@ -85,7 +96,11 @@ public class DataBuffer implements Runnable{
 	
 	
 	private void fillCache() throws IOException{
-		in.read(writingCache, 0, getCurrentBlockStatus().offsets[partOfBlock++]);
+		if (in == null){
+			in = new FileInputStream(getCurrentBlockStatus().block);
+		}
+		System.out.println("---bytes from file");
+		writingLength = in.read(writingCache, 0, getCurrentBlockStatus().offsets[partOfBlock++]);
 		if (partOfBlock >= getCurrentBlockStatus().offsets.length){
 			in.close();
 			partOfBlock = 0;
@@ -94,14 +109,23 @@ public class DataBuffer implements Runnable{
 			if (currentBlock < blocks.size()){
 				in = new FileInputStream(getCurrentBlockStatus().block);
 			}else{
-				finished = true;
+				writingfinished = true;
 			}
 		}
 		written = true;
 		
 	}
 	
-
+	public void start() throws IOException{
+		finished = false;
+		written = false;
+		writingfinished = false;
+		fillCache();
+		switchCache();
+		Thread t = new Thread(this);
+		t.setDaemon(true);
+		t.start();
+	}
 	
 	//TODO
 	public void reset(){
@@ -123,6 +147,19 @@ public class DataBuffer implements Runnable{
 				}
 			}
 		}
+		System.out.println("thread finished!");
 	}
 	
+	public static void main(String[] args) throws IOException {
+		DataBuffer db = new DataBuffer("data/aaa");
+		db.start();
+		
+		for(byte[] ref = db.getByteArrayRef(); ref != null;ref = db.getByteArrayRef() ){
+			int currentBytesLength = db.getCurrentBytesLength();
+			System.out.println(currentBytesLength);
+			db.releaseByteArrayRef();
+		}
+		
+		
+	}
 }

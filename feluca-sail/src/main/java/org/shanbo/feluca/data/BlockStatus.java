@@ -14,9 +14,9 @@ public class BlockStatus {
 	Properties statistics;
 	int[] offsets;
 	
-	public BlockStatus(String name){
+	public BlockStatus(String prefix){
 		try {
-			FileInputStream fis = new FileInputStream(name + ".stat");
+			FileInputStream fis = new FileInputStream(prefix + ".stat");
 			statistics = new Properties();
 			statistics.load(fis);
 			fis.close();
@@ -26,7 +26,11 @@ public class BlockStatus {
 			for(int i = 0 ; i < ends.length; i ++){
 				this.offsets[i] = Integer.parseInt(ends[i]);
 			}
-			block = new File(name + ".dat");
+			//TODO whether offsets are relative or absolute
+			for(int i = ends.length -1 ; i > 0 ; i--){
+				this.offsets[i] = this.offsets[i] - this.offsets[i-1];
+			}
+			block = new File(prefix + ".dat");
 		} catch (IOException e) {
 			throw new FelucaException("status file not found");
 		}
