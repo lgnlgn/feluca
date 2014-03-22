@@ -12,7 +12,7 @@ public class BlockStatus {
 	File block;
 	Properties statistics;
 	int[] offsets;
-	
+	int blockLength;
 	public BlockStatus(String prefix){
 		try {
 			FileInputStream fis = new FileInputStream(prefix + ".stat");
@@ -24,6 +24,7 @@ public class BlockStatus {
 			this.offsets = new int[ends.length];
 			for(int i = 0 ; i < ends.length; i ++){
 				this.offsets[i] = Integer.parseInt(ends[i]);
+				blockLength = this.offsets[i];
 			}
 			//TODO whether offsets are relative or absolute
 			for(int i = ends.length -1 ; i > 0 ; i--){

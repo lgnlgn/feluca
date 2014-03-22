@@ -12,15 +12,16 @@ public class DataBuffer implements Runnable{
 	final static int CACHE_SIZE = 32 * 1024*1024;
 	
 	List<BlockStatus> blocks; 
-
-	int partOfBlock;
+	long dataLength = -1;
+	int offsetIndex; // 
 	
 	byte[] readingCache ;
 	int readingLength;
 	byte[] writingCache;
 	int writingLength;
 	FileInputStream in;
-	int currentBlock;
+	
+	int currentBlock; //block id
 	
 	volatile boolean reading;  //control by reader, the writer need to monitor it
 	volatile boolean writingfinished; // flag for fetching process
@@ -35,6 +36,9 @@ public class DataBuffer implements Runnable{
 		return readingLength;
 	}
 	
+	public synchronized long getDataLength(){
+		return dataLength;
+	}
 	
 	public DataBuffer(String dirName){
 		readingCache = new byte[CACHE_SIZE];
@@ -45,6 +49,13 @@ public class DataBuffer implements Runnable{
 		for(File dat : listFiles){
 			blocks.add(new BlockStatus(dat.getAbsolutePath()
 					.substring(0,dat.getAbsolutePath().length() - 4)));
+		}
+		
+		if (dataLength == -1){
+			dataLength = 0;
+			for(int i = 0 ; i < blocks.size(); i++){
+				dataLength += blocks.get(i).blockLength;
+			}
 		}
 	}
 	
@@ -98,12 +109,12 @@ public class DataBuffer implements Runnable{
 		if (in == null){
 			in = new FileInputStream(getCurrentBlockStatus().block);
 		}
-		System.out.println("---bytes from file");
-		
-		writingLength = in.read(writingCache, 0, getCurrentBlockStatus().offsets[partOfBlock++]);
-		if (partOfBlock >= getCurrentBlockStatus().offsets.length){
+//		System.out.println("---bytes from file");
+		System.out.print("-------from file");
+		writingLength = in.read(writingCache, 0, getCurrentBlockStatus().offsets[offsetIndex++]);
+		if (offsetIndex >= getCurrentBlockStatus().offsets.length){
 			in.close();
-			partOfBlock = 0;
+			offsetIndex = 0;
 			//move to next block
 			currentBlock +=1;
 			if (currentBlock < blocks.size()){
@@ -112,6 +123,7 @@ public class DataBuffer implements Runnable{
 				writingfinished = true;
 			}
 		}
+		System.out.print("-------finished:");
 		written = true;
 		
 	}
@@ -141,6 +153,7 @@ public class DataBuffer implements Runnable{
 			}else{
 				// read some vectors from file to ram each loop, do not switch immediately.  
 				try{
+//					System.out.println("!!!!!");
 					this.fillCache(); 
 				}catch (IOException e) {
 					throw new RuntimeException("IO exception!!!!!!!");
@@ -153,6 +166,7 @@ public class DataBuffer implements Runnable{
 	public static void main(String[] args) throws IOException {
 		DataBuffer db = new DataBuffer("data/aaa");
 		db.start();
+//		System.out.println(db.getDataLength() + "\n");
 		
 		for(byte[] ref = db.getByteArrayRef(); ref != null;ref = db.getByteArrayRef() ){
 			int currentBytesLength = db.getCurrentBytesLength();
