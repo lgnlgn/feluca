@@ -1,4 +1,4 @@
-package org.shanbo.feluca.model;
+package org.shanbo.feluca.distribute.model;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

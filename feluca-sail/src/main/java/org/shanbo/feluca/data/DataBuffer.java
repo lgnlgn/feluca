@@ -22,7 +22,6 @@ public class DataBuffer implements Runnable{
 	FileInputStream in;
 	int currentBlock;
 	
-	
 	volatile boolean reading;  //control by reader, the writer need to monitor it
 	volatile boolean writingfinished; // flag for fetching process
 	volatile boolean finished; //  control by writer, the reader need to monitor it
@@ -100,6 +99,7 @@ public class DataBuffer implements Runnable{
 			in = new FileInputStream(getCurrentBlockStatus().block);
 		}
 		System.out.println("---bytes from file");
+		
 		writingLength = in.read(writingCache, 0, getCurrentBlockStatus().offsets[partOfBlock++]);
 		if (partOfBlock >= getCurrentBlockStatus().offsets.length){
 			in.close();
