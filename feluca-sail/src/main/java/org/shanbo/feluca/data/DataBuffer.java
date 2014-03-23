@@ -15,13 +15,14 @@ public class DataBuffer implements Runnable{
 	long dataLength = -1;
 	int offsetIndex; // 
 	
-	byte[] readingCache ;
+	byte[] readingCache ; 
 	int readingLength;
 	byte[] writingCache;
-	int writingLength;
+	int readLength;
 	FileInputStream in;
 	
 	int currentBlock; //block id
+	int currentAccBlockSize;
 	
 	volatile boolean reading;  //control by reader, the writer need to monitor it
 	volatile boolean writingfinished; // flag for fetching process
@@ -54,7 +55,7 @@ public class DataBuffer implements Runnable{
 		if (dataLength == -1){
 			dataLength = 0;
 			for(int i = 0 ; i < blocks.size(); i++){
-				dataLength += blocks.get(i).blockLength;
+				dataLength += blocks.get(i).getBlockSize();
 			}
 		}
 	}
@@ -94,8 +95,8 @@ public class DataBuffer implements Runnable{
 		readingCache = writingCache;
 		writingCache = tmpCache;
 		
-		readingLength = writingLength;
-		writingLength = 0;
+		readingLength = readLength;
+		readLength = 0;
 		
 		reading = true;      // close for the writer
 		written = false; 
@@ -109,12 +110,12 @@ public class DataBuffer implements Runnable{
 		if (in == null){
 			in = new FileInputStream(getCurrentBlockStatus().block);
 		}
-//		System.out.println("---bytes from file");
 		System.out.print("-------from file");
-		writingLength = in.read(writingCache, 0, getCurrentBlockStatus().offsets[offsetIndex++]);
-		if (offsetIndex >= getCurrentBlockStatus().offsets.length){
+		readLength = in.read(writingCache, 0, writingCache.length);
+		currentAccBlockSize += readLength;
+		if (currentAccBlockSize == blocks.get(currentBlock).getBlockSize()){
 			in.close();
-			offsetIndex = 0;
+			currentAccBlockSize = 0;
 			//move to next block
 			currentBlock +=1;
 			if (currentBlock < blocks.size()){
@@ -153,7 +154,6 @@ public class DataBuffer implements Runnable{
 			}else{
 				// read some vectors from file to ram each loop, do not switch immediately.  
 				try{
-//					System.out.println("!!!!!");
 					this.fillCache(); 
 				}catch (IOException e) {
 					throw new RuntimeException("IO exception!!!!!!!");
@@ -165,6 +165,8 @@ public class DataBuffer implements Runnable{
 	
 	public static void main(String[] args) throws IOException {
 		DataBuffer db = new DataBuffer("data/aaa");
+		System.out.println("\n");
+		long t1 = System.nanoTime();
 		db.start();
 //		System.out.println(db.getDataLength() + "\n");
 		
@@ -173,7 +175,7 @@ public class DataBuffer implements Runnable{
 			System.out.println(currentBytesLength);
 			db.releaseByteArrayRef();
 		}
-		
-		
+		long t2 = System.nanoTime();
+		System.out.println("ms:" + (t2-t1)/1000000);
 	}
 }
