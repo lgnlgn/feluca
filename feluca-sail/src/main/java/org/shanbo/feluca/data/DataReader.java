@@ -10,8 +10,8 @@ public abstract class DataReader {
 	
 	long[] vectorOffsets; //
 
+	int currentVectorIdxOfCache;
 	
-	int numData;
 	
 	protected DataReader(String dataName) {
 		

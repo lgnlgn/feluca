@@ -3,7 +3,6 @@ package org.shanbo.feluca.data;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Properties;
 
 import org.shanbo.feluca.common.FelucaException;

@@ -8,39 +8,41 @@ import java.util.List;
 
 import com.google.common.io.PatternFilenameFilter;
 
+
 public class DataBuffer implements Runnable{
 	final static int CACHE_SIZE = 32 * 1024*1024;
-	
+
 	List<BlockStatus> blocks; 
 	long dataLength = -1;
 	int offsetIndex; // 
-	
+
 	byte[] readingCache ; 
 	int readingLength;
 	byte[] writingCache;
 	int readLength;
 	FileInputStream in;
-	
+
 	int currentBlock; //block id
 	int currentAccBlockSize;
-	
+
 	volatile boolean reading;  //control by reader, the writer need to monitor it
 	volatile boolean writingfinished; // flag for fetching process
 	volatile boolean finished; //  control by writer, the reader need to monitor it
 	boolean written ;
 
+
 	public BlockStatus getCurrentBlockStatus(){
 		return blocks.get(currentBlock);
 	}
-	
+
 	public int getCurrentBytesLength(){
 		return readingLength;
 	}
-	
+
 	public synchronized long getDataLength(){
 		return dataLength;
 	}
-	
+
 	public DataBuffer(String dirName){
 		readingCache = new byte[CACHE_SIZE];
 		writingCache = new byte[CACHE_SIZE];
@@ -51,7 +53,7 @@ public class DataBuffer implements Runnable{
 			blocks.add(new BlockStatus(dat.getAbsolutePath()
 					.substring(0,dat.getAbsolutePath().length() - 4)));
 		}
-		
+
 		if (dataLength == -1){
 			dataLength = 0;
 			for(int i = 0 ; i < blocks.size(); i++){
@@ -59,7 +61,7 @@ public class DataBuffer implements Runnable{
 			}
 		}
 	}
-	
+
 	/**
 	 * call by outside, current 
 	 * @return
@@ -78,14 +80,14 @@ public class DataBuffer implements Runnable{
 			}
 		}
 	}
-	
+
 	/**
 	 * call by outside
 	 */
 	synchronized void releaseByteArrayRef(){
 		reading = false;
 	}
-	
+
 	/**
 	 * only call by 
 	 */
@@ -94,41 +96,42 @@ public class DataBuffer implements Runnable{
 		byte[] tmpCache = readingCache;
 		readingCache = writingCache;
 		writingCache = tmpCache;
-		
+
 		readingLength = readLength;
 		readLength = 0;
-		
+
 		reading = true;      // close for the writer
 		written = false; 
 		if (writingfinished){
 			finished = true;
 		}
- 	}
-	
-	
+	}
+
+
 	private void fillCache() throws IOException{
 		if (in == null){
 			in = new FileInputStream(getCurrentBlockStatus().block);
+			currentAccBlockSize = getCurrentBlockStatus().getBlockSize();
 		}
 		System.out.print("-------from file");
-		readLength = in.read(writingCache, 0, writingCache.length);
-		currentAccBlockSize += readLength;
-		if (currentAccBlockSize == blocks.get(currentBlock).getBlockSize()){
+		readLength = in.read(writingCache, 0, Math.min(writingCache.length,currentAccBlockSize));
+		currentAccBlockSize -= readLength;
+		if (currentAccBlockSize == 0){
 			in.close();
-			currentAccBlockSize = 0;
 			//move to next block
 			currentBlock +=1;
 			if (currentBlock < blocks.size()){
 				in = new FileInputStream(getCurrentBlockStatus().block);
+				currentAccBlockSize = getCurrentBlockStatus().getBlockSize();
 			}else{
 				writingfinished = true;
 			}
 		}
 		System.out.print("-------finished:");
 		written = true;
-		
+
 	}
-	
+
 	public void start() throws IOException{
 		finished = false;
 		written = false;
@@ -139,10 +142,10 @@ public class DataBuffer implements Runnable{
 		t.setDaemon(true);
 		t.start();
 	}
-	
+
 	//TODO
 	public void reset(){
-		
+
 	}
 
 	public void run() {
@@ -162,14 +165,14 @@ public class DataBuffer implements Runnable{
 		}
 		System.out.println("thread finished!");
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		DataBuffer db = new DataBuffer("data/aaa");
-		System.out.println("\n");
+		System.out.println();
 		long t1 = System.nanoTime();
 		db.start();
-//		System.out.println(db.getDataLength() + "\n");
-		
+		//		System.out.println(db.getDataLength() + "\n");
+
 		for(byte[] ref = db.getByteArrayRef(); ref != null;ref = db.getByteArrayRef() ){
 			int currentBytesLength = db.getCurrentBytesLength();
 			System.out.println(currentBytesLength);
