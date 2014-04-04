@@ -23,17 +23,34 @@ public class BlockStatus {
 		} catch (IOException e) {
 			throw new FelucaException("status file not found");
 		}
-		
+
 	}
-	
+
 	public int getBlockSize(){
 		return blockSize;
 	}
-	
+
 	//TODO
 	public int getNumLines(){
 		return 0;
 	}
 
-	
+	public int getValue(String key, int defaultValue){
+		try{
+			return Integer.parseInt(statistics.getProperty(key));
+		}catch (Exception e) {
+			return defaultValue;
+		}
+	}
+
+	public String getValue(String key, String defaultValue){
+
+		if ( statistics.getProperty(key) == null)
+			return defaultValue;
+		else {
+			return  statistics.getProperty(key);
+		}
+
+	}
+
 }
