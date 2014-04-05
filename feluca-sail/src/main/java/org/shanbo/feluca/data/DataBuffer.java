@@ -143,10 +143,6 @@ public class DataBuffer implements Runnable{
 		t.start();
 	}
 
-	//TODO
-	public void reset(){
-
-	}
 
 	public void run() {
 		while(!finished){

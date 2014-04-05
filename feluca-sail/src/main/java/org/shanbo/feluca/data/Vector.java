@@ -11,6 +11,11 @@ import org.shanbo.feluca.data.util.BytesUtil;
 
 import com.google.common.base.Splitter;
 
+/**
+ * general vector format
+ * @author lgn
+ *
+ */
 public abstract class Vector {
 	
 	public enum VectorType{
@@ -22,7 +27,8 @@ public abstract class Vector {
 	int[] ids ;
 	int idSize;
 	VectorType type;
-
+	VectorType outputType;
+	
 	protected Vector(){
 		ids = new int[64 * 1024];
 	}
@@ -49,6 +55,13 @@ public abstract class Vector {
 	 */
 	public abstract void set(byte[] cache, int start, int end);
 	
+	/**
+	 * control the output(serialize) format 
+	 * @param outputType
+	 */
+	public void setOutputType(VectorType outputType){
+		this.outputType = outputType;
+	}
 	
 	public int getSize(){
 		return idSize;
@@ -73,6 +86,7 @@ public abstract class Vector {
 		}
 		return ids[idx];
 	}
+
 	
 	protected float getWeight(int idx){
 		return 0;
@@ -103,9 +117,14 @@ public abstract class Vector {
 		}
 	}
 	
-
 	
 	public static class FIDVector extends Vector{
+		
+		protected FIDVector(){
+			this.type = VectorType.FIDONLY;
+			this.outputType = VectorType.FIDONLY;
+		}
+		
 		@Override
 		public void set(byte[] cache, int start, int end) {
 			int size = (end- start)/4;
@@ -119,9 +138,9 @@ public abstract class Vector {
 
 		@Override
 		public boolean appendToByteBuffer(ByteBuffer buffer) {
-			int capacityNeeds = (idSize << 2) + 4;
+			int capacityNeeds = (idSize * 4) + 4;
 			if (buffer.capacity() - buffer.arrayOffset() > capacityNeeds){
-				buffer.putInt(idSize);
+				buffer.putInt(idSize  * 4);
 				for(int i = 0 ; i < idSize; i++){
 					buffer.putInt(ids[i]);
 				}
@@ -222,7 +241,11 @@ public abstract class Vector {
 	}
 	
 	
-	
+	/**
+	 * decide the analysis way (both serialized and raw_text) for the vector.
+	 * @param type
+	 * @return
+	 */
 	public static Vector build(VectorType type){
 		if (type == VectorType.FIDONLY){
 			return new FIDVector();

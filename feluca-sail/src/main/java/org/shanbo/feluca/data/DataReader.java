@@ -40,7 +40,7 @@ public abstract class DataReader {
 		int currentStart = 0;
 		int i = 0;
 		for(int length = BytesUtil.getInt(inMemData, currentStart); length != 0; currentStart += (length + 4)){
-			long offset = ((long)(currentStart + 4) << 32) | ((long)length);
+			long offset = ((long)(currentStart + 4) << 32) | ((long)(currentStart + 4 + length));
 			vectorOffsets[i++] = offset;
 			if (i > vectorOffsets.length){
 				long[] tmp = new long[vectorOffsets.length + 64 * 1024];
