@@ -3,6 +3,8 @@ package org.shanbo.feluca.data;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.shanbo.feluca.data.Vector.VectorType;
+
 
 public abstract class DataStatistic {
 
@@ -17,23 +19,25 @@ public abstract class DataStatistic {
 	//with id
 	public final static String MAX_VECTOR_ID = "maxVectorId";
 
-
+	VectorType statVectorType;
 	public DataStatistic counter;
 
 	protected DataStatistic(DataStatistic counter){
 		if (counter != null){
 			this.counter = counter;
 		}
-
 	}
 
 	protected abstract void doStat(Vector vector);
 	protected abstract Properties getStatResult();
 
+	
 	public final void stat(Vector vector){
-		if (counter != null)
+		if (counter != null){
 			counter.doStat(vector);
+		}
 		doStat(vector);
+		this.statVectorType = vector.outputType;
 	}
 
 	public String toString(){
@@ -42,10 +46,12 @@ public abstract class DataStatistic {
 			p.putAll( counter.getStatResult());
 		}
 		p.putAll(getStatResult());
+		p.put("vectorType", statVectorType);
 		StringBuilder builder = new StringBuilder();
 		for(Entry<Object, Object> entry : p.entrySet()){
 			builder.append(entry.getKey() + "=" + entry.getValue() + "\n");
 		}
+		
 		return builder.toString();
 	}
 
@@ -99,6 +105,7 @@ public abstract class DataStatistic {
 			p.put("minFeatureId", this.minId);
 			return p;
 		}
+
 		
 	}
 	

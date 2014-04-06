@@ -26,10 +26,10 @@ public abstract class Vector {
 	
 	int[] ids ;
 	int idSize;
-	VectorType type;
-	VectorType outputType;
+	VectorType inputType;
+	VectorType outputType; //
 	
-	protected Vector(){
+	private Vector(){
 		ids = new int[64 * 1024];
 	}
 	
@@ -54,6 +54,8 @@ public abstract class Vector {
 	 * @param end
 	 */
 	public abstract void set(byte[] cache, int start, int end);
+	
+	public abstract String toString();
 	
 	/**
 	 * control the output(serialize) format 
@@ -120,18 +122,18 @@ public abstract class Vector {
 	
 	public static class FIDVector extends Vector{
 		
-		protected FIDVector(){
-			this.type = VectorType.FIDONLY;
+		private FIDVector(){
+			super();
+			this.inputType = VectorType.FIDONLY;
 			this.outputType = VectorType.FIDONLY;
 		}
 		
 		@Override
 		public void set(byte[] cache, int start, int end) {
-			int size = (end- start)/4;
-			for(int i = 0 ; i < size; i+= 4){
-				int id = BytesUtil.getInt(cache, start + i);
-				ids[i >> 2] = id;
-				idSize += 1;
+			idSize = (end- start)/4;
+			for(int i = 0 ; i < idSize; ++i){
+				int id = BytesUtil.getInt(cache, start + (i << 2));
+				ids[i] = id;
 				checkAndExpand();
 			}
 		}
@@ -173,6 +175,12 @@ public abstract class Vector {
 	public static class LWVector extends Vector{
 		int label;
 		float[] weights;
+		
+		private LWVector(){
+			super();
+			this.inputType = VectorType.LABEL_FID_WEIGHT;
+			this.outputType = VectorType.LABEL_FID_WEIGHT;
+		}
 		
 		@Override
 		public boolean appendToByteBuffer(ByteBuffer buffer) {

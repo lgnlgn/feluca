@@ -113,7 +113,7 @@ public class DataBuffer implements Runnable{
 			in = new FileInputStream(getCurrentBlockStatus().block);
 			currentAccBlockSize = getCurrentBlockStatus().getBlockSize();
 		}
-		System.out.print("-------from file");
+//		System.out.print("-------from file");
 		readLength = in.read(writingCache, 0, Math.min(writingCache.length,currentAccBlockSize));
 		currentAccBlockSize -= readLength;
 		if (currentAccBlockSize == 0){
@@ -127,7 +127,7 @@ public class DataBuffer implements Runnable{
 				writingfinished = true;
 			}
 		}
-		System.out.print("-------finished:");
+//		System.out.print("-------finished:");
 		written = true;
 
 	}
@@ -163,7 +163,7 @@ public class DataBuffer implements Runnable{
 	}
 
 	public static void main(String[] args) throws IOException {
-		DataBuffer db = new DataBuffer("data/aaa");
+		DataBuffer db = new DataBuffer("data/mush");
 		System.out.println();
 		long t1 = System.nanoTime();
 		db.start();
@@ -174,6 +174,7 @@ public class DataBuffer implements Runnable{
 			System.out.println(currentBytesLength);
 			db.releaseByteArrayRef();
 		}
+		
 		long t2 = System.nanoTime();
 		System.out.println("ms:" + (t2-t1)/1000000);
 	}

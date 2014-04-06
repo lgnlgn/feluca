@@ -13,13 +13,13 @@ public class BlockStatus {
 	int blockSize;
 	public BlockStatus(String prefix){
 		try {
-			FileInputStream fis = new FileInputStream(prefix + ".stat");
+			FileInputStream fis = new FileInputStream(prefix + ".sta");
 			statistics = new Properties();
 			statistics.load(fis);
 			fis.close();
-			blockSize = Integer.parseInt(statistics.getProperty("blockSize"));
-
+//			blockSize = Integer.parseInt(statistics.getProperty("blockSize"));
 			block = new File(prefix + ".dat");
+			blockSize = (int)block.length();
 		} catch (IOException e) {
 			throw new FelucaException("status file not found");
 		}
