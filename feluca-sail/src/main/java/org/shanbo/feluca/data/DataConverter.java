@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.shanbo.feluca.data.Vector.VectorType;
+import org.shanbo.feluca.data.DataStatistic.LableWeightStatistic;
+import org.shanbo.feluca.data.DataStatistic.BasicStatistic;
 
 import com.google.common.io.Closeables;
 
@@ -26,14 +28,10 @@ public class DataConverter {
 	
 	public DataConverter(String inFile) throws FileNotFoundException{
 		rawDataReader = new BufferedReader(new FileReader(inFile));
+		buffer = ByteBuffer.wrap(new byte[32 * 1024 * 1024]);
 	}
 	
-	/**
-	 * convert fim data format
-	 * @param outDir
-	 * @throws IOException
-	 */
-	public void convertFID2FID(String outDir) throws IOException{
+	private void generalConverting(String outDir, VectorType inputType, VectorType outpuType, DataStatistic statistic) throws FileNotFoundException, IOException{
 		File dir = new File(outDir);
 		if (dir.isFile()){
 			dir.delete();
@@ -42,42 +40,43 @@ public class DataConverter {
 			dir.mkdir();
 		}
 		String dataName = dir.getName();
-		vector = Vector.build(VectorType.FIDONLY);
-		vector.setOutputType(VectorType.FIDONLY);
-		buffer = ByteBuffer.wrap(new byte[32 * 1024 * 1024]);
-		int blockId = 0;
-		int partOfBlock = 2; // trim to size when this > 1;
-		DataStatistic statistic = new DataStatistic.BasicStatistic();
-		
+		vector = Vector.build(inputType);
+		vector.setOutputType(outpuType);
+
+		int blockId = 1;
+		int partOfBlock = 0; // trim to size when this > 1;
+	
 		statWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_1.sta"));
 		out = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_1.dat" ));
-
+		int count = 0;
 		for(String line = rawDataReader.readLine(); line != null ; line = rawDataReader.readLine()){
 			vector.parseLine(line);
+			count ++;
 			statistic.stat(vector);
 			boolean success = vector.appendToByteBuffer(buffer);
 			if (success == false){
-				if (partOfBlock >= 2){
-					statWriter.write(statistic.toString()); //finish stat of this block
-					Closeables.close(out, true); //close old and open a new
-					Closeables.close(statWriter, false);
-					blockId += 1;
-					out = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".dat" ));
-					statWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".sta"));
-					partOfBlock = 0;
-				}
 				for(;  buffer.position() < buffer.capacity(); ){
 					buffer.putInt(0);
 				}
 				out.write(buffer.array());
 				buffer.clear();
 				partOfBlock += 1;
+				if (partOfBlock >= 2){
+					System.out.println(count);
+					statWriter.write(statistic.toString()); //finish stat of this block
+					statistic.clearStat();
+					Closeables.close(out, true); //close old and open a new
+					Closeables.close(statWriter, false);
+					blockId += 1;
+					out = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".dat" ));
+					statWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".sta"));
+					partOfBlock = 0;
+					//re-filling
+					vector.appendToByteBuffer(buffer);
+				}
 			}
 		}
-		
-//		System.out.println(buffer.position());
-//		System.out.println(buffer.arrayOffset());
-//		System.out.println(buffer.capacity());
+		System.out.println(count);
 		//end of 
 		out.write(buffer.array(), 0, buffer.position());
 		statWriter.write(statistic.toString());
@@ -86,6 +85,19 @@ public class DataConverter {
 		Closeables.close(rawDataReader, true);
 		Closeables.close(statWriter, true);
 	}
-
 	
+	
+	/**
+	 * convert fim data format
+	 * @param outDir
+	 * @throws IOException
+	 */
+	public void convertFID2FID(String outDir) throws IOException{
+		generalConverting(outDir, VectorType.FIDONLY, VectorType.FIDONLY, new BasicStatistic());
+	}
+
+	public void convertLW2LW(String outDir) throws IOException{
+		generalConverting(outDir, VectorType.LABEL_FID_WEIGHT, VectorType.LABEL_FID_WEIGHT, new LableWeightStatistic(new BasicStatistic()));
+	}
+		
 }

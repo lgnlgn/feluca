@@ -12,7 +12,7 @@ import org.shanbo.feluca.data.util.BytesUtil;
 import com.google.common.base.Splitter;
 
 /**
- * general vector format
+ * general vector format. Vector needs only initialize once
  * @author lgn
  *
  */
@@ -24,6 +24,8 @@ public abstract class Vector {
 		VID_FID_WEIGHT,
 	}
 	
+	public final static int LENGTH_PER_EXPANTION = 128 * 1024;
+	
 	int[] ids ;
 	int idSize;
 	VectorType inputType;
@@ -34,14 +36,14 @@ public abstract class Vector {
 	}
 	
 	/**
-	 * 
+	 * object serialize to bytes
 	 * @param buffer
 	 * @return
 	 */
 	public abstract boolean appendToByteBuffer(ByteBuffer buffer);
 	
 	/**
-	 * should be synchronized
+	 * should be synchronized. raw text to object
 	 * @param line
 	 * @return
 	 */
@@ -49,6 +51,7 @@ public abstract class Vector {
 	
 	/**
 	 * exclude offset length . e.g. (end - start)
+	 * deserialization from bytes
 	 * @param cache
 	 * @param start
 	 * @param end
@@ -56,6 +59,11 @@ public abstract class Vector {
 	public abstract void set(byte[] cache, int start, int end);
 	
 	public abstract String toString();
+	
+	/**
+	 * you have to manually expand capacity of the arrays.  
+	 */
+	abstract void checkAndExpand();
 	
 	/**
 	 * control the output(serialize) format 
@@ -111,13 +119,7 @@ public abstract class Vector {
 	}
 	
 	
-	protected void checkAndExpand(){
-		if (idSize >= ids.length){
-			int[] tmp = new int[idSize + 128 * 1024];
-			System.arraycopy(ids, 0, tmp, 0, idSize);
-			ids = tmp;
-		}
-	}
+
 	
 	
 	public static class FIDVector extends Vector{
@@ -161,7 +163,7 @@ public abstract class Vector {
 		}
 
 		@Override
-		public boolean parseLine(String line) {
+		public synchronized boolean parseLine(String line) {
 			String[] iids = line.split("\\s+");
 			idSize = iids.length;
 			for(int i =0; i < idSize; i++){
@@ -170,6 +172,13 @@ public abstract class Vector {
 			return true;
 		}
 		
+		final void checkAndExpand(){
+			if (idSize >= ids.length){
+				int[] tmp = new int[idSize + LENGTH_PER_EXPANTION];
+				System.arraycopy(ids, 0, tmp, 0, idSize);
+				ids = tmp;
+			}
+		}
 	}
 	
 	public static class LWVector extends Vector{
@@ -178,14 +187,25 @@ public abstract class Vector {
 		
 		private LWVector(){
 			super();
+			weights = new float[ids.length];
 			this.inputType = VectorType.LABEL_FID_WEIGHT;
 			this.outputType = VectorType.LABEL_FID_WEIGHT;
 		}
 		
 		@Override
 		public boolean appendToByteBuffer(ByteBuffer buffer) {
-			// TODO Auto-generated method stub
-			return false;
+			int capacityNeeds = 4 + 4+ (idSize  << 3) ; //(veclenght) + (label) + (kv pairs) each kv-pair occupy 8 bytes
+			if (buffer.capacity() - buffer.position() > capacityNeeds){
+				buffer.putInt(capacityNeeds - 4);
+				buffer.putInt(label);
+				for(int i = 0 ; i < idSize; i++){
+					buffer.putInt(ids[i]);
+					buffer.putFloat(weights[i]);
+				}
+				return true;
+			}else{
+				return false;
+			}
 		}
 
 		@Override
@@ -193,31 +213,32 @@ public abstract class Vector {
 			return weights[idx];
 		}
 		
+		/**
+		 * represent classifier label
+		 */
 		public int getIntHeader(){
 			return label;
 		}
 		
 		@Override
 		public void set(byte[] cache, int start, int end) {
-			
+			idSize  = (end- start - 4)/8; // include the 4-bytes header 
 			label = BytesUtil.getInt(cache, start);
-			int size = (end- start - 4)/8;
-			for(int i = 0 ; i < size; i+= 8){
-				int id = BytesUtil.getInt(cache, start + i);
-				float weight = BytesUtil.getFloat(cache, start + i + 4);
-				ids[i >> 3] = id;
-				weights[i>>3] = weight;
-				idSize += 1;
+			for(int i = 0 ; i < idSize; i++){
+				int id = BytesUtil.getInt(cache, start + 4 + (i <<3 ));
+				float weight = BytesUtil.getFloat(cache, start + 8 + (i <<3 ));
+				ids[i] = id;
+				weights[i] = weight;
 				checkAndExpand();
 			}
 		}
 		
-		final protected void checkAndExpand(){
+		final void checkAndExpand(){
 			if (idSize >= ids.length){
-				int[] tmp = new int[idSize + 128 * 1024];
+				int[] tmp = new int[idSize + LENGTH_PER_EXPANTION];
 				System.arraycopy(ids, 0, tmp, 0, idSize);
 				ids = tmp;
-				float[] tmp2 = new float[idSize + 128*1024];
+				float[] tmp2 = new float[idSize + LENGTH_PER_EXPANTION];
 				System.arraycopy(weights, 0, tmp2, 0, idSize);
 				weights = tmp2;
 			}
@@ -235,7 +256,7 @@ public abstract class Vector {
 		public boolean parseLine(String line) {
 			String[] labelIds = line.split("\\s+", 2);
 			this.label = Integer.parseInt(labelIds[0]);
-			Map<String, String> split = Splitter.onPattern("\\s+").withKeyValueSeparator(":").split(labelIds[1]);
+			Map<String, String> split = Splitter.onPattern("\\s+").withKeyValueSeparator(":").split(labelIds[1].trim());
 			int i = 0;
 			for(Entry<String, String> kv : split.entrySet()){
 				ids[i] = Integer.parseInt(kv.getKey());
