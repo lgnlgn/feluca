@@ -2,6 +2,7 @@ package org.shanbo.feluca.data.convert;
 
 import java.util.Map.Entry;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,8 +53,8 @@ public abstract class DataStatistic {
 		}
 		clear();
 	}
-	
 
+	
 	public String toString(){
 		Properties p = new Properties();
 		if (counter != null){

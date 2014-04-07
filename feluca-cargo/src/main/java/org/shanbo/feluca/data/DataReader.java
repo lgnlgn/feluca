@@ -6,6 +6,11 @@ import org.shanbo.feluca.data.Vector.VectorType;
 import org.shanbo.feluca.data.util.BytesUtil;
 import org.shanbo.feluca.data.util.CollectionUtil;
 
+/**
+ * General vector reader. use {@link #createDataReader(boolean, String)} to fetch an instance
+ * @author lgn
+ *
+ */
 public abstract class DataReader {
 	byte[] inMemData; //a global data set of just a cache reference 
 	
@@ -14,7 +19,7 @@ public abstract class DataReader {
 	Vector vector;
 	String dirName;
 	
-	protected long getOffsetsByIdx(int index){
+	public long getOffsetsByIdx(int index){
 		if (index < 0 ||  index >= offsetSize){
 			throw new RuntimeException("offsets index out of range", new IndexOutOfBoundsException());
 		}else{

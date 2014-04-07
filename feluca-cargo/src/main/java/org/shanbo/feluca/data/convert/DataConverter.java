@@ -23,8 +23,9 @@ public class DataConverter {
 	
 	Vector vector;
 	
-	BufferedOutputStream out;
-	BufferedWriter statWriter;
+	BufferedOutputStream dataOutput;
+	BufferedWriter blockStatWriter;
+	BufferedWriter globalStatWriter;
 	BufferedReader rawDataReader;
 	
 	public DataConverter(String inFile) throws FileNotFoundException{
@@ -32,7 +33,7 @@ public class DataConverter {
 		buffer = ByteBuffer.wrap(new byte[32 * 1024 * 1024]);
 	}
 	
-	private void generalConverting(String outDir, VectorType inputType, VectorType outpuType, DataStatistic statistic) throws FileNotFoundException, IOException{
+	private void generalConverting(String outDir, VectorType inputType, VectorType outpuType, DataStatistic blockStat, DataStatistic globalStat) throws FileNotFoundException, IOException{
 		File dir = new File(outDir);
 		if (dir.isFile()){
 			dir.delete();
@@ -47,44 +48,53 @@ public class DataConverter {
 		int blockId = 1;
 		int partOfBlock = 0; // trim to size when this > 1;
 	
-		statWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_1.sta"));
-		out = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_1.dat" ));
+		
+		
+		blockStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_1.sta"));
+		globalStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + ".sta"));
+		dataOutput = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_1.dat" ));
 		int count = 0;
 		for(String line = rawDataReader.readLine(); line != null ; line = rawDataReader.readLine()){
 			vector.parseLine(line);
+			globalStat.stat(vector);
 			count ++;
-			statistic.stat(vector);
 			boolean success = vector.appendToByteBuffer(buffer);
 			if (success == false){
 				for(;  buffer.position() < buffer.capacity(); ){
 					buffer.putInt(0);
 				}
-				out.write(buffer.array());
+				dataOutput.write(buffer.array());
 				buffer.clear();
 				partOfBlock += 1;
 				if (partOfBlock >= 2){
 					System.out.println(count);
-					statWriter.write(statistic.toString()); //finish stat of this block
-					statistic.clearStat();
-					Closeables.close(out, true); //close old and open a new
-					Closeables.close(statWriter, false);
+					blockStatWriter.write(blockStat.toString()); //finish stat of this block
+					blockStat.clearStat();
+					Closeables.close(dataOutput, true); //close old and open a new
+					Closeables.close(blockStatWriter, false);
 					blockId += 1;
-					out = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".dat" ));
-					statWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".sta"));
+					dataOutput = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".dat" ));
+					blockStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".sta"));
 					partOfBlock = 0;
 					//re-filling
 					vector.appendToByteBuffer(buffer);
+					blockStat.stat(vector);
 				}
+			}else{
+				blockStat.stat(vector);
 			}
+			
 		}
 		System.out.println(count);
 		//end of 
-		out.write(buffer.array(), 0, buffer.position());
-		statWriter.write(statistic.toString());
+		dataOutput.write(buffer.array(), 0, buffer.position());
+		blockStatWriter.write(blockStat.toString());
+		globalStatWriter.write(globalStat.toString());
 		
-		Closeables.close(out, true);
+		Closeables.close(dataOutput, true);
 		Closeables.close(rawDataReader, true);
-		Closeables.close(statWriter, true);
+		Closeables.close(blockStatWriter, true);
+		Closeables.close(globalStatWriter, true);
 	}
 	
 	
@@ -94,11 +104,13 @@ public class DataConverter {
 	 * @throws IOException
 	 */
 	public void convertFID2FID(String outDir) throws IOException{
-		generalConverting(outDir, VectorType.FIDONLY, VectorType.FIDONLY, new BasicStatistic());
+		generalConverting(outDir, VectorType.FIDONLY, VectorType.FIDONLY, 
+				new BasicStatistic(),new BasicStatistic());
 	}
 
 	public void convertLW2LW(String outDir) throws IOException{
-		generalConverting(outDir, VectorType.LABEL_FID_WEIGHT, VectorType.LABEL_FID_WEIGHT, new LableWeightStatistic(new BasicStatistic()));
+		generalConverting(outDir, VectorType.LABEL_FID_WEIGHT, VectorType.LABEL_FID_WEIGHT, 
+				new LableWeightStatistic(new BasicStatistic()),  new LableWeightStatistic(new BasicStatistic()));
 	}
 		
 }

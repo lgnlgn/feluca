@@ -43,6 +43,8 @@ public class DataBuffer implements Runnable{
 		return dataLength;
 	}
 
+
+	
 	public DataBuffer(String dirName){
 		readingCache = new byte[CACHE_SIZE];
 		writingCache = new byte[CACHE_SIZE];
@@ -63,7 +65,7 @@ public class DataBuffer implements Runnable{
 	}
 
 	/**
-	 * call by outside, current 
+	 * call by  {@link DataReader}
 	 * @return
 	 */
 	synchronized byte[] getByteArrayRef(){
@@ -82,17 +84,14 @@ public class DataBuffer implements Runnable{
 	}
 
 	/**
-	 * call by outside
+	 * call by {@link DataReader}
 	 */
 	synchronized void releaseByteArrayRef(){
 		reading = false;
 	}
 
-	/**
-	 * only call by 
-	 */
+
 	private void switchCache(){
-		//TODO
 		byte[] tmpCache = readingCache;
 		readingCache = writingCache;
 		writingCache = tmpCache;
