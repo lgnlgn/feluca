@@ -2,6 +2,7 @@ package org.shanbo.feluca.distribute.model;
 
 import org.shanbo.feluca.data.DataReader;
 
+
 public class AlgorithmBase{
 	
 	ModelClient modelClient;
