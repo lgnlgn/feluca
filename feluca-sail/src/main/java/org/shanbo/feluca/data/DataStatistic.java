@@ -14,7 +14,9 @@ public abstract class DataStatistic {
 	public final static String NUM_VECTORS = "numVectors";
 	public final static String MAX_FEATURE_ID = "maxFeatureId";
 	public final static String TOTAL_FEATURES = "totalFeatures";
+	public final static String MAX_VECTORSIZE = "maxVectorSize";
 
+	
 	//with weight
 	public final static String SUM_WEIGHTS = "sumWeights";
 	public final static String LABEL_INFO = "labelInfo";
@@ -70,7 +72,8 @@ public abstract class DataStatistic {
 		int numVectors = 0;
 		int totalFeatures = 0;
 		int maxFeatureId = 0;
-
+		int maxVectorSize = 1;
+		
 		public BasicStatistic() {
 			super(null);
 			clear();
@@ -80,6 +83,7 @@ public abstract class DataStatistic {
 		protected void doStat(Vector vector) {
 			numVectors += 1;
 			totalFeatures += vector.getSize();
+			maxVectorSize = vector.getSize() > maxVectorSize ? vector.getSize(): maxVectorSize;
 			for(int i = 0 ; i < vector.getSize(); i++){
 				maxFeatureId = vector.getFId(i) > maxFeatureId ?vector.getFId(i):maxFeatureId ;
 			}
@@ -91,6 +95,7 @@ public abstract class DataStatistic {
 			p.put(NUM_VECTORS, this.numVectors);
 			p.put(MAX_FEATURE_ID, this.maxFeatureId);
 			p.put(TOTAL_FEATURES, this.totalFeatures);
+			p.put(MAX_VECTORSIZE, this.maxVectorSize);
 			return p;
 		}
 
