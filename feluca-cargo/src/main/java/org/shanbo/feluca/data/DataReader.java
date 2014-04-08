@@ -99,11 +99,9 @@ public abstract class DataReader {
 	}
 	
 	public static class FSCacheDataReader extends DataReader{
-		
-		
-		long[] currentOffsets;
+
 		DataBuffer fileBuffer;
-		
+
 		int vectorIdxOfCurrentCache;
 		
 		private FSCacheDataReader(String dataName) throws IOException {

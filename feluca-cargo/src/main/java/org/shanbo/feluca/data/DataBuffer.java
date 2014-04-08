@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import com.google.common.io.PatternFilenameFilter;
 
@@ -12,6 +13,7 @@ import com.google.common.io.PatternFilenameFilter;
 public class DataBuffer implements Runnable{
 	final static int CACHE_SIZE = 32 * 1024*1024;
 
+	Properties globalStatus;
 	List<BlockStatus> blocks; 
 	long dataLength = -1;
 	int offsetIndex; // 
@@ -43,7 +45,11 @@ public class DataBuffer implements Runnable{
 		return dataLength;
 	}
 
-
+	public String getGlobalValue(String key){
+		if (globalStatus == null)
+			return null;
+		return globalStatus.getProperty(key);
+	}
 	
 	public DataBuffer(String dirName){
 		readingCache = new byte[CACHE_SIZE];
@@ -60,6 +66,17 @@ public class DataBuffer implements Runnable{
 			dataLength = 0;
 			for(int i = 0 ; i < blocks.size(); i++){
 				dataLength += blocks.get(i).getBlockSize();
+			}
+		}
+		
+		File globalStatusFile = new File(dirName +"/" + dirName + ".sta");
+		
+		if (globalStatusFile.isFile()){
+			try{
+				FileInputStream fis = new FileInputStream(globalStatusFile);
+				globalStatus.load(fis);
+				fis.close();
+			}catch (Exception e) {
 			}
 		}
 	}
