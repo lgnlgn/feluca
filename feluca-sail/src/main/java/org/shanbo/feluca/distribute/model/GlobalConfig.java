@@ -15,6 +15,18 @@ public class GlobalConfig {
 		return allConfigs.length;
 	}
 	
+	public GlobalConfig(String json){
+		JSONObject tmp = JSONObject.parseObject(json);
+		int i = 0;
+		ipMap = new HashMap<String, JSONObject>();
+		allConfigs = new JSONObject[tmp.size()];
+		for(String keyString : tmp.keySet()){
+			ipMap.put(keyString, tmp.getJSONObject(keyString));
+			allConfigs[i++] = tmp.getJSONObject(keyString);
+		}
+	}
+	
+	
 	/**
 	 * 0 to size-1
 	 * @param index

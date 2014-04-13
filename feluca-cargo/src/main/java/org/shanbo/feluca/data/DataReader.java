@@ -61,13 +61,7 @@ public abstract class DataReader {
 		offsetSize = i;
 	}
 
-	
-	
-	public void shuffle(){
-		CollectionUtil.shuffle(vectorOffsets, 0, offsetSize);
-	}
-	
-	
+
 	public static DataReader createDataReader(boolean inRAM, String dataName) throws IOException{
 		if (inRAM){
 			return new RAMDataReader(dataName);
