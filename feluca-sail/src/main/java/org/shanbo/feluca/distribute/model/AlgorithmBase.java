@@ -1,6 +1,7 @@
 package org.shanbo.feluca.distribute.model;
 
 import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -37,18 +38,27 @@ public class AlgorithmBase{
 		
 	}
 	
+	public static void distinct(TIntHashSet idSet, Vector v){
+		for(int i = 0; i < v.getSize(); i ++){
+			idSet.add(v.getFId(i));
+		}
+	}
+	
+	
 	public void runAlgorithm(){
 		Integer loops = algoConf.getInteger(Constants.Algorithm.LOOPS);
 		if (loops == null)
 			loops = 10;
 		for(int i = 0 ; i < loops;i++){
 			int batchCurrent = 0;
+			TIntHashSet idSet = new TIntHashSet();
 			while(dataInput.hasNext()){
-				TIntIntHashMap countingMap = new TIntIntHashMap();
+				
 				long[] offsetArray = dataInput.getOffsetArray();
 				 
 				for(int o = 0 ; o < offsetArray.length; o++){
 					Vector v = dataInput.getVectorByOffset(offsetArray[o]);
+					distinct(idSet, v);
 				}
 			}
 		}
