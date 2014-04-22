@@ -5,6 +5,8 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.data.DataReader;
@@ -22,10 +24,21 @@ public class AlgorithmBase{
 	DataReader dataInput;
 	GlobalConfig conf;
 	JSONObject algoConf;
+	
+	public static class IndexOffset{
+		int start;
+		int end;
+		public IndexOffset(int start, int end){
+			this.start = start;
+			this.end = end;
+		}
+	}
+	
 	public AlgorithmBase(GlobalConfig conf) throws UnknownHostException{
 		this.conf = conf;
 		this.algoConf = conf.getConfigByNodeAddress(NetworkUtils.getIPv4Localhost().toString());
 	}
+	
 	
 	
 	public void init() throws IOException{
@@ -44,21 +57,34 @@ public class AlgorithmBase{
 		}
 	}
 	
+	static List<IndexOffset> partition(int arrayLength, int partitions){
+		int per = arrayLength / partitions;
+		List<IndexOffset> result = new ArrayList<AlgorithmBase.IndexOffset>();
+		int i = 0 ;
+		for(; i < partitions -1 ; i++){
+			result.add(new IndexOffset(per*i, per * (i+1)));
+		}
+		result.add(new IndexOffset(i * per, arrayLength));
+		return result;
+	}
+	
 	
 	public void runAlgorithm(){
 		Integer loops = algoConf.getInteger(Constants.Algorithm.LOOPS);
 		if (loops == null)
 			loops = 10;
 		for(int i = 0 ; i < loops;i++){
-			int batchCurrent = 0;
 			TIntHashSet idSet = new TIntHashSet();
 			while(dataInput.hasNext()){
 				
 				long[] offsetArray = dataInput.getOffsetArray();
-				 
-				for(int o = 0 ; o < offsetArray.length; o++){
-					Vector v = dataInput.getVectorByOffset(offsetArray[o]);
-					distinct(idSet, v);
+				List<IndexOffset> offsets = partition(offsetArray.length, 100);
+				for(IndexOffset indexOffset : offsets){
+					for(int o = indexOffset.start ; o < indexOffset.end; o++){
+						Vector v = dataInput.getVectorByOffset(offsetArray[o]);
+						distinct(idSet, v);
+					}
+					//TODO 
 				}
 			}
 		}
