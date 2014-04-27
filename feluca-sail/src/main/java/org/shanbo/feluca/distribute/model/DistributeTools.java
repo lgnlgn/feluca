@@ -85,6 +85,11 @@ public class DistributeTools {
 		request("/fetch");
 	}
 	
+	/**
+	 * send update request to remote 
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	public void updateModel() throws InterruptedException, ExecutionException{
 		request("/update");
 	}

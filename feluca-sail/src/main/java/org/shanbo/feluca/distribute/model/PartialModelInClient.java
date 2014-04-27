@@ -8,6 +8,11 @@ import org.shanbo.feluca.common.FelucaException;
 import gnu.trove.iterator.TIntFloatIterator;
 import gnu.trove.map.hash.TIntFloatHashMap;
 
+/**
+ * model 
+ * @author lgn
+ *
+ */
 public class PartialModelInClient {
 
 	final static int MODEL_CLEAR_INTERVAL = 4;
@@ -23,7 +28,11 @@ public class PartialModelInClient {
 	
 
 
-	
+	/**
+	 * ids  to BytesPark  according to partitioner
+	 * @param ids
+	 * @param bytesParks
+	 */
 	public void partitionQueryIds(int[] ids, BytesPark[] bytesParks){
 		for(int i = 0 ; i < ids.length; i++){
 			int allocate = partitioner.decidePartition(ids[i]);

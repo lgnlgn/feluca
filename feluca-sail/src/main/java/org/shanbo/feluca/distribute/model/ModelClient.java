@@ -17,6 +17,12 @@ public class ModelClient {
 		rpc = new DistributeTools(conf);
 	}
 	
+	/**
+	 * update model to remote , needs partition model by ids according to partitioner
+	 * @param ids
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	public void updateModel(int ids[]) throws InterruptedException, ExecutionException{
 		for(int i = 0 ; i < rpc.caches.length; i++){
 			rpc.caches[i].clear();
@@ -25,6 +31,12 @@ public class ModelClient {
 		rpc.updateModel();
 	}
 	
+	/**
+	 * fetchModelBack by ids
+	 * @param ids
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	public void fetchModel(int ids[]) throws InterruptedException, ExecutionException{
 		for(int i = 0 ; i < rpc.caches.length; i++){
 			rpc.caches[i].clear();

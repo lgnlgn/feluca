@@ -1,22 +1,28 @@
 package org.shanbo.feluca.distribute.model;
 
-import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.data.DataReader;
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.util.NetworkUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 
-
+/**
+ * LR
+ * @author lgn
+ *
+ */
 public class AlgorithmBase{
+	
+	static Logger log = LoggerFactory.getLogger(AlgorithmBase.class);
 	
 	ModelClient modelClient;
 	ModelServer modelServer;
@@ -59,6 +65,10 @@ public class AlgorithmBase{
 	
 	static List<IndexOffset> partition(int arrayLength, int partitions){
 		int per = arrayLength / partitions;
+		if (per < 100){
+			per  = 100;
+			partitions = arrayLength/ per ;
+		}
 		List<IndexOffset> result = new ArrayList<AlgorithmBase.IndexOffset>();
 		int i = 0 ;
 		for(; i < partitions -1 ; i++){
@@ -66,6 +76,10 @@ public class AlgorithmBase{
 		}
 		result.add(new IndexOffset(i * per, arrayLength));
 		return result;
+	}
+	
+	protected void compute(Vector v){
+		
 	}
 	
 	
@@ -76,15 +90,29 @@ public class AlgorithmBase{
 		for(int i = 0 ; i < loops;i++){
 			TIntHashSet idSet = new TIntHashSet();
 			while(dataInput.hasNext()){
-				
 				long[] offsetArray = dataInput.getOffsetArray();
 				List<IndexOffset> offsets = partition(offsetArray.length, 100);
-				for(IndexOffset indexOffset : offsets){
+				for(IndexOffset indexOffset : offsets){ 
+					//batch processing
 					for(int o = indexOffset.start ; o < indexOffset.end; o++){
 						Vector v = dataInput.getVectorByOffset(offsetArray[o]);
 						distinct(idSet, v);
 					}
-					//TODO 
+					int[] ids = idSet.toArray();
+					try {
+						modelClient.fetchModel(ids);
+					} catch (Exception e) {
+						log.error("", e);
+					} 
+					for(int o = indexOffset.start ; o < indexOffset.end; o++){
+						Vector v = dataInput.getVectorByOffset(offsetArray[o]);
+						compute(v);//do computation
+					}
+					try {
+						modelClient.updateModel(ids);
+					} catch (Exception e) {
+						log.error("", e);
+					}
 				}
 			}
 		}
