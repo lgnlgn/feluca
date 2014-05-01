@@ -198,7 +198,7 @@ public abstract class Vector {
 		
 		@Override
 		public boolean appendToByteBuffer(ByteBuffer buffer) {
-			int capacityNeeds = 4 + 4+ (idSize  << 3) ; //(veclenght) + (label) + (kv pairs) each kv-pair occupy 8 bytes
+			int capacityNeeds = 4 + 4 + (idSize  << 3) ; //(veclenght) + (label) + (kv pairs) each kv-pair occupy 8 bytes
 			if (buffer.capacity() - buffer.position() > capacityNeeds){
 				buffer.putInt(capacityNeeds - 4);
 				buffer.putInt(label);
@@ -226,11 +226,12 @@ public abstract class Vector {
 		
 		@Override
 		public void set(byte[] cache, int start, int end) {
-			idSize  = (end- start - 4)/8; // include the 4-bytes header 
 			label = BytesUtil.getInt(cache, start);
+			idSize  = (end - start - 4)/8; // include the 4-bytes header 
+			int fStart = start + 4; // label
 			for(int i = 0 ; i < idSize; i++){
-				int id = BytesUtil.getInt(cache, start + 4 + (i <<3 ));
-				float weight = BytesUtil.getFloat(cache, start + 8 + (i <<3 ));
+				int id = BytesUtil.getInt(cache, fStart + ( i << 3 ));
+				float weight = BytesUtil.getFloat(cache, fStart + 4 + (i <<3 ));
 				ids[i] = id;
 				weights[i] = weight;
 				checkAndExpand();

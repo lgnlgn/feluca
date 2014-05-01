@@ -21,16 +21,16 @@ import com.alibaba.fastjson.JSONObject;
  *
  */
 public class AlgorithmBase{
-	
+
 	static Logger log = LoggerFactory.getLogger(AlgorithmBase.class);
-	
-	ModelClient modelClient;
-	ModelServer modelServer;
-	
+
+	protected ModelClient modelClient;
+	protected ModelServer modelServer;
+
 	DataReader dataInput;
-	GlobalConfig conf;
-	JSONObject algoConf;
-	
+	protected GlobalConfig conf;
+	protected JSONObject algoConf;
+
 	public static class IndexOffset{
 		int start;
 		int end;
@@ -39,30 +39,30 @@ public class AlgorithmBase{
 			this.end = end;
 		}
 	}
-	
+
 	public AlgorithmBase(GlobalConfig conf) throws UnknownHostException{
 		this.conf = conf;
 		this.algoConf = conf.getConfigByNodeAddress(NetworkUtils.getIPv4Localhost().toString());
 	}
-	
-	
-	
+
+
+
 	public void init() throws IOException{
 		dataInput = DataReader.createDataReader(false,Constants.Base.DATA_DIR + "/" +this.algoConf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
 		modelClient = new ModelClient(conf);
 		modelServer = new ModelServer();
 	}
-	
+
 	public void close(){
-		
+
 	}
-	
+
 	public static void distinct(TIntHashSet idSet, Vector v){
 		for(int i = 0; i < v.getSize(); i ++){
 			idSet.add(v.getFId(i));
 		}
 	}
-	
+
 	static List<IndexOffset> partition(int arrayLength, int partitions){
 		int per = arrayLength / partitions;
 		if (per < 100){
@@ -77,12 +77,15 @@ public class AlgorithmBase{
 		result.add(new IndexOffset(i * per, arrayLength));
 		return result;
 	}
-	
+
+
+
 	protected void compute(Vector v){
-		
+
+
 	}
-	
-	
+
+
 	public void runAlgorithm(){
 		Integer loops = algoConf.getInteger(Constants.Algorithm.LOOPS);
 		if (loops == null)
@@ -117,5 +120,5 @@ public class AlgorithmBase{
 			}
 		}
 	}
-	
+
 }
