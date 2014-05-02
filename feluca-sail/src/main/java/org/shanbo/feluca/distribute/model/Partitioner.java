@@ -41,28 +41,30 @@ public interface Partitioner{
 	}
 	
 	/**
-	 * TODO not implemented yet
+	 *
 	 * @author lgn
 	 *
 	 */
 	public static class RangePartitioner implements Partitioner{
 		int partitions = 0;
+		int idsPerPartition = 0;
 		int idMax = 0;
 		public RangePartitioner(int idMax, int partitions){
-			if (partitions < 0)
+			if (partitions < 0 || idMax < 0)
 				throw new FelucaException("partitions must =0 in HashPartitioner");
 			this.partitions = partitions;
+			idsPerPartition = (idMax + 1) / partitions;
 		}
 		
 		public int decidePartition(int id) {
-			return id % partitions;
+			return id / partitions;
 		}
 
 		/**
 		 * from 0 or 1, 
 		 */
 		public int decideIndexById(int id) {
-			return id / partitions;
+			return id - ( idsPerPartition * partitions ) ;
 		}
 	}
 	

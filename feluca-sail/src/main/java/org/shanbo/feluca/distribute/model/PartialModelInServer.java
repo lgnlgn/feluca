@@ -14,22 +14,29 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class PartialModelInServer {
+	static Logger log = LoggerFactory.getLogger(PartialModelInServer.class);
 	
 	volatile float values[];//key value storage; since key=array_index, we need to use partitioner to convert id to index
 	Partitioner partitioner;
 	SimpleChannelHandler serverChannel;
+	int thisBlock;
 	
 	public PartialModelInServer(int allBlocks, int thisBlockId, int maxIds){
 		serverChannel = new BytesChannelHandler();
+		partitioner = new Partitioner.HashPartitioner(allBlocks);
 		init(allBlocks, thisBlockId, maxIds);
 	}
 	
 	
 	private void init(int allBlocks, int thisBlockId, int maxIds){
-		//TODO
+		int maxIdOfThisBlock = maxIds / allBlocks + 1;
+		this.thisBlock = thisBlockId;
+		values = new float[maxIdOfThisBlock + 1];
 	}
 	
 	private void mergeModel(byte[] modelArray){

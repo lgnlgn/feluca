@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.shanbo.feluca.common.FelucaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gnu.trove.iterator.TIntFloatIterator;
 import gnu.trove.map.hash.TIntFloatHashMap;
@@ -16,7 +18,7 @@ import gnu.trove.map.hash.TIntFloatHashMap;
 public class PartialModelInClient {
 
 	final static int MODEL_CLEAR_INTERVAL = 4;
-
+	static Logger log = LoggerFactory.getLogger(PartialModelInClient.class);
 	TIntFloatHashMap model ;
 	TIntFloatHashMap tmp;
 	Partitioner partitioner;
