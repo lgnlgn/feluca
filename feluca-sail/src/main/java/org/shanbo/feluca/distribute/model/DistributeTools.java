@@ -1,5 +1,7 @@
 package org.shanbo.feluca.distribute.model;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -22,23 +25,24 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
  * @author lgn
  *
  */
-public class DistributeTools {
-	final HttpClient client ;
+public class DistributeTools implements Closeable{
+	final CloseableHttpClient client ;
 	BytesPark[] caches ;
 	String[] address;
 	
 	class RequstCallable implements Callable<Void>{
-
+		String remoteAddress;
 		String requestMark;
 		BytesPark bytesPark;
-		public RequstCallable(String requestMark, BytesPark bytesPark){
+		public RequstCallable(String remoteAddress, String requestMark, BytesPark bytesPark){
 			this.bytesPark = bytesPark;
 			this.requestMark = requestMark;
+			this.remoteAddress = remoteAddress;
 		}
 
 		public Void call() throws Exception {
 			//TODO
-			HttpPost post = new HttpPost();
+			HttpPost post = new HttpPost(remoteAddress);
 			post.setEntity( new ByteArrayEntity(bytesPark.getArray(), 0, bytesPark.arraySize()));
 			HttpResponse response = client.execute(post);
 			final StatusLine statusLine = response.getStatusLine();
@@ -97,8 +101,12 @@ public class DistributeTools {
 	private void request(String path) throws InterruptedException, ExecutionException{
 		List<Callable<Void>> messageSend = new ArrayList<Callable<Void>>(caches.length);
 		for(int i = 0 ;i < caches.length;i++){
-			messageSend.add(new RequstCallable(path, caches[i]));
+			messageSend.add(new RequstCallable(address[i], path, caches[i]));
 		}
 		ConcurrentExecutor.execute(messageSend);
+	}
+	
+	public void close() throws IOException{
+		client.close();
 	}
 }

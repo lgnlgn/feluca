@@ -48,13 +48,15 @@ public class AlgorithmBase{
 
 
 	public void init() throws IOException{
-		dataInput = DataReader.createDataReader(false,Constants.Base.DATA_DIR + "/" +this.algoConf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
+		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ "/" +this.algoConf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
 		modelClient = new ModelClient(conf);
 		modelServer = new ModelServer();
+		//TODO
 	}
 
-	public void close(){
-
+	public void close() throws IOException{
+		modelClient.close();
+		modelServer.stop();
 	}
 
 	public static void distinct(TIntHashSet idSet, Vector v){

@@ -1,5 +1,7 @@
 package org.shanbo.feluca.distribute.model;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -7,7 +9,7 @@ import java.util.concurrent.ExecutionException;
  * @author shanbo.liang
  *
  */
-public class ModelClient {
+public class ModelClient implements Closeable{
 	
 	DistributeTools rpc;
 	PartialModelInClient partialModel;
@@ -15,6 +17,11 @@ public class ModelClient {
 	public ModelClient(GlobalConfig conf){
 		partialModel = new PartialModelInClient(conf.nodes());
 		rpc = new DistributeTools(conf);
+	}
+	
+	
+	public void close() throws IOException{
+		rpc.close();
 	}
 	
 	/**

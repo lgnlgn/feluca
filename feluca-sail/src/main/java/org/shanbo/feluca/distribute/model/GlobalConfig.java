@@ -1,10 +1,12 @@
 package org.shanbo.feluca.distribute.model;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import org.shanbo.feluca.common.FelucaException;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableSet;
 
 public class GlobalConfig {
 
@@ -22,7 +24,9 @@ public class GlobalConfig {
 		allConfigs = new JSONObject[tmp.size()];
 		for(String keyString : tmp.keySet()){
 			ipMap.put(keyString, tmp.getJSONObject(keyString));
-			allConfigs[i++] = tmp.getJSONObject(keyString);
+			allConfigs[i] = tmp.getJSONObject(keyString);
+			allConfigs[i].put("address", keyString);
+			i+=1;
 		}
 	}
 	
@@ -47,4 +51,9 @@ public class GlobalConfig {
 		}
 		return JSONObject.parseObject(jo.toJSONString());
 	}
+	
+	public Set<String> addresses(){
+		return ImmutableSet.copyOf(ipMap.keySet());
+	}
+	
 }

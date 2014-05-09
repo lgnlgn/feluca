@@ -5,11 +5,11 @@ import org.shanbo.feluca.common.FelucaException;
 public interface Partitioner{
 	
 	/**
-	 * client side
+	 * feature_id -> partition_id
 	 * @param id
 	 * @return
 	 */
-	public int decidePartition(int id);
+	public int decidePartition(int fid);
 	
 	/**
 	 * 
@@ -18,7 +18,7 @@ public interface Partitioner{
 	 * @param id
 	 * @return
 	 */
-	public int decideIndexById(int id);
+	public int decideIndexById(int fid);
 	
 	public static class HashPartitioner implements Partitioner{
 		int partitions = 0;
@@ -28,15 +28,15 @@ public interface Partitioner{
 			this.partitions = partitions;
 		}
 		
-		public int decidePartition(int id) {
-			return id % partitions;
+		public int decidePartition(int fid) {
+			return fid % partitions;
 		}
 
 		/**
 		 * from 0 or 1, 
 		 */
-		public int decideIndexById(int id) {
-			return id / partitions;
+		public int decideIndexById(int fid) {
+			return fid / partitions;
 		}
 	}
 	
@@ -56,15 +56,15 @@ public interface Partitioner{
 			idsPerPartition = (idMax + 1) / partitions;
 		}
 		
-		public int decidePartition(int id) {
-			return id / partitions;
+		public int decidePartition(int fid) {
+			return fid / partitions;
 		}
 
 		/**
 		 * from 0 or 1, 
 		 */
-		public int decideIndexById(int id) {
-			return id - ( idsPerPartition * partitions ) ;
+		public int decideIndexById(int fid) {
+			return fid - ( idsPerPartition * partitions ) ;
 		}
 	}
 	

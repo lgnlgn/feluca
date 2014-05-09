@@ -7,6 +7,8 @@ import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.distribute.model.AlgorithmBase;
 import org.shanbo.feluca.distribute.model.GlobalConfig;
 
+import com.alibaba.fastjson.JSONObject;
+
 public class SGDL2LR extends AlgorithmBase{
 	
 	final static double initWeight = 0;
@@ -50,6 +52,7 @@ public class SGDL2LR extends AlgorithmBase{
 	public SGDL2LR(GlobalConfig conf) throws UnknownHostException {
 		super(conf);
 		initParams();
+		estimateParameter();
 	}
 
 	public void initParams(){
@@ -122,4 +125,23 @@ public class SGDL2LR extends AlgorithmBase{
 		}
 		return error;
 	}
+	
+	protected void estimateParameter() throws NullPointerException{
+		this.samples = algoConf.getIntValue(DataStatistic.NUM_VECTORS);
+		double rate = Math.log(2 + samples /((1 + biasWeightRound)/(biasWeightRound * 2.0)) /( this.maxFeatureId + 0.0));
+		if (rate < 0.5)
+			rate = 0.5;
+
+		if (alpha == null){
+			alpha = 0.5 / rate;
+			minAlpha = alpha  / Math.pow(1 + rate, 1.8);
+		}
+		if (this.lambda == null){
+			lambda = 0.2 / rate;
+//			minLambda = lambda  / Math.pow(1 + rate, 1.8);
+			minLambda = 0.01;
+		}
+	}
+	
+	
 }

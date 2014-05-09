@@ -79,6 +79,9 @@ public class PartialModelInClient {
 
 	}
 	
+	
+	
+	
 	public float getById(int id){
 		return tmp.get(id);
 	}
