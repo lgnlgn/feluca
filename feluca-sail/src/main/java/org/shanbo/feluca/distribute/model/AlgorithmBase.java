@@ -42,7 +42,7 @@ public class AlgorithmBase{
 
 	public AlgorithmBase(GlobalConfig conf) throws UnknownHostException{
 		this.conf = conf;
-		this.algoConf = conf.getConfigByNodeAddress(NetworkUtils.getIPv4Localhost().toString());
+		this.algoConf = conf.getAlgorithmConf();
 	}
 
 
@@ -50,13 +50,17 @@ public class AlgorithmBase{
 	public void init() throws IOException{
 		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ "/" +this.algoConf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
 		modelClient = new ModelClient(conf);
-		modelServer = new ModelServer();
-		//TODO
+		int modelSegmentID = conf.modelIndexOf(NetworkUtils.getIPv4Localhost().toString());
+		if (modelSegmentID > -1){
+			modelServer = new ModelServer(conf, modelSegmentID);
+			modelServer.start();
+		}
 	}
 
 	public void close() throws IOException{
 		modelClient.close();
-		modelServer.stop();
+		if (modelServer != null)
+			modelServer.stop();
 	}
 
 	public static void distinct(TIntHashSet idSet, Vector v){

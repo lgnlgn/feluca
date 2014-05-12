@@ -18,10 +18,20 @@ public interface Partitioner{
 	 * @param id
 	 * @return
 	 */
-	public int decideIndexById(int fid);
+	public int featureIdToIndex(int fid);
+	
+	/**
+	 * 
+	 * server side calls. recall index to feature id
+	 * be careful of index starts 
+	 * @param id
+	 * @return
+	 */
+	public int indexToFeatureId(int index, int partition);
+	
 	
 	public static class HashPartitioner implements Partitioner{
-		int partitions = 0;
+		int partitions = 1;
 		public HashPartitioner(int partitions){
 			if (partitions < 0)
 				throw new FelucaException("partitions must =0 in HashPartitioner");
@@ -35,8 +45,12 @@ public interface Partitioner{
 		/**
 		 * from 0 or 1, 
 		 */
-		public int decideIndexById(int fid) {
+		public int featureIdToIndex(int fid) {
 			return fid / partitions;
+		}
+
+		public int indexToFeatureId(int index, int partition) {
+			return index * partitions + partition;
 		}
 	}
 	
@@ -63,9 +77,15 @@ public interface Partitioner{
 		/**
 		 * from 0 or 1, 
 		 */
-		public int decideIndexById(int fid) {
+		public int featureIdToIndex(int fid) {
 			return fid - ( idsPerPartition * partitions ) ;
 		}
+
+		public int indexToFeatureId(int index, int partition) {
+			return index + idsPerPartition * partition;
+		}
+
+
 	}
 	
 }

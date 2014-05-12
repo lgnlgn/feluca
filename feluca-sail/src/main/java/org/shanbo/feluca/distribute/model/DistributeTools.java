@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
@@ -37,11 +36,10 @@ public class DistributeTools implements Closeable{
 		public RequstCallable(String remoteAddress, String requestMark, BytesPark bytesPark){
 			this.bytesPark = bytesPark;
 			this.requestMark = requestMark;
-			this.remoteAddress = remoteAddress;
+			this.remoteAddress = remoteAddress + ":" + ModelServer.PORT;
 		}
 
 		public Void call() throws Exception {
-			//TODO
 			HttpPost post = new HttpPost(remoteAddress);
 			post.setEntity( new ByteArrayEntity(bytesPark.getArray(), 0, bytesPark.arraySize()));
 			HttpResponse response = client.execute(post);
@@ -63,11 +61,11 @@ public class DistributeTools implements Closeable{
 
 	public DistributeTools(GlobalConfig conf){
 		client = HttpClientBuilder.create().useSystemProperties().build();
-		caches = new BytesPark[conf.nodes()];
-		address =new String[conf.nodes()];
-		for(int i = 0 ; i < conf.nodes(); i++){
+		caches = new BytesPark[conf.getModelServers().size()];
+		address =new String[conf.getModelServers().size()];
+		for(int i = 0 ; i < conf.getModelServers().size(); i++){
 			caches[i] = new BytesPark();
-			address[i]= conf.getConfigByPart(i).getString("address");
+			address[i]= conf.getModelServers().get(i) ;
 		}
 	}
 

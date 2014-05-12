@@ -15,7 +15,7 @@ public class ModelClient implements Closeable{
 	PartialModelInClient partialModel;
 	
 	public ModelClient(GlobalConfig conf){
-		partialModel = new PartialModelInClient(conf.nodes());
+		partialModel = new PartialModelInClient(conf.getModelServers().size());
 		rpc = new DistributeTools(conf);
 	}
 	
@@ -66,4 +66,7 @@ public class ModelClient implements Closeable{
 	public void setValue(int id, float value){
 		partialModel.setValue(id, value);
 	}
+	
+
+	
 }

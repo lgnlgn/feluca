@@ -14,6 +14,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.shanbo.feluca.data.convert.DataStatistic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +27,12 @@ public class PartialModelInServer {
 	SimpleChannelHandler serverChannel;
 	int thisBlock;
 	
-	public PartialModelInServer(int allBlocks, int thisBlockId, int maxIds){
+	public PartialModelInServer(GlobalConfig conf, int thisBlockId){
 		serverChannel = new BytesChannelHandler();
-		partitioner = new Partitioner.HashPartitioner(allBlocks);
-		init(allBlocks, thisBlockId, maxIds);
+		partitioner = conf.getPartitioner();
+		init(conf.getModelServers().size(), 
+				thisBlockId, 
+				conf.getDataStatistic().getIntValue(DataStatistic.MAX_FEATURE_ID));
 	}
 	
 	
@@ -41,9 +44,9 @@ public class PartialModelInServer {
 	
 	private void mergeModel(byte[] modelArray){
 		for(int offset = 0 ; offset < modelArray.length ; offset += 8){
-			int id = BytesPark.yieldIdFrom4bytes(offset, modelArray);
+			int fid = BytesPark.yieldIdFrom4bytes(offset, modelArray);
 			float deltaValue = BytesPark.yieldValueFrom8Bytes(offset, modelArray);
-			int index = partitioner.decideIndexById(id);
+			int index = partitioner.featureIdToIndex(fid);
 			values[index] += deltaValue;
 		}
 	}
@@ -53,9 +56,9 @@ public class PartialModelInServer {
 		byte[] result = new byte[idsArray.length * 2];
 		int rOffest = 0;
 		for(int offset = 0 ; offset < idsArray.length; offset+=4, rOffest+= 8){
-			int id = BytesPark.yieldIdFrom4bytes(offset, idsArray);
-			int index = partitioner.decideIndexById(id);
-			BytesPark.fillIntFloatToBytes(rOffest, id, values[index], result);
+			int fid = BytesPark.yieldIdFrom4bytes(offset, idsArray);
+			int index = partitioner.featureIdToIndex(fid);
+			BytesPark.fillIntFloatToBytes(rOffest, fid, values[index], result);
 		}
 		return result;
 	}
@@ -97,5 +100,7 @@ public class PartialModelInServer {
 	public SimpleChannelHandler getChannelForNetty(){
 		return serverChannel;
 	}
-	
+	public void saveModel(){
+		//TODO
+	}
 }
