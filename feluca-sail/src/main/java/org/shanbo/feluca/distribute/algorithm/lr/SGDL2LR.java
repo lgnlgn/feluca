@@ -7,8 +7,6 @@ import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.distribute.model.AlgorithmBase;
 import org.shanbo.feluca.distribute.model.GlobalConfig;
 
-import com.alibaba.fastjson.JSONObject;
-
 public class SGDL2LR extends AlgorithmBase{
 	
 	final static double initWeight = 0;
@@ -56,7 +54,7 @@ public class SGDL2LR extends AlgorithmBase{
 	}
 
 	public void initParams(){
-		String infoString = algoConf.getString(DataStatistic.LABEL_INFO);
+		String infoString = conf.getAlgorithmConf().getString(DataStatistic.LABEL_INFO);
 		String[] ll = infoString.split("\\s+");
 		String[] classInfo1 = ll[0].split(":"); // orginal_label:converted_label:#num
 		String[] classInfo2 = ll[1].split(":");
@@ -127,7 +125,7 @@ public class SGDL2LR extends AlgorithmBase{
 	}
 	
 	protected void estimateParameter() throws NullPointerException{
-		this.samples = algoConf.getIntValue(DataStatistic.NUM_VECTORS);
+		this.samples = conf.getAlgorithmConf().getIntValue(DataStatistic.NUM_VECTORS);
 		double rate = Math.log(2 + samples /((1 + biasWeightRound)/(biasWeightRound * 2.0)) /( this.maxFeatureId + 0.0));
 		if (rate < 0.5)
 			rate = 0.5;

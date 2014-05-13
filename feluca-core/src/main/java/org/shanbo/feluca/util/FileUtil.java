@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -172,6 +173,14 @@ public class FileUtil {
 
 		//关闭JarInputStream
 		jarIn.close();
+	}
+	
+	public static Properties loadProperties(String filePath) throws IOException{
+		FileInputStream fis = new FileInputStream(filePath);
+		Properties p = new Properties();
+		p.load(fis);
+		fis.close();
+		return p;
 	}
 	
 }

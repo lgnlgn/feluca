@@ -29,7 +29,6 @@ public class AlgorithmBase{
 
 	DataReader dataInput;
 	protected GlobalConfig conf;
-	protected JSONObject algoConf;
 
 	public static class IndexOffset{
 		int start;
@@ -42,13 +41,12 @@ public class AlgorithmBase{
 
 	public AlgorithmBase(GlobalConfig conf) throws UnknownHostException{
 		this.conf = conf;
-		this.algoConf = conf.getAlgorithmConf();
 	}
 
 
 
 	public void init() throws IOException{
-		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ "/" +this.algoConf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
+		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ "/" + this.conf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
 		modelClient = new ModelClient(conf);
 		int modelSegmentID = conf.modelIndexOf(NetworkUtils.getIPv4Localhost().toString());
 		if (modelSegmentID > -1){
@@ -93,7 +91,7 @@ public class AlgorithmBase{
 
 
 	public void runAlgorithm(){
-		Integer loops = algoConf.getInteger(Constants.Algorithm.LOOPS);
+		Integer loops = conf.getAlgorithmConf().getInteger(Constants.Algorithm.LOOPS);
 		if (loops == null)
 			loops = 10;
 		for(int i = 0 ; i < loops;i++){
