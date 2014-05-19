@@ -1,13 +1,8 @@
 package org.shanbo.feluca.distribute.model;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import org.shanbo.feluca.common.FelucaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.trove.iterator.TIntFloatIterator;
 import gnu.trove.map.hash.TIntFloatHashMap;
 
 /**

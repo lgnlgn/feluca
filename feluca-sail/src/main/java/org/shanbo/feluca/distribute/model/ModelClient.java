@@ -14,6 +14,8 @@ public class ModelClient implements Closeable{
 	DistributeTools rpc;
 	PartialModelInClient partialModel;
 	
+	private boolean stopNow = false;
+	
 	public ModelClient(GlobalConfig conf){
 		partialModel = new PartialModelInClient(conf.getModelServers().size());
 		rpc = new DistributeTools(conf);
@@ -67,6 +69,11 @@ public class ModelClient implements Closeable{
 		partialModel.setValue(id, value);
 	}
 	
-
+	public boolean reachStopCondition(){
+		return stopNow;
+	}
 	
+	public void setEarlyStop(){
+		stopNow = true;
+	}
 }

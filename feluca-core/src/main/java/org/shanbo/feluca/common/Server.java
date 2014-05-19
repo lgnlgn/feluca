@@ -2,6 +2,7 @@ package org.shanbo.feluca.common;
 
 import java.net.SocketException;
 
+import org.apache.commons.lang.StringUtils;
 import org.shanbo.feluca.util.Config;
 import org.shanbo.feluca.util.NetworkUtils;
 import org.shanbo.feluca.util.ZKClient;
@@ -22,7 +23,10 @@ public abstract class Server {
 	public void start(){
 		try{
 			this.preStart();
-			//TODO create prefix dir path for node
+			String[] paths = zkRegisterPath().split("/");
+			for(int i = 0 ; i < paths.length - 1; i++){
+				ZKClient.get().createIfNotExist("/" + StringUtils.join(paths, "/", 0, i));
+			}
 			ZKClient.get().registerEphemeralNode(zkRegisterPath(), getServerAddress());
 		}catch (Exception e) {
 			log.error("Server [" + this.getClass().getName() + "] start failed", e);

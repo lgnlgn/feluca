@@ -1,23 +1,14 @@
 package org.shanbo.feluca.distribute.model;
 
-import java.net.UnknownHostException;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.common.Constants.Network;
-import org.shanbo.feluca.common.Server;
-import org.shanbo.feluca.node.http.BaseChannelHandler;
 import org.shanbo.feluca.node.http.BaseNioServer;
-import org.shanbo.feluca.node.http.Handlers;
-import org.shanbo.feluca.node.leader.LeaderNettyChannel;
-import org.shanbo.feluca.util.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

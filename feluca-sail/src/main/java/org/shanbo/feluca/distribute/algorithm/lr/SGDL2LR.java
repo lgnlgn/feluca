@@ -1,11 +1,14 @@
 package org.shanbo.feluca.distribute.algorithm.lr;
 
 import java.net.UnknownHostException;
+import java.util.Map.Entry;
 
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.distribute.model.AlgorithmBase;
 import org.shanbo.feluca.distribute.model.GlobalConfig;
+
+import com.alibaba.fastjson.JSONObject;
 
 public class SGDL2LR extends AlgorithmBase{
 	
@@ -13,15 +16,14 @@ public class SGDL2LR extends AlgorithmBase{
 	final static int LABELRANGEBASE = 32768;
 	public final static double DEFAULT_STOP = 0.001;
 	public final static int DEFAULT_LOOPS = 30;
-	
-	
+		
 	
 	protected int[][] dataInfo = null;
 	
 	
 	protected Double alpha = null; // learning speed
 	protected Double lambda = null;// regularization
-	protected Double stop = null;
+	protected Double convergence = null;
 	protected boolean alphaSetted = false;
 	protected boolean lambdaSetted = false;
 
@@ -53,8 +55,8 @@ public class SGDL2LR extends AlgorithmBase{
 		estimateParameter();
 	}
 
-	public void initParams(){
-		String infoString = conf.getAlgorithmConf().getString(DataStatistic.LABEL_INFO);
+	private void initParams(){
+		String infoString = conf.getDataStatistic().getString(DataStatistic.LABEL_INFO);
 		String[] ll = infoString.split("\\s+");
 		String[] classInfo1 = ll[0].split(":"); // orginal_label:converted_label:#num
 		String[] classInfo2 = ll[1].split(":");
@@ -80,7 +82,8 @@ public class SGDL2LR extends AlgorithmBase{
 			;
 		}
 		this.biasWeightRound = Math.round(ratio);
-	
+		
+		this.setProperties(conf.getAlgorithmConf());
 	}
 	
 	final public void compute(Vector v){
@@ -139,6 +142,36 @@ public class SGDL2LR extends AlgorithmBase{
 //			minLambda = lambda  / Math.pow(1 + rate, 1.8);
 			minLambda = 0.01;
 		}
+	}
+	
+	private void setProperties(JSONObject algoConf) {
+		if (algoConf.containsKey("loops")){
+			loops = algoConf.getInteger("loops");
+		}
+		if (algoConf.containsKey("alpha")){
+			alpha = algoConf.getDouble("alpha");
+			alphaSetted = true;
+		}
+		if (algoConf.containsKey("lambda")){
+			this.lambda  = algoConf.getDouble("lambda");
+			lambdaSetted = true;
+		}
+		if (algoConf.containsKey("convergence")){
+			convergence = algoConf.getDouble("convergence");
+		}
+		
+		for(Entry<String, Object> entry : algoConf.entrySet()){
+			String  key= entry.getKey();
+			if (key.startsWith("-w")){
+				biasLabel = Integer.parseInt(key.substring(2));
+				biasWeightRound = Integer.parseInt(entry.getValue().toString());
+			}
+		}
+	}
+
+	@Override
+	protected void checkStopCondition() {
+		//TODO
 	}
 	
 	

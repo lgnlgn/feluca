@@ -76,8 +76,8 @@ public class GlobalConfig {
 	}
 	
 	public Partitioner getPartitioner(){
-		JSONObject partitioner = conf.getJSONObject(PARTITIONER);
-		if (partitioner!= null && "range".equals(partitioner.getString("type")) ){
+		String partitioner = conf.getString(PARTITIONER);
+		if (partitioner!= null && "range".equals(partitioner) ){
 			return new Partitioner.RangePartitioner(conf.getJSONObject(DATA_STATUS).getIntValue(DataStatistic.MAX_FEATURE_ID), modelServers.size());
 		}else {
 			return new Partitioner.HashPartitioner(modelServers.size());

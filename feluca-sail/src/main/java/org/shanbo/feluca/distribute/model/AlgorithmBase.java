@@ -13,14 +13,12 @@ import org.shanbo.feluca.util.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.fastjson.JSONObject;
-
 /**
  * LR
  * @author lgn
  *
  */
-public class AlgorithmBase{
+public abstract class AlgorithmBase{
 
 	static Logger log = LoggerFactory.getLogger(AlgorithmBase.class);
 
@@ -84,11 +82,9 @@ public class AlgorithmBase{
 
 
 
-	protected void compute(Vector v){
+	abstract protected void compute(Vector v);
 
-
-	}
-
+	abstract protected void checkStopCondition();
 
 	public void runAlgorithm(){
 		Integer loops = conf.getAlgorithmConf().getInteger(Constants.Algorithm.LOOPS);
@@ -121,6 +117,10 @@ public class AlgorithmBase{
 						log.error("", e);
 					}
 				}
+			}
+			checkStopCondition();
+			if (modelClient.reachStopCondition()){
+				return;
 			}
 		}
 	}

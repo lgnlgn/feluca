@@ -19,10 +19,16 @@ public class TestSGDL2LR {
 		ArrayList<String> models = new ArrayList<String>(1);
 		models.add(NetworkUtils.getIPv4Localhost().toString());
 		JSONObject algoConf = new JSONObject();
+		algoConf.put("alpha", 0.01);
+		algoConf.put("lambda", 0.0001);
+		
 		GlobalConfig cc = GlobalConfig.build("sgdl2lr", new Partitioner.HashPartitioner(0), dataName,
 				FileUtil.loadProperties(Constants.Base.getWorkerRepository() + "/" + dataName + "/" + dataName + ".sta"), algoConf, models );
 	
-	
+		SGDL2LR lr = new SGDL2LR(cc);
+		lr.init();
+		lr.runAlgorithm();
+		lr.close();
 	}
 
 }
