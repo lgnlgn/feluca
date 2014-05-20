@@ -267,6 +267,12 @@ public class NetworkUtils {
 
 	}
 
+	public static String ipv4Host() throws SocketException{
+		 return NetworkUtils.getFirstNonLoopbackAddress(
+				NetworkUtils.StackType.IPv4).getHostAddress();
+	}
+	
+	
 	public static void main(String[] ss) {
 		try {
 			System.out.println(getNextAliablePort("192.168.62.45", 10000));

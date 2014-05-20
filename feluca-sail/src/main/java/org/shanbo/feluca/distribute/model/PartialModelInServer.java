@@ -73,6 +73,7 @@ public class PartialModelInServer {
 			if (uri.equals("/update")){
 				byte[] idValues = req.getContent().array();
 				mergeModel(idValues);
+				resp.setContent(ChannelBuffers.copiedBuffer(new byte[]{}));
 				resp.setStatus(HttpResponseStatus.CREATED);
 			}else if (uri.equals("/fetch")){
 				byte[] ids = req.getContent().array();

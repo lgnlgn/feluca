@@ -46,7 +46,7 @@ public abstract class AlgorithmBase{
 	public void init() throws IOException{
 		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ "/" + this.conf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
 		modelClient = new ModelClient(conf);
-		int modelSegmentID = conf.modelIndexOf(NetworkUtils.getIPv4Localhost().toString());
+		int modelSegmentID = conf.modelIndexOf(NetworkUtils.ipv4Host());
 		if (modelSegmentID > -1){
 			modelServer = new ModelServer(conf, modelSegmentID);
 			modelServer.start();
@@ -105,6 +105,7 @@ public abstract class AlgorithmBase{
 					try {
 						modelClient.fetchModel(ids);
 					} catch (Exception e) {
+						e.printStackTrace();
 						log.error("", e);
 					} 
 					for(int o = indexOffset.start ; o < indexOffset.end; o++){

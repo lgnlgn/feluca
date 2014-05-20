@@ -40,7 +40,7 @@ public class DistributeTools implements Closeable{
 		}
 
 		public Void call() throws Exception {
-			HttpPost post = new HttpPost(remoteAddress);
+			HttpPost post = new HttpPost("http://" + remoteAddress + requestMark);
 			post.setEntity( new ByteArrayEntity(bytesPark.getArray(), 0, bytesPark.arraySize()));
 			HttpResponse response = client.execute(post);
 			final StatusLine statusLine = response.getStatusLine();
@@ -50,9 +50,12 @@ public class DistributeTools implements Closeable{
 				throw new HttpResponseException(statusLine.getStatusCode(),
 						statusLine.getReasonPhrase());
 			}
-			InputStream in = entity.getContent();
-			bytesPark.fill(in);
-			in.close();
+			if (statusLine.getStatusCode() == 200){
+				InputStream in = entity.getContent();
+				bytesPark.fill(in);
+				in.close();
+			}
+			
 			return null;
 		}
 

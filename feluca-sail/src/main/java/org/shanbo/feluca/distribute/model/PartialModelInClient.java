@@ -21,6 +21,8 @@ public class PartialModelInClient {
 	
 	public PartialModelInClient(int totalModelSegments){
 		partitioner = new Partitioner.HashPartitioner(totalModelSegments);
+		model = new TIntFloatHashMap();
+		tmp = new TIntFloatHashMap();
 	}
 	
 

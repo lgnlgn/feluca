@@ -24,8 +24,8 @@ public abstract class Server {
 		try{
 			this.preStart();
 			String[] paths = zkRegisterPath().split("/");
-			for(int i = 0 ; i < paths.length - 1; i++){
-				ZKClient.get().createIfNotExist("/" + StringUtils.join(paths, "/", 0, i));
+			for(int i = 0 ; i < paths.length  ; i++){
+				ZKClient.get().createIfNotExist(StringUtils.join(paths, "/", 0, i+1));
 			}
 			ZKClient.get().registerEphemeralNode(zkRegisterPath(), getServerAddress());
 		}catch (Exception e) {

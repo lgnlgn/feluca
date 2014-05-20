@@ -50,7 +50,9 @@ public class ModelServer extends BaseNioServer{
 	@Override
 	public void preStart() throws Exception {
 		ClusterUtil.getWorkerList();
+		 //model initialization before server starting!
 		model = new PartialModelInServer(conf, modelSegmentID);
+		super.preStart(); //bind address to start
 	}
 
 	@Override

@@ -113,7 +113,9 @@ public class GlobalConfig {
 	}
 	
 	
-	
+	public String toString(){
+		return conf.toJSONString();
+	}
 	
 	
 }

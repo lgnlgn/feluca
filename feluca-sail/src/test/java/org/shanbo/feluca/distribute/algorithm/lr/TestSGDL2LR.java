@@ -17,7 +17,7 @@ public class TestSGDL2LR {
 	public static void main(String[] args) throws IOException {
 		String dataName = "covtype";
 		ArrayList<String> models = new ArrayList<String>(1);
-		models.add(NetworkUtils.getIPv4Localhost().toString());
+		models.add(NetworkUtils.ipv4Host());
 		JSONObject algoConf = new JSONObject();
 		algoConf.put("alpha", 0.01);
 		algoConf.put("lambda", 0.0001);
