@@ -119,6 +119,7 @@ public class DataBuffer implements Runnable{
 		reading = true;      // close for the writer
 		written = false; 
 		if (writingfinished){
+//			System.out.println("all finished");
 			finished = true;
 		}
 	}
@@ -129,7 +130,7 @@ public class DataBuffer implements Runnable{
 			in = new FileInputStream(getCurrentBlockStatus().block);
 			currentAccBlockSize = getCurrentBlockStatus().getBlockSize();
 		}
-		System.out.print("-------from file");
+//		System.out.print("-------from file");
 		readLength = in.read(writingCache, 0, Math.min(writingCache.length,currentAccBlockSize));
 		currentAccBlockSize -= readLength;
 		if (currentAccBlockSize == 0){
@@ -143,7 +144,7 @@ public class DataBuffer implements Runnable{
 				writingfinished = true;
 			}
 		}
-		System.out.print("-------finished:");
+//		System.out.print("-------finished:");
 		written = true;
 
 	}
@@ -179,7 +180,7 @@ public class DataBuffer implements Runnable{
 	}
 
 	public static void main(String[] args) throws IOException {
-		DataBuffer db = new DataBuffer("data/mush");
+		DataBuffer db = new DataBuffer("data/covtype");
 		System.out.println();
 		long t1 = System.nanoTime();
 		db.start();

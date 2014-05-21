@@ -98,7 +98,7 @@ public abstract class AlgorithmBase{
 			while(dataInput.hasNext()){
 				long[] offsetArray = dataInput.getOffsetArray();
 				List<IndexOffset> offsets = partition(offsetArray.length, 10);
-//				System.out.println(offsets);
+
 				for(IndexOffset indexOffset : offsets){ 
 					//batch processing
 					for(int o = indexOffset.start ; o < indexOffset.end; o++){
@@ -125,8 +125,9 @@ public abstract class AlgorithmBase{
 				}
 				System.out.println("hasNext?");
 			}
+			dataInput.releaseHolding();//release holding
 			System.out.println("loops:" + i);
-			checkStopCondition();
+			checkStopCondition(); 
 			if (modelClient.reachStopCondition()){
 				return;
 			}

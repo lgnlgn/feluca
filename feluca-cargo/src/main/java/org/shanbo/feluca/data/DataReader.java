@@ -35,6 +35,8 @@ public abstract class DataReader {
 		return tmp;
 	}
 	
+	public abstract void releaseHolding();
+	
 	public abstract boolean hasNext();
 	
 	private DataReader(String dataName) {
@@ -89,6 +91,13 @@ public abstract class DataReader {
 		public boolean hasNext() {
 			return false;
 		}
+
+
+		@Override
+		public void releaseHolding() {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 	
@@ -119,12 +128,20 @@ public abstract class DataReader {
 		@Override
 		public boolean hasNext() {
 			inMemData = fileBuffer.getByteArrayRef();
+			
 			if (inMemData == null)
 				return false;
 			else{
 				this.readOffsetsFromCache();
 				return true;
 			}
+		}
+
+
+
+		@Override
+		public void releaseHolding() {
+			fileBuffer.releaseByteArrayRef();
 		}
 		
 	}

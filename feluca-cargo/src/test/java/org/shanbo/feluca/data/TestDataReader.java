@@ -18,9 +18,10 @@ public class TestDataReader {
 			if (i < 10)
 				System.out.println(vectorByOffset.toString());
 			count ++;
+			
 		}
 		System.out.println(count);
-
+		dataReader.releaseHolding();
 	}
 
 }
