@@ -33,6 +33,7 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
  *  @Description: TODO
  *	@author shanbo.liang
  */
+@Deprecated
 public class HttpRequester extends DistributedRequester{
 
 	public static class HttpClientCallable implements Callable<String>{

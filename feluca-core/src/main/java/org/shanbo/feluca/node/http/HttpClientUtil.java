@@ -2,6 +2,7 @@ package org.shanbo.feluca.node.http;
 
 import java.io.IOException;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -23,7 +24,7 @@ public class HttpClientUtil {
 	private HttpClientUtil(){
 		ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager();
 		mgr.setDefaultMaxPerRoute(256);
-		
+		mgr.setMaxTotal(256);
 		client = new DefaultHttpClient(mgr);
 		client.getParams().setIntParameter(PROP_SO_TIMEOUT, 5000);
 		client.getParams().setIntParameter(PROP_CONNECTION_TIMEOUT, 3000);
@@ -70,5 +71,9 @@ public class HttpClientUtil {
 	public HttpClient getHttpClient(){
 		return client; 
 	}
-
+	
+	public HttpResponse doPost(HttpPost post) throws ClientProtocolException, IOException{
+		HttpResponse execute = client.execute(post);
+		return execute;
+	}
 }

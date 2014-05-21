@@ -15,6 +15,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.shanbo.feluca.data.convert.DataStatistic;
+import org.shanbo.feluca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +71,7 @@ public class PartialModelInServer {
 			HttpRequest req = (HttpRequest)e.getMessage();
 			HttpResponse resp = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 			String uri = req.getUri();
+//			System.out.println( uri);
 			if (uri.equals("/update")){
 				byte[] idValues = req.getContent().array();
 				mergeModel(idValues);
@@ -81,10 +83,10 @@ public class PartialModelInServer {
 				resp.setContent(ChannelBuffers.copiedBuffer(result));
 			}
 			boolean close = !HttpHeaders.isKeepAlive(req);
-
+			resp.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/octet-stream");
+			resp.setHeader("Content-Length", resp.getContent().readableBytes());
 			resp.setHeader(HttpHeaders.Names.CONNECTION,
-					close ? HttpHeaders.Values.CLOSE
-							: HttpHeaders.Values.KEEP_ALIVE);
+					close ? HttpHeaders.Values.CLOSE : HttpHeaders.Values.KEEP_ALIVE);
 			
 			ChannelFuture cf = e.getChannel().write(resp);
 

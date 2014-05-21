@@ -8,15 +8,19 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultBackoffStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 /**
@@ -25,10 +29,9 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
  *
  */
 public class DistributeTools implements Closeable{
-	final CloseableHttpClient client ;
+//	final CloseableHttpClient client ;
 	BytesPark[] caches ;
 	String[] address;
-	
 	class RequstCallable implements Callable<Void>{
 		String remoteAddress;
 		String requestMark;
@@ -42,7 +45,7 @@ public class DistributeTools implements Closeable{
 		public Void call() throws Exception {
 			HttpPost post = new HttpPost("http://" + remoteAddress + requestMark);
 			post.setEntity( new ByteArrayEntity(bytesPark.getArray(), 0, bytesPark.arraySize()));
-			HttpResponse response = client.execute(post);
+			HttpResponse response = HttpClientUtil.get().doPost(post);
 			final StatusLine statusLine = response.getStatusLine();
 			final HttpEntity entity = response.getEntity();
 			if (statusLine.getStatusCode() >= 300) {
@@ -63,7 +66,7 @@ public class DistributeTools implements Closeable{
 
 
 	public DistributeTools(GlobalConfig conf){
-		client = HttpClientBuilder.create().useSystemProperties().build();
+
 		caches = new BytesPark[conf.getModelServers().size()];
 		address =new String[conf.getModelServers().size()];
 		for(int i = 0 ; i < conf.getModelServers().size(); i++){
@@ -108,6 +111,6 @@ public class DistributeTools implements Closeable{
 	}
 	
 	public void close() throws IOException{
-		client.close();
+		//TODO
 	}
 }

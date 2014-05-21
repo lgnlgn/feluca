@@ -50,9 +50,13 @@ public class ModelClient implements Closeable{
 		for(int i = 0 ; i < rpc.caches.length; i++){
 			rpc.caches[i].clear();
 		}
+//		System.out.print("fe");
 		partialModel.partitionQueryIds(ids, rpc.caches);
+//		System.out.print("tc");
 		rpc.fetchModelBack();
+//		System.out.print("hM");
 		partialModel.deserializeFrom(rpc.caches);
+//		System.out.println("odel.");
 	}
 		
 	public float getById(int id){

@@ -35,6 +35,9 @@ public abstract class AlgorithmBase{
 			this.start = start;
 			this.end = end;
 		}
+		public String toString(){
+			return "[" + start + ",\t" + end + ")";
+		}
 	}
 
 	public AlgorithmBase(GlobalConfig conf) throws UnknownHostException{
@@ -94,7 +97,8 @@ public abstract class AlgorithmBase{
 			TIntHashSet idSet = new TIntHashSet();
 			while(dataInput.hasNext()){
 				long[] offsetArray = dataInput.getOffsetArray();
-				List<IndexOffset> offsets = partition(offsetArray.length, 100);
+				List<IndexOffset> offsets = partition(offsetArray.length, 10);
+//				System.out.println(offsets);
 				for(IndexOffset indexOffset : offsets){ 
 					//batch processing
 					for(int o = indexOffset.start ; o < indexOffset.end; o++){
@@ -117,8 +121,11 @@ public abstract class AlgorithmBase{
 					} catch (Exception e) {
 						log.error("", e);
 					}
+					System.out.print("!");
 				}
+				System.out.println("hasNext?");
 			}
+			System.out.println("loops:" + i);
 			checkStopCondition();
 			if (modelClient.reachStopCondition()){
 				return;

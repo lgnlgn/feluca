@@ -129,7 +129,7 @@ public class DataBuffer implements Runnable{
 			in = new FileInputStream(getCurrentBlockStatus().block);
 			currentAccBlockSize = getCurrentBlockStatus().getBlockSize();
 		}
-//		System.out.print("-------from file");
+		System.out.print("-------from file");
 		readLength = in.read(writingCache, 0, Math.min(writingCache.length,currentAccBlockSize));
 		currentAccBlockSize -= readLength;
 		if (currentAccBlockSize == 0){
@@ -143,7 +143,7 @@ public class DataBuffer implements Runnable{
 				writingfinished = true;
 			}
 		}
-//		System.out.print("-------finished:");
+		System.out.print("-------finished:");
 		written = true;
 
 	}

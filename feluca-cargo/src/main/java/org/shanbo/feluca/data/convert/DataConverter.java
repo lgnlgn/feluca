@@ -49,9 +49,9 @@ public class DataConverter {
 		int partOfBlock = 0; // trim to size when this > 1;
 	
 		
+		globalStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + ".sta"));
 		
 		blockStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_1.sta"));
-		globalStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + ".sta"));
 		dataOutput = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_1.dat" ));
 		int count = 0;
 		for(String line = rawDataReader.readLine(); line != null ; line = rawDataReader.readLine()){
@@ -61,7 +61,7 @@ public class DataConverter {
 			boolean success = vector.appendToByteBuffer(buffer);
 			if (success == false){
 				for(;  buffer.position() < buffer.capacity(); ){
-					buffer.putInt(0);
+					buffer.putInt(0);//fill 0s
 				}
 				dataOutput.write(buffer.array());
 				buffer.clear();
@@ -76,10 +76,10 @@ public class DataConverter {
 					dataOutput = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".dat" ));
 					blockStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_" + blockId + ".sta"));
 					partOfBlock = 0;
-					//re-filling
-					vector.appendToByteBuffer(buffer);
-					blockStat.stat(vector);
 				}
+				//refill to either 'new block' or '2nd part' 
+				vector.appendToByteBuffer(buffer);
+				blockStat.stat(vector);
 			}else{
 				blockStat.stat(vector);
 			}
