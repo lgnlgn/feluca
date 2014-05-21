@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.shanbo.feluca.data.Vector.VectorType;
 import org.shanbo.feluca.data.util.BytesUtil;
-import org.shanbo.feluca.data.util.CollectionUtil;
 
 /**
  * General vector reader. use {@link #createDataReader(boolean, String)} to fetch an instance
@@ -35,6 +34,9 @@ public abstract class DataReader {
 		return tmp;
 	}
 	
+	/**
+	 * call it after hasNext(). Usually at the end of a hasNext()_loop
+	 */
 	public abstract void releaseHolding();
 	
 	public abstract boolean hasNext();

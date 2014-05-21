@@ -84,4 +84,8 @@ public class ModelServer extends BaseNioServer{
 			}
 		};
 	}
+	
+	public void saveModel(){
+		model.saveModel();
+	}
 }
