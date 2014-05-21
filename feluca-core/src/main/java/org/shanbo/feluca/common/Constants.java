@@ -33,9 +33,11 @@ public class Constants {
 		}
 		
 		public final static String DATA_DIR = "/data";
+		public final static String MODEL_DIR= "/model";
+		public final static String RESOURCE_DIR = "/resources";
 		
-		public final static String LEADER_DATASET_DIR = LEADER_REPOSITORY + DATA_DIR;
-		public final static String WORKER_DATASET_DIR = WORKER_REPOSITORY + DATA_DIR;
+//		public final static String LEADER_DATASET_DIR = LEADER_REPOSITORY + DATA_DIR;
+//		public final static String WORKER_DATASET_DIR = WORKER_REPOSITORY + DATA_DIR;
 		
 		public final static String ZK_CHROOT = "/feluca";
 		public final static String ZK_WORKER_PATH = ZK_CHROOT + "/workers";

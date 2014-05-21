@@ -27,7 +27,7 @@ public class WorkerModule extends RoleModule{
 	private JobManager jobManager;
 	
 	public WorkerModule(){
-		this.dataDir = Constants.Base.WORKER_DATASET_DIR;
+		this.dataDir = Constants.Base.getWorkerRepository() + Constants.Base.DATA_DIR;
 		this.jobManager = new JobManager();
 	}
 	

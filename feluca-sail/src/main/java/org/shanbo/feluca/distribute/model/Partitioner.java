@@ -55,7 +55,7 @@ public interface Partitioner{
 	}
 	
 	/**
-	 *
+	 * not tested yet
 	 * @author lgn
 	 *
 	 */

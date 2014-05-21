@@ -1,14 +1,19 @@
-package org.shanbo.feluca.distribute.model;
+package org.shanbo.feluca.distribute.algorithm.lr;
 
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.data.DataReader;
 import org.shanbo.feluca.data.Vector;
+import org.shanbo.feluca.distribute.model.GlobalConfig;
+import org.shanbo.feluca.distribute.model.ModelClient;
+import org.shanbo.feluca.distribute.model.ModelServer;
 import org.shanbo.feluca.util.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +52,6 @@ public abstract class AlgorithmBase{
 
 
 	public void init() throws IOException{
-		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ "/" + this.conf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
 		modelClient = new ModelClient(conf);
 		int modelSegmentID = conf.modelIndexOf(NetworkUtils.ipv4Host());
 		if (modelSegmentID > -1){
@@ -55,6 +59,13 @@ public abstract class AlgorithmBase{
 			modelServer.start();
 		}
 	}
+	
+	private void initDataInput() throws IOException{
+		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ Constants.Base.DATA_DIR +
+				"/" + this.conf.getDataName().replace("/+", "/"));
+	}
+
+	
 
 	public void close() throws IOException{
 		modelClient.close();
@@ -89,12 +100,13 @@ public abstract class AlgorithmBase{
 
 	abstract protected void checkStopCondition();
 
-	public void runAlgorithm(){
+	public void runAlgorithm() throws IOException{
 		Integer loops = conf.getAlgorithmConf().getInteger(Constants.Algorithm.LOOPS);
 		if (loops == null)
 			loops = 10;
+		TIntHashSet idSet = new TIntHashSet();
 		for(int i = 0 ; i < loops;i++){
-			TIntHashSet idSet = new TIntHashSet();
+			this.initDataInput();
 			while(dataInput.hasNext()){
 				long[] offsetArray = dataInput.getOffsetArray();
 				List<IndexOffset> offsets = partition(offsetArray.length, 10);
@@ -123,15 +135,16 @@ public abstract class AlgorithmBase{
 					}
 					System.out.print("!");
 				}
-				System.out.println("hasNext?");
+				dataInput.releaseHolding();//release holding
 			}
-			dataInput.releaseHolding();//release holding
+			
 			System.out.println("loops:" + i);
 			checkStopCondition(); 
 			if (modelClient.reachStopCondition()){
 				return;
 			}
 		}
+		modelServer.saveModel();
 	}
 
 }

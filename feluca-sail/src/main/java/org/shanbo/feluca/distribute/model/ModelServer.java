@@ -1,5 +1,7 @@
 package org.shanbo.feluca.distribute.model;
 
+import java.io.IOException;
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
@@ -83,5 +85,9 @@ public class ModelServer extends BaseNioServer{
 				return pipeline;
 			}
 		};
+	}
+	
+	public void saveModel() throws IOException{
+		model.saveModel();
 	}
 }

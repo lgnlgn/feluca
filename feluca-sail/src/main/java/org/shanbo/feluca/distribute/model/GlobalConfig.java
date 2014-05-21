@@ -112,6 +112,10 @@ public class GlobalConfig {
 		return conf.getString(key);
 	}
 	
+	public String getDataName(){
+		return getString(Constants.Algorithm.DATANAME);
+	}
+	
 	
 	public String toString(){
 		return conf.toJSONString();

@@ -1,6 +1,13 @@
 package org.shanbo.feluca.distribute.model;
 
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -14,6 +21,8 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.util.Strings;
 import org.slf4j.Logger;
@@ -27,13 +36,14 @@ public class PartialModelInServer {
 	Partitioner partitioner;
 	SimpleChannelHandler serverChannel;
 	int thisBlock;
-	
+	String modelPrefix;
 	public PartialModelInServer(GlobalConfig conf, int thisBlockId){
 		serverChannel = new BytesChannelHandler();
 		partitioner = conf.getPartitioner();
 		init(conf.getModelServers().size(), 
 				thisBlockId, 
 				conf.getDataStatistic().getIntValue(DataStatistic.MAX_FEATURE_ID));
+		modelPrefix = conf.getString("modelPrifex");
 	}
 	
 	
@@ -103,7 +113,17 @@ public class PartialModelInServer {
 	public SimpleChannelHandler getChannelForNetty(){
 		return serverChannel;
 	}
-	public void saveModel(){
-		//TODO
+	public void saveModel() throws IOException{
+		if (modelPrefix == null)
+			throw new FelucaException("model name is null");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(
+				Constants.Base.getWorkerRepository() + Constants.Base.MODEL_DIR + "/" + modelPrefix + "." + thisBlock));
+		for(int i = 0; i < values.length; i++){
+			if (values[i] == 0)
+				writer.write("0\n");
+			else
+				writer.write(String.format("%.6f\n", values[i]));
+		}
+		writer.close();
 	}
 }
