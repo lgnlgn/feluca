@@ -61,12 +61,8 @@ public abstract class AlgorithmBase{
 	}
 	
 	private void initDataInput() throws IOException{
-<<<<<<< HEAD:feluca-sail/src/main/java/org/shanbo/feluca/distribute/algorithm/lr/AlgorithmBase.java
 		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ Constants.Base.DATA_DIR +
 				"/" + this.conf.getDataName().replace("/+", "/"));
-=======
-		dataInput = DataReader.createDataReader(false, Constants.Base.getWorkerRepository()+ "/" + this.conf.getString(Constants.Algorithm.DATANAME).replace("/+", "/"));
->>>>>>> c3124c9d14dbbc5e234aed141598dc33da30e24a:feluca-sail/src/main/java/org/shanbo/feluca/distribute/model/AlgorithmBase.java
 	}
 
 	
