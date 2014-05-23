@@ -87,7 +87,11 @@ public class ModelServer extends BaseNioServer{
 		};
 	}
 	
+<<<<<<< HEAD
 	public void saveModel() throws IOException{
+=======
+	public void saveModel(){
+>>>>>>> c3124c9d14dbbc5e234aed141598dc33da30e24a
 		model.saveModel();
 	}
 }
