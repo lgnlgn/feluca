@@ -23,12 +23,13 @@ public class TestSGDL2LR {
 		algoConf.put("lambda", 0.0001);
 		
 		GlobalConfig cc = GlobalConfig.build("sgdl2lr", new Partitioner.HashPartitioner(0), dataName,
-				FileUtil.loadProperties(Constants.Base.getWorkerRepository() + "/" + dataName + "/" + dataName + ".sta"), algoConf, models );
+				FileUtil.loadProperties(Constants.Base.getWorkerRepository() + Constants.Base.DATA_DIR +  "/" + dataName + "/" + dataName + ".sta"), algoConf, models );
 	
 		SGDL2LR lr = new SGDL2LR(cc);
 		lr.init();
 		lr.runAlgorithm();
 		lr.close();
+		System.out.println("finish all!");
 	}
 
 }

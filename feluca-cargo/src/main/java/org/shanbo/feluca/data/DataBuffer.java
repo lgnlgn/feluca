@@ -176,7 +176,7 @@ public class DataBuffer implements Runnable{
 				}
 			}
 		}
-		System.out.println("thread finished!");
+//		System.out.println("thread finished!");
 	}
 
 	public static void main(String[] args) throws IOException {

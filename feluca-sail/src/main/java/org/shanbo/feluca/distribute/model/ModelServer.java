@@ -23,7 +23,7 @@ public class ModelServer extends BaseNioServer{
 	
 	final static int PORT = 12800;
 	Logger log = LoggerFactory.getLogger(ModelServer.class);
-	String zkPath = Constants.Algorithm.ZK_ALGO_CHROOT + "/test";
+
 	PartialModelInServer model ;
 	GlobalConfig conf;
 	String host ;
@@ -59,7 +59,6 @@ public class ModelServer extends BaseNioServer{
 
 	@Override
 	public void postStop() throws Exception {
-		super.postStop(); //shutdown channels
 		
 	}
 

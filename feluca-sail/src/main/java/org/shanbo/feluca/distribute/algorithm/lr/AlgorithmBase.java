@@ -141,7 +141,7 @@ public abstract class AlgorithmBase{
 			System.out.println("loops:" + i);
 			checkStopCondition(); 
 			if (modelClient.reachStopCondition()){
-				return;
+				break;
 			}
 		}
 		modelServer.saveModel();

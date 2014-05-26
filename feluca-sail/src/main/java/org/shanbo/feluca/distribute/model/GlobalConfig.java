@@ -18,6 +18,7 @@ public class GlobalConfig {
 	public final static  String  MODEL_SERVERS = "modelServers";
 	public final static  String  ALGO_CONF = "algoConf";
 	public final static  String  PARTITIONER = "partitioner";
+	public final static  String  MODEL_PREFIX = "modelPrifex";
 	
 	final JSONObject conf ;
 	final ImmutableList<String> modelServers;
@@ -59,6 +60,7 @@ public class GlobalConfig {
 		json.put(DATA_STATUS, dataStatus);
 		json.put(ALGO_CONF, algoConf);
 		json.put(ALGO_NAME, algoName);
+		json.put(MODEL_PREFIX, dataName + "_model");
 		return new GlobalConfig(json.toJSONString());
 	}
 	
@@ -121,5 +123,7 @@ public class GlobalConfig {
 		return conf.toJSONString();
 	}
 	
-	
+	public String getModelPreifx(){
+		return conf.getString(MODEL_PREFIX);
+	}
 }

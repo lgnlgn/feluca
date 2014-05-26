@@ -1,10 +1,7 @@
 package org.shanbo.feluca.distribute.model;
 
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -24,7 +21,6 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data.convert.DataStatistic;
-import org.shanbo.feluca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +39,7 @@ public class PartialModelInServer {
 		init(conf.getModelServers().size(), 
 				thisBlockId, 
 				conf.getDataStatistic().getIntValue(DataStatistic.MAX_FEATURE_ID));
-		modelPrefix = conf.getString("modelPrifex");
+		modelPrefix = conf.getModelPreifx();
 	}
 	
 	
@@ -76,7 +72,7 @@ public class PartialModelInServer {
 	
 	
 	class BytesChannelHandler extends SimpleChannelHandler{
-		//TODO
+
 		public void messageReceived(ChannelHandlerContext ctx, final MessageEvent e){
 			HttpRequest req = (HttpRequest)e.getMessage();
 			HttpResponse resp = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
@@ -113,6 +109,7 @@ public class PartialModelInServer {
 	public SimpleChannelHandler getChannelForNetty(){
 		return serverChannel;
 	}
+	
 	public void saveModel() throws IOException{
 		if (modelPrefix == null)
 			throw new FelucaException("model name is null");
