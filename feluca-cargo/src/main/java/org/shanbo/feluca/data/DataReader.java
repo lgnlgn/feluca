@@ -1,5 +1,6 @@
 package org.shanbo.feluca.data;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.shanbo.feluca.data.Vector.VectorType;
@@ -7,17 +8,30 @@ import org.shanbo.feluca.data.util.BytesUtil;
 
 /**
  * General vector reader. use {@link #createDataReader(boolean, String)} to fetch an instance
+ * <p>
+ * 
+ * <p>while(reader.hasNext()){ <p>
+ * <p>&nbsp;&nbsp;   long[] offsetArray = reader.getOffsetArray();<p>
+ * <p>&nbsp;&nbsp;   for(int o = 0 ; o < offsetArray.length; o++){
+ * <p>&nbsp;&nbsp;&nbsp;		Vector v = dataInput.getVectorByOffset(offsetArray[o]);
+ * <p>&nbsp;&nbsp;&nbsp;					//<i> do your computation</b>
+ * <p>&nbsp;&nbsp;		}
+ * <p>&nbsp;<b> reader.releaseHolding() </b>
+ * <p>&nbsp;}
+ * <p>&nbsp;
  * @author lgn
  *
  */
 public abstract class DataReader {
 	byte[] inMemData; //a global data set of just a cache reference 
-	
+
 	long[] vectorOffsets; //
 	int offsetSize;
 	Vector vector;
 	String dirName;
-	
+
+	BlockStatus glocalStatus;
+
 	public long getOffsetsByIdx(int index){
 		if (index < 0 ||  index >= offsetSize){
 			throw new RuntimeException("offsets index out of range", new IndexOutOfBoundsException());
@@ -25,28 +39,32 @@ public abstract class DataReader {
 			return vectorOffsets[index];
 		}
 	}
-	
+
 	public abstract Vector getVectorByOffset(long offset);
-	
+
 	public long[] getOffsetArray(){
 		long[] tmp = new long[offsetSize];
 		System.arraycopy(vectorOffsets, 0, tmp, 0, offsetSize);
 		return tmp;
 	}
-	
+
 	/**
-	 * call it after hasNext(). Usually at the end of a hasNext()_loop
+	 * call it after hasNext(). Usually inside the end of a hasNext()_loop
 	 */
 	public abstract void releaseHolding();
-	
+
 	public abstract boolean hasNext();
-	
+
+	public BlockStatus getStatistic(){
+		return glocalStatus;
+	}
+
 	private DataReader(String dataName) {
-		
+		this.glocalStatus = new BlockStatus(new File(dataName));
 		this.dirName = dataName;
 		this.vectorOffsets = new long[32 * 1024];
 	}
-	
+
 	protected void readOffsetsFromCache(){
 		int currentStart = 0;
 		int i = 0;
@@ -72,10 +90,10 @@ public abstract class DataReader {
 		}else{
 			return new FSCacheDataReader(dataName);
 		}
-		
-		
+
+
 	}
-	
+
 	public static class RAMDataReader extends DataReader{
 
 		private RAMDataReader(String dataName) {
@@ -98,17 +116,17 @@ public abstract class DataReader {
 		@Override
 		public void releaseHolding() {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 	}
-	
+
 	public static class FSCacheDataReader extends DataReader{
 
 		DataBuffer fileBuffer;
 
 		int vectorIdxOfCurrentCache;
-		
+
 		private FSCacheDataReader(String dataName) throws IOException {
 			super(dataName);
 			fileBuffer = new DataBuffer(dirName);
@@ -130,7 +148,7 @@ public abstract class DataReader {
 		@Override
 		public boolean hasNext() {
 			inMemData = fileBuffer.getByteArrayRef();
-			
+
 			if (inMemData == null)
 				return false;
 			else{
@@ -145,7 +163,7 @@ public abstract class DataReader {
 		public void releaseHolding() {
 			fileBuffer.releaseByteArrayRef();
 		}
-		
+
 	}
-	
+
 }
