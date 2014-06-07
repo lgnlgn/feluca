@@ -1,4 +1,4 @@
-package org.dami.classification.lr;
+package org.shanbo.feluca.classification.lr;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,7 +20,7 @@ import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.paddle.common.MemoryEstimater;
 import org.shanbo.feluca.paddle.common.Utilities;
 
-public abstract class AbstractSDGLogisticRegression implements Classifier, MemoryEstimater{
+public abstract class AbstractSGDLogisticRegression implements Classifier, MemoryEstimater{
 	final static double initWeight = 0;
 	final static int LABELRANGEBASE = 32768;
 	public final static double DEFAULT_STOP = 0.001;

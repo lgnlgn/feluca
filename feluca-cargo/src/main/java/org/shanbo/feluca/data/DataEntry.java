@@ -20,7 +20,7 @@ public class DataEntry {
 	/**
 	 * this construction only fetch statistic of global info
 	 * invoke {@link #reOpen()} before reading data!
-	 * @param dataDir
+	 * @param dataDir with absolute path
 	 * @param inRam
 	 * @throws IOException
 	 */
