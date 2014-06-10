@@ -15,12 +15,16 @@ import java.util.Properties;
  *
  */
 public class DataEntry {
-	
+
 	private DataReader reader;
 	private String dataDir ;
 	private boolean inRam;
-	
-	Properties statistic ;
+
+	private long[] offsetArray = new long[]{};
+	private int offsetArrayIdx = Integer.MAX_VALUE;
+
+	private Properties statistic ;
+
 	
 	/**
 	 * this construction only fetch statistic of global info
@@ -35,11 +39,11 @@ public class DataEntry {
 
 		statistic = BlockStatus.loadStatistic(dataDir + "/" +new File(dataDir).getName() + ".sta");
 	}
-	
+
 	public DataReader getDataReader(){
 		return reader;
 	}
-	
+
 	/**
 	 * create a new {@link DataReader}
 	 * @throws IOException
@@ -47,8 +51,24 @@ public class DataEntry {
 	public void reOpen() throws IOException{
 		reader = DataReader.createDataReader(false, dataDir);
 	}
-	
+
 	public Properties getDataStatistic(){
 		return new Properties(statistic);
 	}
+
+	public synchronized Vector getNextVector(){
+		if (offsetArrayIdx >= offsetArray.length){
+			reader.releaseHolding();
+			if (reader.hasNext()){
+				offsetArray = reader.getOffsetArray();
+				offsetArrayIdx = 0;
+			}else{
+				return null;
+			}
+		}
+		Vector v = reader.getVectorByOffset(offsetArray[offsetArrayIdx]);
+		offsetArrayIdx += 1;
+		return v;
+	}
+
 }

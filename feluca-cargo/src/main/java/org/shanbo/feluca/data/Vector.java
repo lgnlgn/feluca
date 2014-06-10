@@ -31,6 +31,7 @@ public abstract class Vector {
 	VectorType inputType;
 	VectorType outputType; //
 
+	
 	private Vector(){
 		ids = new int[64 * 1024];
 	}
@@ -93,7 +94,7 @@ public abstract class Vector {
 		return null;
 	}
 
-
+	
 	public int getFId(int idx){
 		if (idx < 0 || idx >= idSize){
 			throw new IndexOutOfBoundsException("vector index out of bound");
@@ -106,6 +107,10 @@ public abstract class Vector {
 		return 0;
 	}
 
+	public byte[] getBytesPayload(int idx){
+		return new byte[]{};
+	}
+	
 	public int getIntPayload(int idx){
 		return 0;
 	}
@@ -289,7 +294,7 @@ public abstract class Vector {
 	public static Vector build(VectorType type){
 		if (type == VectorType.FIDONLY){
 			return new FIDVector();
-		}else{
+		}else {
 			return new LWVector();
 		}
 	}
