@@ -55,7 +55,10 @@ public class DataConverter {
 		dataOutput = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_1.dat" ));
 		int count = 0;
 		for(String line = rawDataReader.readLine(); line != null ; line = rawDataReader.readLine()){
-			vector.parseLine(line);
+			boolean parseOk = vector.parseLine(line);
+			if (parseOk == false){
+				continue;
+			}
 			globalStat.stat(vector);
 			count ++;
 			boolean success = vector.appendToByteBuffer(buffer);

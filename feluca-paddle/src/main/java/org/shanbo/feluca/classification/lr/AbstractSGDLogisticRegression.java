@@ -63,9 +63,9 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		if (this.dataEntry == null){
 			throw new RuntimeException("dataEntry must be set!");
 		}else{
-			maxFeatureId = dataEntry.getDataReader().getStatistic().getInt(DataStatistic.MAX_FEATURE_ID, 0);
+			maxFeatureId = Utilities.getIntFromProperties(dataEntry.getDataStatistic(), DataStatistic.MAX_FEATURE_ID);
 					
-			String tmpInfo = dataEntry.getDataReader().getStatistic().getString(DataStatistic.LABEL_INFO, "");
+			String tmpInfo = Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.LABEL_INFO);
 			this.dataInfo = new int[LABELRANGEBASE * 2][];
 			if (tmpInfo.split(" ").length > 2){
 				throw new RuntimeException("Data Set contains more than 2 classes");
@@ -134,11 +134,12 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 			System.out.println("----cross validation loop " + i);
 			this._train(fold, i);
 			//-------------test-------
+			
 			this.dataEntry.reOpen();
 			int c = 1;
 			double[] resultProbs = new double[2];
 
-			
+			System.out.println("testing");
 			while(dataEntry.getDataReader().hasNext()){
 				long[] offsetArray = dataEntry.getDataReader().getOffsetArray();
 				for(int o= 0; o < offsetArray.length; o++){
@@ -152,6 +153,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 						}
 					}
 				}
+				dataEntry.getDataReader().releaseHolding();
 			}
 		}
 	}
@@ -184,8 +186,8 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 
 	public void saveModel(String filePath) throws Exception {		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
-		bw.write(this.dataEntry.getDataReader().getStatistic().getString(DataStatistic.MAX_FEATURE_ID, "")  + "\n");
-		bw.write(this.dataEntry.getDataReader().getStatistic().getString(DataStatistic.LABEL_INFO , "")  + "\n");
+		bw.write(Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.MAX_FEATURE_ID) + "\n");
+		bw.write(Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.LABEL_INFO) + "\n");
 		for(int i = 0 ; i < this.featureWeights.length; i++){
 			if (this.featureWeights[i] == initWeight)
 				bw.write("0\n" );

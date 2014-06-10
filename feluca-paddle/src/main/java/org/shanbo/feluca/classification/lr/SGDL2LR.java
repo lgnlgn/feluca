@@ -128,7 +128,8 @@ public class SGDL2LR extends AbstractSGDLogisticRegression{
 
 
 	@Override
-	protected void estimateParameter() throws NullPointerException{
+	protected void estimateParameter(){
+		
 		this.samples = Utilities.getIntFromProperties(dataEntry.getDataStatistic(), DataStatistic.NUM_VECTORS);
 		double rate = Math.log(2 + samples /((1 + biasWeightRound)/(biasWeightRound * 2.0)) /( this.maxFeatureId + 0.0));
 		if (rate < 0.5)
@@ -137,11 +138,13 @@ public class SGDL2LR extends AbstractSGDLogisticRegression{
 		if (alpha == null){
 			alpha = 0.5 / rate;
 			minAlpha = alpha  / Math.pow(1 + rate, 1.8);
+			System.out.println("guessing alpha:" + alpha);
 		}
 		if (this.lambda == null){
 			lambda = 0.2 / rate;
 //			minLambda = lambda  / Math.pow(1 + rate, 1.8);
 			minLambda = 0.01;
+			System.out.println("guessing lambda:" + lambda);
 		}
 	}
 
