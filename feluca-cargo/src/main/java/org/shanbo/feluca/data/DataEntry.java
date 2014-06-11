@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+
 /**
  * <p>entry for {@link DataReader}
  * <p>2 ways of getting statistics of data
@@ -16,7 +17,7 @@ import java.util.Properties;
  */
 public class DataEntry {
 
-	private DataReader reader;
+	protected DataReader reader;
 	private String dataDir ;
 	private boolean inRam;
 
@@ -25,7 +26,7 @@ public class DataEntry {
 
 	private Properties statistic ;
 
-	
+	protected int currentPosition;
 	/**
 	 * this construction only fetch statistic of global info
 	 * invoke {@link #reOpen()} before reading data!
@@ -50,15 +51,22 @@ public class DataEntry {
 	 */
 	public void reOpen() throws IOException{
 		reader = DataReader.createDataReader(false, dataDir);
+		currentPosition = 0;
 	}
 
+	public void close() throws IOException{
+		reader.close();
+	}
+	
+	
 	public Properties getDataStatistic(){
 		return new Properties(statistic);
 	}
 
 	public synchronized Vector getNextVector(){
 		if (offsetArrayIdx >= offsetArray.length){
-			reader.releaseHolding();
+			if (offsetArrayIdx != Integer.MAX_VALUE) // no release on first opening
+				reader.releaseHolding();
 			if (reader.hasNext()){
 				offsetArray = reader.getOffsetArray();
 				offsetArrayIdx = 0;
@@ -68,7 +76,38 @@ public class DataEntry {
 		}
 		Vector v = reader.getVectorByOffset(offsetArray[offsetArrayIdx]);
 		offsetArrayIdx += 1;
+		currentPosition += 1;
 		return v;
 	}
 
+	/**
+	 * 
+	 * @author lgn
+	 *
+	 */
+	public static class VDataEntry extends DataEntry{
+
+		long[] forwardIndex;//
+		
+		public VDataEntry(String dataDir) throws IOException {
+			super(dataDir, true);
+			//TODO 
+		}
+
+		public void reOpen() throws IOException{
+			
+		}
+
+		/**
+		 * the Vector must have an ID
+		 * @param vectorId
+		 * @param deepIndex
+		 * @return
+		 */
+		public synchronized Vector getVectorById(int vectorId){
+			long offset = forwardIndex[vectorId];
+			return reader.getVectorByOffset(offset);
+		}
+	}
+	
 }

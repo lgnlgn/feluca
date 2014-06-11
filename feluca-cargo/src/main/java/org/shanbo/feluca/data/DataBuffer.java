@@ -1,5 +1,6 @@
 package org.shanbo.feluca.data;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,8 +10,12 @@ import java.util.Properties;
 
 import com.google.common.io.PatternFilenameFilter;
 
-
-public class DataBuffer implements Runnable{
+/**
+ * actually it is a fileBuffer
+ * @author lgn
+ *
+ */
+public class DataBuffer implements Runnable, Closeable{
 	final static int CACHE_SIZE = 32 * 1024*1024;
 
 	Properties globalStatus;
@@ -160,6 +165,10 @@ public class DataBuffer implements Runnable{
 		t.start();
 	}
 
+	public void close() throws IOException{
+		finished = true;//daemon thread will be stopped
+	}
+	
 
 	public void run() {
 		while(!finished){
@@ -174,6 +183,10 @@ public class DataBuffer implements Runnable{
 				}catch (IOException e) {
 					throw new RuntimeException("IO exception!!!!!!!");
 				}
+			}
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
 			}
 		}
 //		System.out.println("thread finished!");

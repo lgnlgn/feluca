@@ -6,12 +6,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Map;
 import java.util.Properties;
+
 
 import org.shanbo.feluca.cf.common.RatingInfo;
 import org.shanbo.feluca.cf.common.Recommender;
 import org.shanbo.feluca.cf.common.UserRatings;
 import org.shanbo.feluca.data.DataEntry;
+import org.shanbo.feluca.data.DataEntry.VDataEntry;
+import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.paddle.common.Utilities;
 
@@ -54,7 +58,8 @@ public class SlopeOne implements Recommender{
 	public void train() throws Exception {
 		this.init_space();
 		UserRatings ur = new UserRatings();
-		for(dataEntry.nextUser(ur); ur.getItemNum() > 0; dataEntry.nextUser(ur)){
+		for(Vector v = dataEntry.getNextVector(); v!= null; v = dataEntry.getNextVector()){
+			ur.setVector(v);
 			int rates = ur.getItemNum();
 			for(int i = 0 ; i < rates-1; i++){
 				RatingInfo rii = ur.getRatingByIndex(i);
@@ -164,7 +169,7 @@ public class SlopeOne implements Recommender{
 		}
 	}
 
-	@Override
+
 	public void saveModel(String filePath) throws Exception {
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
 		ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -217,6 +222,13 @@ public class SlopeOne implements Recommender{
 			}
 			return predicts;
 		}
+	}
+
+
+
+	public Map<Integer, double[]> predict(int[] users) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

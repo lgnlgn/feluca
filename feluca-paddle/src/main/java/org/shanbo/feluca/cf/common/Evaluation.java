@@ -32,7 +32,7 @@ public class Evaluation {
 					itemIds[i] = ur.getRatingByIndex(i).itemId;
 				}
 				// predict in batch mode
-				double[] predicts = recommender.predict(ur.getUid(), itemIds);
+				double[] predicts = recommender.predict(ur, itemIds);
 				if (predicts == null)
 					dbsize -= ur.getItemNum();
 				else{

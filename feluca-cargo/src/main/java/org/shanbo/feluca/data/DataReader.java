@@ -1,10 +1,14 @@
 package org.shanbo.feluca.data;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.shanbo.feluca.data.Vector.VectorType;
 import org.shanbo.feluca.data.util.BytesUtil;
+
+import com.google.common.io.Closeables;
 
 /**
  * General vector reader. use {@link #createDataReader(boolean, String)} to fetch an instance
@@ -22,23 +26,21 @@ import org.shanbo.feluca.data.util.BytesUtil;
  * @author lgn
  *
  */
-public abstract class DataReader {
+public abstract class DataReader implements Closeable {
 	byte[] inMemData; //a global data set of just a cache reference 
 
-	long[] vectorOffsets; //
+	long[] vectorOffsets; //automatically enlarge
 	int offsetSize;
 	Vector vector;
 	String dirName;
 
-	BlockStatus glocalStatus;
-
-	public long getOffsetsByIdx(int index){
-		if (index < 0 ||  index >= offsetSize){
-			throw new RuntimeException("offsets index out of range", new IndexOutOfBoundsException());
-		}else{
-			return vectorOffsets[index];
-		}
-	}
+//	public long getOffsetsByIdx(int index){
+//		if (index < 0 ||  index >= offsetSize){
+//			throw new RuntimeException("offsets index out of range", new IndexOutOfBoundsException());
+//		}else{
+//			return vectorOffsets[index];
+//		}
+//	}
 
 	public abstract Vector getVectorByOffset(long offset);
 
@@ -55,12 +57,10 @@ public abstract class DataReader {
 
 	public abstract boolean hasNext();
 
-	public BlockStatus getStatistic(){
-		return glocalStatus;
-	}
 
+	public abstract void close() throws IOException;
+	
 	private DataReader(String dataName) {
-		this.glocalStatus = new BlockStatus(new File(dataName));
 		this.dirName = dataName;
 		this.vectorOffsets = new long[32 * 1024];
 	}
@@ -95,9 +95,15 @@ public abstract class DataReader {
 	}
 
 	public static class RAMDataReader extends DataReader{
-
+		
+		int blockIter;
+		int vectorIter;
+		List<byte[]> dats;
+		List<long[]> offsets;
+		//TODO
 		private RAMDataReader(String dataName) {
 			super(dataName);
+			
 		}
 
 
@@ -116,7 +122,12 @@ public abstract class DataReader {
 		@Override
 		public void releaseHolding() {
 			// TODO Auto-generated method stub
-
+		}
+		
+		@Override
+		public void close() {
+			// TODO Auto-generated method stub
+			
 		}
 
 	}
@@ -162,6 +173,13 @@ public abstract class DataReader {
 		@Override
 		public void releaseHolding() {
 			fileBuffer.releaseByteArrayRef();
+		}
+
+
+
+		@Override
+		public void close() throws IOException {
+			Closeables.close(fileBuffer, false);
 		}
 
 	}
