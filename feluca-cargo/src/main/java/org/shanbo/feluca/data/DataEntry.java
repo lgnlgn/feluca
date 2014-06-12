@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.shanbo.feluca.data.DataReader.RAMDataReader;
+import org.shanbo.feluca.data.convert.DataStatistic;
+
 
 /**
  * <p>entry for {@link DataReader}
@@ -18,13 +21,13 @@ import java.util.Properties;
 public class DataEntry {
 
 	protected DataReader reader;
-	private String dataDir ;
-	private boolean inRam;
+	protected String dataDir ;
+	protected boolean inRam;
 
 	private long[] offsetArray = new long[]{};
 	private int offsetArrayIdx = Integer.MAX_VALUE;
 
-	private Properties statistic ;
+	protected Properties statistic ;
 
 	protected int currentPosition;
 	/**
@@ -50,8 +53,12 @@ public class DataEntry {
 	 * @throws IOException
 	 */
 	public void reOpen() throws IOException{
-		reader = DataReader.createDataReader(false, dataDir);
-		currentPosition = 0;
+		if (inRam == false){
+			reader = DataReader.createDataReader(inRam, dataDir);
+			currentPosition = 0;
+		}else{
+			
+		}
 	}
 
 	public void close() throws IOException{
@@ -87,17 +94,33 @@ public class DataEntry {
 	 */
 	public static class VDataEntry extends DataEntry{
 
-		long[] forwardIndex;//
+		int[][] forwardIndex;//[[blockIter, offsetStart, offsetEnd], [], []...]  vector id = index;
 		
 		public VDataEntry(String dataDir) throws IOException {
 			super(dataDir, true);
-			//TODO 
+			forwardIndex = new int[Integer.parseInt(statistic.getProperty(DataStatistic.MAX_VECTOR_ID)) + 1][];
+			buildforwardIndex();
 		}
 
 		public void reOpen() throws IOException{
-			
+			((RAMDataReader) reader).reOpen();
 		}
 
+		private void buildforwardIndex(){
+			
+			RAMDataReader ram = (RAMDataReader) reader;
+			while(ram.hasNext()){
+				long[] offsetArray2 = ram.getOffsetArray();
+				for(int o = 0 ;o < offsetArray2.length; o++){
+					Vector v = ram.getVectorByOffset(offsetArray2[o]);
+					int start = (int)(((offsetArray2[o] & 0xffffffff00000000l) >> 32) & 0xffffffff);
+					int end = (int)(offsetArray2[o] & 0xffffffffl);
+
+					forwardIndex[v.getIntHeader()] = new int[]{ram.getBlockIter(), start, end};
+				}
+			}
+		}
+		
 		/**
 		 * the Vector must have an ID
 		 * @param vectorId
@@ -105,8 +128,8 @@ public class DataEntry {
 		 * @return
 		 */
 		public synchronized Vector getVectorById(int vectorId){
-			long offset = forwardIndex[vectorId];
-			return reader.getVectorByOffset(offset);
+			int[] index = forwardIndex[vectorId];
+			return ((RAMDataReader) reader).getVectorOfBlock(index[0], index[1], index[2]);
 		}
 	}
 	

@@ -1,8 +1,9 @@
 package org.shanbo.feluca.data;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.shanbo.feluca.data.Vector.VectorType;
@@ -12,12 +13,13 @@ import com.google.common.io.Closeables;
 
 /**
  * General vector reader. use {@link #createDataReader(boolean, String)} to fetch an instance
+ * <p><b>DO NOT support random access! </b>
  * <p>
  * 
  * <p>while(reader.hasNext()){ <p>
  * <p>&nbsp;&nbsp;   long[] offsetArray = reader.getOffsetArray();<p>
  * <p>&nbsp;&nbsp;   for(int o = 0 ; o < offsetArray.length; o++){
- * <p>&nbsp;&nbsp;&nbsp;		Vector v = dataInput.getVectorByOffset(offsetArray[o]);
+ * <p>&nbsp;&nbsp;&nbsp;		Vector v = reader.getVectorByOffset(offsetArray[o]);
  * <p>&nbsp;&nbsp;&nbsp;					//<i> do your computation</b>
  * <p>&nbsp;&nbsp;		}
  * <p>&nbsp;<b> reader.releaseHolding() </b>
@@ -34,20 +36,11 @@ public abstract class DataReader implements Closeable {
 	Vector vector;
 	String dirName;
 
-//	public long getOffsetsByIdx(int index){
-//		if (index < 0 ||  index >= offsetSize){
-//			throw new RuntimeException("offsets index out of range", new IndexOutOfBoundsException());
-//		}else{
-//			return vectorOffsets[index];
-//		}
-//	}
 
 	public abstract Vector getVectorByOffset(long offset);
 
 	public long[] getOffsetArray(){
-		long[] tmp = new long[offsetSize];
-		System.arraycopy(vectorOffsets, 0, tmp, 0, offsetSize);
-		return tmp;
+		return Arrays.copyOf(vectorOffsets, offsetSize);
 	}
 
 	/**
@@ -55,6 +48,10 @@ public abstract class DataReader implements Closeable {
 	 */
 	public abstract void releaseHolding();
 
+	/**
+	 * call it before iterate vectors
+	 * @return
+	 */
 	public abstract boolean hasNext();
 
 
@@ -94,40 +91,92 @@ public abstract class DataReader implements Closeable {
 
 	}
 
-	public static class RAMDataReader extends DataReader{
+	/**
+	 * support random access
+	 * @author lgn
+	 *
+	 */
+	public static class RAMDataReader extends FSCacheDataReader{
 		
-		int blockIter;
-		int vectorIter;
+		int blockIter; // trace of blocks
+
 		List<byte[]> dats;
 		List<long[]> offsets;
+		List<BlockStatus> blockStatuses;
 		//TODO
-		private RAMDataReader(String dataName) {
+		private RAMDataReader(String dataName) throws IOException {
 			super(dataName);
-			
+			dats = new ArrayList<byte[]>();
+			offsets = new ArrayList<long[]>();
+			while(super.hasNext()){
+				dats.add(Arrays.copyOfRange(inMemData, 0, inMemData.length));
+				offsets.add(Arrays.copyOfRange(vectorOffsets, 0, vectorOffsets.length));
+				super.releaseHolding();
+			}
+			blockStatuses = fileBuffer.blocks;
 		}
 
+		/**
+		 * for random access
+		 * @param blockIdx
+		 * @param start
+		 * @param end
+		 * @return
+		 */
+		public Vector getVectorOfBlock(int blockIdx, int start, int end){
+			vector.set(dats.get(blockIdx), start, end);
+			return vector;
+		}
 
+		/**
+		 * for random access
+		 * @param blockIdx
+		 * @param start
+		 * @param end
+		 * @return
+		 */
+		public Vector getVectorOfBlock(int blockIdx, long offset){
+			int start = (int)(((offset & 0xffffffff00000000l) >> 32) & 0xffffffff);
+			int end = (int)(offset & 0xffffffffl);
+			vector.set(dats.get(blockIdx), start, end);
+			return vector;
+		}
+		
+		
 		@Override
 		public Vector getVectorByOffset(long offset) {
-			// TODO Auto-generated method stub
-			return null;
+			int start = (int)(((offset & 0xffffffff00000000l) >> 32) & 0xffffffff);
+			int end = (int)(offset & 0xffffffffl);
+			return getVectorOfBlock(blockIter, start, end);
 		}
 
 		@Override
 		public boolean hasNext() {
+			if ((blockIter+1) < dats.size()){
+				return true;
+			}
 			return false;
 		}
 
-
+		public synchronized void reOpen(){
+			blockIter = 0;
+		}
+		
+		public int getBlockIter(){
+			return blockIter;
+		}
+		
+		public long[] getOffsetArray(){
+			return Arrays.copyOfRange(offsets.get(blockIter), 0 , offsets.get(blockIter).length);
+		}
+		
 		@Override
 		public void releaseHolding() {
-			// TODO Auto-generated method stub
+			++blockIter;
 		}
 		
 		@Override
 		public void close() {
-			// TODO Auto-generated method stub
-			
 		}
 
 	}
@@ -136,7 +185,6 @@ public abstract class DataReader implements Closeable {
 
 		DataBuffer fileBuffer;
 
-		int vectorIdxOfCurrentCache;
 
 		private FSCacheDataReader(String dataName) throws IOException {
 			super(dataName);
@@ -145,8 +193,6 @@ public abstract class DataReader implements Closeable {
 			vector = Vector.build(VectorType.valueOf(vectorType));
 			fileBuffer.start();
 		}
-
-
 
 		@Override
 		public Vector getVectorByOffset(long offset) {
