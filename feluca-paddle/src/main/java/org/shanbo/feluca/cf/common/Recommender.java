@@ -22,36 +22,7 @@ public interface Recommender {
 	public void setProperties(Properties prop);
 	
 	public Properties getProperties();
-	
-//	/**
-//	 * A single rating prediction
-//	 * @param userId
-//	 * @param itemId
-//	 * @return
-//	 * @throws Exception
-//	 */
-//	public double predict(int userId, int itemId) throws Exception;
-//
-//
-//	/**
-//	 * batch prediction of {@link #predict(int, int)}, often for testing
-//	 * @param userId
-//	 * @param itemIds
-//	 * @return
-//	 * @throws Exception
-//	 */
-//	public double[] predict(int userId, int[] itemIds) throws Exception;
-//	
-//	/**
-//	 * Predict a user's all-items rating. 
-//	 * To predict all user's all-item, use {@link #predict(int, int[])} with an integer array with int[i]=i
-//	 * Some implementations require user history loaded in the model!
-//	 * @param userId
-//	 * @return
-//	 * @throws Exception
-//	 */
-//	public double[] predict(int userId) throws Exception;
-	
+
 	
 	/**
 	 * Predict a user's all-items rating, using his history. 

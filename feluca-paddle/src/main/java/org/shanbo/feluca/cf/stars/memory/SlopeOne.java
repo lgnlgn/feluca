@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,7 +16,6 @@ import org.shanbo.feluca.cf.common.RatingInfo;
 import org.shanbo.feluca.cf.common.Recommender;
 import org.shanbo.feluca.cf.common.UserRatings;
 import org.shanbo.feluca.data.DataEntry;
-import org.shanbo.feluca.data.DataEntry.VDataEntry;
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.paddle.common.Utilities;
@@ -94,8 +95,7 @@ public class SlopeOne implements Recommender{
 	}
 
 
-	public double predict(int userId, int itemId) throws Exception {
-		UserRatings user = this.dataEntry.getUserById(userId);
+	public double predict(UserRatings user, int itemId) throws Exception {
 		if (user == null){
 			return -1;
 		}else{
@@ -109,40 +109,30 @@ public class SlopeOne implements Recommender{
 		}
 	}
 
-//	public double[] predict(int userId, int[] itemIds) throws Exception{
-//		UserRatings user = this.dataEntry.getUserById(userId);
-//		if (user == null){
-//			return null;
-//		}else{
-//			double[] predicts = new double[itemIds.length];
-//			int[] coRatingsArray = new int[itemIds.length];
-//			//for each rated item
-//			for(RatingInfo ri = user.getNormalNextRating(); ri != null; ri = user.getNormalNextRating()){
-//				float[] diffOfItem = diffs[ri.itemId];
-//				int[] coRates = this.coRating[ri.itemId];
-//				//get co-relation vector 
-//				for(int i = 0 ; i < itemIds.length; i++){
-//					if (coRates[i] != 0){
-//						predicts[i] += ri.rating * coRates[i] - diffOfItem[i];
-//						coRatingsArray[i] += coRates[i];
-//					}
-//				}
-//			}
-//			for(int i=0; i < itemIds.length; i++){
-//				if (coRatingsArray[i] != 0){
-//					predicts[i] /= coRatingsArray[i];
-//				}
-//			}
-//			return predicts;	
-//		}
-//	}
 	
-	
-	/**
-	 * 
-	 */
-	public double[] predict(int userId) throws Exception {
-		UserRatings user = this.dataEntry.getUserById(userId);
+
+
+	public void saveModel(String filePath) throws Exception {
+		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+		ObjectOutputStream oos = new ObjectOutputStream(bos);
+		oos.writeObject(this.diffs);
+		oos.writeObject(this.coRating);
+		oos.close();
+		bos.close();
+	}
+
+	public void loadModel(String modelPath) throws Exception {
+		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(modelPath));
+		ObjectInputStream ois = new ObjectInputStream(bis);
+		this.diffs = (float[][])ois.readObject();
+		this.coRating = (int[][])ois.readObject();
+		ois.close();
+		bis.close();
+		this.maxiid = this.diffs.length - 1;
+	}
+
+
+	public double[] predict(UserRatings user) throws Exception {
 		if (user == null){
 			return null;
 		}else{
@@ -170,36 +160,10 @@ public class SlopeOne implements Recommender{
 	}
 
 
-	public void saveModel(String filePath) throws Exception {
-		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-		ObjectOutputStream oos = new ObjectOutputStream(bos);
-		oos.writeObject(this.diffs);
-		oos.writeObject(this.coRating);
-		oos.close();
-		bos.close();
-	}
 
 
-	@Override
-	public void loadModel(String modelPath) throws Exception {
-		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(modelPath));
-		ObjectInputStream ois = new ObjectInputStream(bis);
-		this.diffs = (float[][])ois.readObject();
-		this.coRating = (int[][])ois.readObject();
-		ois.close();
-		bis.close();
-		this.maxiid = this.diffs.length - 1;
-	}
 
-	@Override
-	public double[] predict(UserRatings user) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double[] predict(int userId, int[] itemIds) throws Exception {
-		UserRatings user = this.dataEntry.getUserById(userId);
+	public double[] predict(UserRatings user, int[] itemIds) throws Exception {
 		if (user == null){
 			return null;
 		}else{
@@ -225,10 +189,14 @@ public class SlopeOne implements Recommender{
 	}
 
 
-
-	public Map<Integer, double[]> predict(int[] users) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<Integer, double[]> predict(List<UserRatings> users)
+			throws Exception {
+		Map<Integer, double[]> result = new HashMap<Integer, double[]>();
+		for(UserRatings user : users){
+			double[] predicts = this.predict(user);
+			result.put(user.getUid(), predicts);
+		}
+		return result;
 	}
 
 }

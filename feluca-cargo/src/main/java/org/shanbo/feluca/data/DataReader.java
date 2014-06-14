@@ -92,7 +92,8 @@ public abstract class DataReader implements Closeable {
 	}
 
 	/**
-	 * support random access
+	 * support random access; read all blocks of data into memory
+	 * TODO more tests need
 	 * @author lgn
 	 *
 	 */
@@ -118,14 +119,19 @@ public abstract class DataReader implements Closeable {
 
 		/**
 		 * for random access
-		 * @param blockIdx
+		 * @param blockIter
 		 * @param start
 		 * @param end
 		 * @return
 		 */
-		public Vector getVectorOfBlock(int blockIdx, int start, int end){
-			vector.set(dats.get(blockIdx), start, end);
+		public Vector getVectorOfBlock(int blockIter, int start, int end){
+			vector.set(dats.get(blockIter), start, end);
 			return vector;
+		}
+		
+		
+		public int getBlocks(){
+			return dats.size();
 		}
 
 		/**

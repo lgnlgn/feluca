@@ -88,15 +88,16 @@ public class DataEntry {
 	}
 
 	/**
-	 * 
+	 * random accessible DataEntry
+	 * TODO more test
 	 * @author lgn
 	 *
 	 */
-	public static class VDataEntry extends DataEntry{
+	public static class RADataEntry extends DataEntry{
 
 		int[][] forwardIndex;//[[blockIter, offsetStart, offsetEnd], [], []...]  vector id = index;
 		
-		public VDataEntry(String dataDir) throws IOException {
+		public RADataEntry(String dataDir) throws IOException {
 			super(dataDir, true);
 			forwardIndex = new int[Integer.parseInt(statistic.getProperty(DataStatistic.MAX_VECTOR_ID)) + 1][];
 			buildforwardIndex();

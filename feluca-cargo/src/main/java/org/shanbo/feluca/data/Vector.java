@@ -130,7 +130,11 @@ public abstract class Vector {
 
 
 
-
+	/**
+	 * fid fid fid...
+	 * @author lgn
+	 *
+	 */
 	public static class FIDVector extends Vector{
 
 		private FIDVector(){
@@ -190,6 +194,11 @@ public abstract class Vector {
 		}
 	}
 
+	/**
+	 * lable:[fid:weight],[fid:weight]...
+	 * @author lgn
+	 *
+	 */
 	public static class LWVector extends Vector{
 		int label;
 		float[] weights;
@@ -285,7 +294,108 @@ public abstract class Vector {
 
 	}
 
+	/**
+	 * vid:(fid:weight),(fid,weight)...
+	 * same as LWVector
+	 * @author lgn
+	 *
+	 */
+	public static class VFWVector extends Vector{
+		int label;
+		float[] weights;
 
+		private VFWVector(){
+			super();
+			weights = new float[ids.length];
+			this.inputType = VectorType.LABEL_FID_WEIGHT;
+			this.outputType = VectorType.LABEL_FID_WEIGHT;
+		}
+
+		@Override
+		public boolean appendToByteBuffer(ByteBuffer buffer) {
+			int capacityNeeds = 4 + 4 + (idSize  << 3) ; //(veclenght) + (label) + (kv pairs) each kv-pair occupy 8 bytes
+			if (buffer.capacity() - buffer.position() > capacityNeeds){
+				buffer.putInt(capacityNeeds - 4);
+				buffer.putInt(label);
+				for(int i = 0 ; i < idSize; i++){
+					buffer.putInt(ids[i]);
+					buffer.putFloat(weights[i]);
+				}
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		@Override
+		public float getWeight(int idx){
+			return weights[idx];
+		}
+
+		/**
+		 * represent classifier label
+		 */
+		public int getIntHeader(){
+			return label;
+		}
+
+		@Override
+		public void set(byte[] cache, int start, int end) {
+			label = BytesUtil.getInt(cache, start);
+			idSize  = (end - start - 4)/8; // include the 4-bytes header 
+			int fStart = start + 4; // label
+			for(int i = 0 ; i < idSize; i++){
+				int id = BytesUtil.getInt(cache, fStart + ( i << 3 ));
+				float weight = BytesUtil.getFloat(cache, fStart + 4 + (i <<3 ));
+				ids[i] = id;
+				weights[i] = weight;
+				checkAndExpand();
+			}
+		}
+
+		final void checkAndExpand(){
+			if (idSize >= ids.length){
+				int[] tmp = new int[idSize + LENGTH_PER_EXPANTION];
+				System.arraycopy(ids, 0, tmp, 0, idSize);
+				ids = tmp;
+				float[] tmp2 = new float[idSize + LENGTH_PER_EXPANTION];
+				System.arraycopy(weights, 0, tmp2, 0, idSize);
+				weights = tmp2;
+			}
+		}
+
+		public String toString(){
+			List<String> tmp = new ArrayList<String>(idSize);
+			for(int i = 0 ; i < idSize; i++){
+				tmp.add(String.format("%d:%.4f", ids[i], weights[i] ));
+			}
+			return label + " " + StringUtils.join(tmp, " ");
+		}
+
+		@Override
+		public boolean parseLine(String line) {
+			String[] labelIds = line.split("\\s+", 2);
+			this.label = Integer.parseInt(labelIds[0]);
+			try{
+				Map<String, String> split = Splitter.onPattern("\\s+").withKeyValueSeparator(":").split(labelIds[1].trim());
+
+				int i = 0;
+				for(Entry<String, String> kv : split.entrySet()){
+					ids[i] = Integer.parseInt(kv.getKey());
+					weights[i] = Float.parseFloat(kv.getValue());
+					i+=1;
+				}
+				idSize = i;
+			}catch (Exception e) {
+				System.err.println(labelIds[1]);
+				return false;
+			}
+			return true;
+		}
+
+	}
+	
+	
 	/**
 	 * decide the analysis way (both serialized and raw_text) for the vector.
 	 * @param type
@@ -294,6 +404,8 @@ public abstract class Vector {
 	public static Vector build(VectorType type){
 		if (type == VectorType.FIDONLY){
 			return new FIDVector();
+		}else if (type == VectorType.VID_FID_WEIGHT){
+			return new VFWVector();
 		}else {
 			return new LWVector();
 		}
