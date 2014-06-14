@@ -13,7 +13,8 @@ import com.google.common.io.Closeables;
 
 /**
  * General vector reader. use {@link #createDataReader(boolean, String)} to fetch an instance
- * <p><b>DO NOT support random access! </b>
+ * <p><b>base usage DOES NOT support random access! and it's NOT thread safe</b>
+ * <p><i>in order to use RA, use {@link #RAMDataReader} </i></p>
  * <p>
  * 
  * <p>while(reader.hasNext()){ <p>
@@ -92,7 +93,10 @@ public abstract class DataReader implements Closeable {
 	}
 
 	/**
-	 * support random access; read all blocks of data into memory
+	 * support random access usage; read all blocks of data into memory
+	 * 
+	 * <p>
+	 * <b>NOT thread safe</b>
 	 * TODO more tests need
 	 * @author lgn
 	 *
@@ -107,14 +111,15 @@ public abstract class DataReader implements Closeable {
 		//TODO
 		private RAMDataReader(String dataName) throws IOException {
 			super(dataName);
-			dats = new ArrayList<byte[]>();
-			offsets = new ArrayList<long[]>();
+			blockStatuses = fileBuffer.blocks;
+			dats = new ArrayList<byte[]>(blockStatuses.size() * 2);
+			offsets = new ArrayList<long[]>(blockStatuses.size() * 2);
 			while(super.hasNext()){
 				dats.add(Arrays.copyOfRange(inMemData, 0, inMemData.length));
 				offsets.add(Arrays.copyOfRange(vectorOffsets, 0, vectorOffsets.length));
 				super.releaseHolding();
 			}
-			blockStatuses = fileBuffer.blocks;
+			
 		}
 
 		/**
@@ -164,7 +169,7 @@ public abstract class DataReader implements Closeable {
 			return false;
 		}
 
-		public synchronized void reOpen(){
+		public void reOpen(){
 			blockIter = 0;
 		}
 		
@@ -187,6 +192,11 @@ public abstract class DataReader implements Closeable {
 
 	}
 
+	/**
+	 *  <b>((NOT)) thread safe!   </b>
+	 * @author lgn
+	 *
+	 */
 	public static class FSCacheDataReader extends DataReader{
 
 		DataBuffer fileBuffer;

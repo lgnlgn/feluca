@@ -70,6 +70,10 @@ public class DataEntry {
 		return new Properties(statistic);
 	}
 
+	/**
+	 * sugar for vector access
+	 * @return
+	 */
 	public synchronized Vector getNextVector(){
 		if (offsetArrayIdx >= offsetArray.length){
 			if (offsetArrayIdx != Integer.MAX_VALUE) // no release on first opening
@@ -121,6 +125,7 @@ public class DataEntry {
 				}
 			}
 		}
+		
 		
 		/**
 		 * the Vector must have an ID
