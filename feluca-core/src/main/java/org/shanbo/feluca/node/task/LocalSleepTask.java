@@ -8,6 +8,11 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * for test
+ * @author lgn
+ *
+ */
 public class LocalSleepTask extends TaskExecutor{
 	public final static String SLEEP = "sleep";
 
@@ -42,7 +47,6 @@ public class LocalSleepTask extends TaskExecutor{
 				try {
 					Thread.sleep(sleepMs);
 				} catch (InterruptedException e) {
-					
 					state = JobState.STOPPING;
 				}
 

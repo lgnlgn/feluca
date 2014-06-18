@@ -16,6 +16,7 @@ import org.shanbo.feluca.paddle.common.collection.IntArray;
 /**
  * self-loop approach for ARISTIDES GIONIS's binary swap randomization
  * see "Accessing data mining result via swap randomization"
+ * TODO tests
  * @author lgn
  *
  */

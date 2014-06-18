@@ -107,7 +107,7 @@ public abstract class FelucaSubJob{
 					boolean killed = false;
 					while(true){
 						if (killed == false && state == JobState.STOPPING){
-							taskExecutor.kill();
+							taskExecutor.kill(); //send a signal
 							killed = true;
 						}else{
 							JobState s = taskExecutor.currentState();

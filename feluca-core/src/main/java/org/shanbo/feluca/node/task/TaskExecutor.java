@@ -38,7 +38,7 @@ public abstract class TaskExecutor {
 	/**
 	 * <li>invoke by FelucaJob</li>
 	 * <li><b>consider it a static method! allow only 1 type : distrib or local</b></li>
-	 * <li>create a list interpret the subjob's steps & concurrent-level</li>
+	 * <li>create a list interpreting the subjob's steps & concurrent-level</li>
 	 * <li><b>remember: conf is for generating SubJob. A distributeJob must be parsed into 2 types : (DISTRIB for leader) && (LOCAL for worker)</b></li>
 	 * <li>format: [[{type:local, <b>task:xxx</b>, param:{xxx}},{},{concurrent-level}],[]... [steps]]</li>
 	 * @return

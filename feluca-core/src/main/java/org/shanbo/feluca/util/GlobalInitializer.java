@@ -17,4 +17,8 @@ public class GlobalInitializer {
 	public static void call(){
 		;
 	}
+	
+	public static void shutdown(){
+		HttpClientUtil.get().getHttpClient().getConnectionManager().shutdown();
+	}
 }
