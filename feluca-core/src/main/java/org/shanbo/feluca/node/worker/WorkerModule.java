@@ -1,5 +1,6 @@
 package org.shanbo.feluca.node.worker;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Calendar;
@@ -29,6 +30,11 @@ public class WorkerModule extends RoleModule{
 	public WorkerModule(){
 		this.dataDir = Constants.Base.getWorkerRepository() + Constants.Base.DATA_DIR;
 		this.jobManager = new JobManager();
+		
+		new File(Constants.Base.getWorkerRepository() + Constants.Base.DATA_DIR).mkdirs();
+		new File(Constants.Base.getWorkerRepository() + Constants.Base.MODEL_DIR).mkdirs();
+		new File(Constants.Base.getWorkerRepository() + Constants.Base.RESOURCE_DIR).mkdirs();
+
 	}
 	
 	

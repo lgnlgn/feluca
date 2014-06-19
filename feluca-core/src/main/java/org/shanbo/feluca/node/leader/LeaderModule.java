@@ -32,6 +32,10 @@ public class LeaderModule extends RoleModule{
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_WORKER_PATH);
 		this.distributeJobManager = new JobManager();
 		this.localJobManager = new JobManager();
+		
+		new File(Constants.Base.getLeaderRepository() + Constants.Base.DATA_DIR).mkdirs();
+		new File(Constants.Base.getLeaderRepository() + Constants.Base.MODEL_DIR).mkdirs();
+		new File(Constants.Base.getLeaderRepository() + Constants.Base.RESOURCE_DIR).mkdirs();
 	}
 
 	

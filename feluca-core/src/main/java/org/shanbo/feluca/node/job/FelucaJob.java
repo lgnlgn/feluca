@@ -14,6 +14,7 @@ import org.shanbo.feluca.node.task.FileDistributeTask;
 import org.shanbo.feluca.node.task.LocalMultiSleepTask;
 import org.shanbo.feluca.node.task.LocalSleepTask;
 import org.shanbo.feluca.node.task.TaskExecutor;
+import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.Strings;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ public class FelucaJob {
 	protected List<List<JobState>> subJobStates;
 	protected int runningJobs = 0;
 
-	protected Thread subJobWatcher; //determine job state by subjobs
+	protected Thread subJobWatcher; //determine job-state by subjobs
 
 	private static HashMap<String, JobState> JOB_STATE_MAP = new HashMap<String, JobState>();
 	static {
@@ -70,6 +71,9 @@ public class FelucaJob {
 		addTask(new FileDistributeTask(null));
 	}
 
+	public static JSONArray getTaskList(){
+		return JSONUtil.fromStrings(TASKS.keySet().toArray());
+	}
 
 	private static void addTask(TaskExecutor task){
 		TASKS.put(task.getTaskName(), task);
@@ -100,17 +104,14 @@ public class FelucaJob {
 		return this.confParser.isLocalJob();
 	}
 	
-	public FelucaJob(JSONObject prop){	
+	public FelucaJob(JSONObject args){	
 		this.properties = new JSONObject();
-		//		this.logCollector  = new ArrayList<JobMessage>(); //each job has it's own one
 
-		this.startTime = System.currentTimeMillis();
-		this.finishTime = System.currentTimeMillis();
 		this.state = JobState.PENDING;
 
-		if (prop != null){
-			this.properties.putAll(prop);
-			String expTime = prop.getString(TIME_TO_LIVE);
+		if (args != null){
+			this.properties.putAll(args);
+			String expTime = args.getString(TIME_TO_LIVE);
 			if(StringUtils.isNumeric(expTime)){
 				Integer t = Integer.parseInt(expTime);
 				this.ttl = t;
@@ -121,7 +122,7 @@ public class FelucaJob {
 		try{
 			this.jobName = this.confParser.getTaskName() + "___" + new DateTime().toString(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss_SSS"));
 			this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
-			this.generateSubJobs();
+			this.generateSubJobs(); //fill subJobs
 			this.subJobStates = new ArrayList<List<JobState>>(this.subJobs.size());
 			for(int i = 0 ; i < subJobs.size(); i++){
 				subJobStates.add(new ArrayList<JobState>());
@@ -130,6 +131,9 @@ public class FelucaJob {
 		}catch(Exception e){
 			log.error("", e);
 			isLegal = false;
+		}finally{
+			this.startTime = System.currentTimeMillis();
+			this.finishTime = System.currentTimeMillis();
 		}
 	}
 

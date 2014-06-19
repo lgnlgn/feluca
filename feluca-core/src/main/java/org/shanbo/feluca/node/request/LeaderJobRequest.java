@@ -1,5 +1,9 @@
 package org.shanbo.feluca.node.request;
 
+
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.shanbo.feluca.node.JobManager;
@@ -9,9 +13,12 @@ import org.shanbo.feluca.node.http.NettyHttpRequest;
 import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.node.leader.LeaderModule;
 import org.shanbo.feluca.util.DateUtil;
+import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.Strings;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableList;
 
 public class LeaderJobRequest extends BasicRequest{
 
@@ -53,6 +60,12 @@ public class LeaderJobRequest extends BasicRequest{
 		LeaderModule m = (LeaderModule)this.module;
 		String content = req.contentAsString();
 		JSONObject parameters = new JSONObject();
+		
+		if (StringUtils.isBlank(content)){
+			HttpResponseUtil.setResponse(resp, "submitJob failed! you need to post content : currently we have tasks:", FelucaJob.getTaskList());
+			return;
+		}
+		
 		try{
 			parameters.putAll(JSONObject.parseObject(content));
 			String submitJob = m.submitJob(FelucaJob.class, parameters);
@@ -81,14 +94,20 @@ public class LeaderJobRequest extends BasicRequest{
 
 	}
 
+	public void displayHelpInfo(NettyHttpRequest req, DefaultHttpResponse resp){
+		HttpResponseUtil.setResponse(resp, "'action' parameters", JSONUtil.fromStrings("info", "submit", "kill"));
+	}
+	
 	public void handle(NettyHttpRequest req, DefaultHttpResponse resp) {
-		String action = req.param("action","info");
+		String action = req.param("action","help");
 		if (action.equalsIgnoreCase("submit")){
 			this.handleJobSubmit(req, resp);
 		}else if (action.equalsIgnoreCase("info")) {
 			this.handleInfoRequest(req, resp);
 		}else if (action.equalsIgnoreCase("kill")) {
 			this.handleJobKill(req, resp);
+		}else{
+			this.displayHelpInfo(req, resp);
 		}
 	}
 

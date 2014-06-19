@@ -44,14 +44,14 @@ public class ClusterUtil {
 			}
 		});
 		try {
-			String feluca = ZKClient.get().getStringData(Constants.Base.ZK_CHROOT);
-			if (feluca == null){
+			String felucaProp = ZKClient.get().getStringData(Constants.Base.ZK_CHROOT);
+			if (felucaProp == null || felucaProp.isEmpty()){
 				ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				defaultProp.store(bos, "");
 				ZKClient.get().setData(Constants.Base.ZK_CHROOT, bos.toByteArray());
 			}else{
-				defaultProp.load(new ByteArrayInputStream(feluca.getBytes()));
+				defaultProp.load(new ByteArrayInputStream(felucaProp.getBytes()));
 			}
 		} catch (Exception e) {
 			log.error("init failed ",e);
