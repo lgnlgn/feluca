@@ -103,7 +103,7 @@ public class FileDistributeTask extends TaskExecutor{
 	protected JSONArray localTypeSubJob(JSONObject global) {
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
 		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-		JSONObject conf = reformNewConf(true);
+		JSONObject conf = getDefaultConf(true);
 		JSONObject param  = global.getJSONObject("param");
 		if (param != null)
 			conf.getJSONObject("param").putAll(param); //using user-def's parameter
@@ -117,7 +117,7 @@ public class FileDistributeTask extends TaskExecutor{
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
 		JSONArray concurrentLevel = new JSONArray();// all worker
 		for(String worker : ClusterUtil.getWorkerList()){
-			JSONObject conf = reformNewConf(false);
+			JSONObject conf = getDefaultConf(false);
 			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
 			JSONObject param  = global.getJSONObject("param");
 			if (param != null)

@@ -38,7 +38,7 @@ public class LocalMultiSleepTask extends LocalSleepTask{
 		for(int i = 0 ; i < NUM_SLEEP; i++){
 			JSONArray concurrentLevel = new JSONArray(CONCURRENT_SLEEP);// needs multiple threads 
 			for(int j = 0; j < CONCURRENT_SLEEP; j++){
-				JSONObject conf = reformNewConf(true);
+				JSONObject conf = getDefaultConf(true);
 				conf.getJSONObject("param").put(SLEEP, sleepMs);
 				if (param != null){
 					conf.getJSONObject("param").putAll(param); //using user-def's parameter

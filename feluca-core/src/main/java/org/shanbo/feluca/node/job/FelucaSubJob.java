@@ -160,7 +160,7 @@ public abstract class FelucaSubJob{
 			String url = address + WORKER_JOB_PATH + "?action=submit";
 			try{
 				this.properties.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
-				this.properties.getJSONObject("param").put("repo", Constants.Base.getWorkerRepository());
+				this.properties.getJSONObject("param").put("repo", Constants.Base.getWorkerRepository()); //change repo for workers
 				remoteJobName = JSONObject.parseObject(HttpClientUtil.get().doPost(url, properties.toString())).getString("response");
 			}catch (Exception e){
 				Thread.sleep(2000);

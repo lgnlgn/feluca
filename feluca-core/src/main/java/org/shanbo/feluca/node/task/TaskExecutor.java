@@ -84,7 +84,13 @@ public abstract class TaskExecutor {
 		return  state;
 	}
 	
-	protected JSONObject reformNewConf(boolean isExplicitLocal){
+	
+	/**
+	 * default
+	 * @param isExplicitLocal
+	 * @return
+	 */
+	protected JSONObject getDefaultConf(boolean isExplicitLocal){
 		JSONObject conf = new JSONObject();
 		JSONObject para = new JSONObject();
 		para.put("repo", Constants.Base.getLeaderRepository());//default single machine job

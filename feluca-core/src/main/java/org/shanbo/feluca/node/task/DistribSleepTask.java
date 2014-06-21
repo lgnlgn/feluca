@@ -6,6 +6,11 @@ import org.shanbo.feluca.node.job.FelucaSubJob;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * for test
+ * @author lgn
+ *
+ */
 public class DistribSleepTask extends LocalSleepTask{
 
 	final static int DEFAULT_SLEEP = 30000;
@@ -33,7 +38,7 @@ public class DistribSleepTask extends LocalSleepTask{
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
 		JSONArray concurrentLevel = new JSONArray();// all worker
 		for(String worker : ClusterUtil.getWorkerList()){
-			JSONObject conf = reformNewConf(false);
+			JSONObject conf = getDefaultConf(false);
 			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
 			JSONObject param  = global.getJSONObject("param");
 			if (param != null)
