@@ -10,6 +10,7 @@ import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
 import org.shanbo.feluca.node.job.FelucaSubJob;
 import org.shanbo.feluca.node.job.JobState;
+import org.shanbo.feluca.node.job.TaskExecutor;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 import com.alibaba.fastjson.JSONArray;

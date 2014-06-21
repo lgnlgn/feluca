@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.job.JobState;
+import org.shanbo.feluca.node.job.TaskExecutor;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 import com.alibaba.fastjson.JSONArray;

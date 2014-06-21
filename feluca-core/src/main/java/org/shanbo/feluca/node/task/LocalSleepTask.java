@@ -3,6 +3,7 @@ package org.shanbo.feluca.node.task;
 import java.util.concurrent.Future;
 
 import org.shanbo.feluca.node.job.JobState;
+import org.shanbo.feluca.node.job.TaskExecutor;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 import com.alibaba.fastjson.JSONArray;

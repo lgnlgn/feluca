@@ -14,7 +14,6 @@ import org.shanbo.feluca.node.task.FileDistributeTask;
 import org.shanbo.feluca.node.task.LocalMultiSleepTask;
 import org.shanbo.feluca.node.task.LocalSleepTask;
 import org.shanbo.feluca.node.task.RuntimeTask;
-import org.shanbo.feluca.node.task.TaskExecutor;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.Strings;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;

@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.JobState;
-import org.shanbo.feluca.node.task.TaskExecutor;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
