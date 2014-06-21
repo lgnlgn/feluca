@@ -1,8 +1,7 @@
-package org.shanbo.feluca.node.task;
+package org.shanbo.feluca.node.job;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.node.job.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
