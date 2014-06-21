@@ -1,6 +1,7 @@
 package org.shanbo.feluca.node.task;
 
 import org.apache.commons.lang.math.RandomUtils;
+import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.job.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,12 @@ public abstract class TaskExecutor {
 
 	/**
 	 * <li>invoke by FelucaJob</li>
+	 * <li>this is just a delegator of xxxTypeSubJob</li>
 	 * <li><b>consider it a static method! allow only 1 type : distrib or local</b></li>
 	 * <li>create a list interpreting the subjob's steps & concurrent-level</li>
 	 * <li><b>remember: conf is for generating SubJob. A distributeJob must be parsed into 2 types : (DISTRIB for leader) && (LOCAL for worker)</b></li>
 	 * <li>format: [[{type:local, <b>task:xxx</b>, param:{xxx}},{},{concurrent-level}],[]... [steps]]</li>
+	 * <p><i>You may want to override this , but most of time you don't need to </i>
 	 * @return
 	 */
 	public JSONArray arrangeSubJob(JSONObject global){
@@ -83,7 +86,10 @@ public abstract class TaskExecutor {
 	
 	protected JSONObject reformNewConf(boolean isExplicitLocal){
 		JSONObject conf = new JSONObject();
-		conf.put("param", new JSONObject());
+		JSONObject para = new JSONObject();
+		para.put("repo", Constants.Base.getLeaderRepository());//default single machine job
+		conf.put("param", para);
+		
 		if (isLocalJob() || isExplicitLocal){
 			conf.put("type", "local");
 			conf.put("task",this.getClass().getName());

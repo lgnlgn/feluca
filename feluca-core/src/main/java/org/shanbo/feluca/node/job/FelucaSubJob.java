@@ -2,6 +2,7 @@ package org.shanbo.feluca.node.job;
 
 import java.lang.reflect.Constructor;
 
+import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.node.task.TaskExecutor;
@@ -158,7 +159,8 @@ public abstract class FelucaSubJob{
 		private void startRemoteTask() throws Exception{
 			String url = address + WORKER_JOB_PATH + "?action=submit";
 			try{
-				this.properties.put("type", "local"); //send 'local' type job to worker
+				this.properties.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
+				this.properties.getJSONObject("param").put("repo", Constants.Base.getWorkerRepository());
 				remoteJobName = JSONObject.parseObject(HttpClientUtil.get().doPost(url, properties.toString())).getString("response");
 			}catch (Exception e){
 				Thread.sleep(2000);

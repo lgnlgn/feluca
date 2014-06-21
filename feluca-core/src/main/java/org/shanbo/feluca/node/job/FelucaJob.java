@@ -13,6 +13,7 @@ import org.shanbo.feluca.node.task.DistribSleepTask;
 import org.shanbo.feluca.node.task.FileDistributeTask;
 import org.shanbo.feluca.node.task.LocalMultiSleepTask;
 import org.shanbo.feluca.node.task.LocalSleepTask;
+import org.shanbo.feluca.node.task.RuntimeTask;
 import org.shanbo.feluca.node.task.TaskExecutor;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.Strings;
@@ -69,6 +70,7 @@ public class FelucaJob {
 		addTask(new LocalMultiSleepTask(null));
 		addTask(new DistribSleepTask(null));
 		addTask(new FileDistributeTask(null));
+		addTask(new RuntimeTask(null));
 	}
 
 	public static JSONArray getTaskList(){
@@ -165,11 +167,6 @@ public class FelucaJob {
 		}
 		return true;
 	}
-
-	public void setLogPipe(List<JobMessage> logCollector){
-		this.logPipe = logCollector;
-	}
-
 
 
 	/**

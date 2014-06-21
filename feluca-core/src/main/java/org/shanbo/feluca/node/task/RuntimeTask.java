@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,40 @@ import com.alibaba.fastjson.JSONObject;
 
 public class RuntimeTask extends TaskExecutor{
 
+	//TODO 
+	public static class StreamGobbler extends Thread {
+	    InputStream is;
+	    String      type;
+	    OutputStream os;
+	    StreamGobbler(InputStream is, String type) {
+	        this(is, type, null);
+	    }
+	    StreamGobbler(InputStream is, String type, OutputStream redirect) {
+	        this.is = is;
+	        this.type = type;
+	        this.os = redirect;
+	    }
+	    public void run() {
+	        try {
+	            PrintWriter pw = null;
+	            if (os != null)
+	                pw = new PrintWriter(os);
+	            InputStreamReader isr = new InputStreamReader(is);
+	            BufferedReader br = new BufferedReader(isr);
+	            String line = null;
+	            while ((line = br.readLine()) != null) {
+	                if (pw != null)
+	                    pw.println(line);
+//	                System.out.println(type + ">" + line);
+	            }
+	            if (pw != null)
+	                pw.flush();
+	        } catch (IOException ioe) {
+	            ioe.printStackTrace();
+	        }
+	    }
+	}
+	
 	public final static String CLASSPATH = "-cp";
 	public final static String ARGUMENTS = "-arg";
 	
@@ -42,8 +78,9 @@ public class RuntimeTask extends TaskExecutor{
 		List<String> cmds = new ArrayList<String>();
 		String newcp = initConf.getJSONObject("param").getString(CLASSPATH) == null?"": initConf.getJSONObject("param").getString(CLASSPATH);
 		String args = initConf.getJSONObject("param").getString(ARGUMENTS) == null?"": initConf.getJSONObject("param").getString(ARGUMENTS);
-		taskName =  initConf.getJSONObject("param").getString("name");
-		String resDir = Constants.Base.getWorkerRepository() + Constants.Base.RESOURCE_DIR;
+		this.taskName =  initConf.getJSONObject("param").getString("name");
+		String repo = initConf.getJSONObject("param").getString("repo");
+		String resDir = repo + Constants.Base.RESOURCE_DIR;
 		String cp = System.getProperty("java.class.path");
 		for(String jar : newcp.split(",|;|:")){
 			cp += System.getProperty("path.separator") + resDir + "/" + jar;
@@ -98,23 +135,19 @@ public class RuntimeTask extends TaskExecutor{
 				} catch (IOException e) {
 					state = JobState.FAILED;
 				}
-				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-				String line = null;
-				boolean finished = false;
+				
+				int exitValue = 1;
 				try {
-					while((line = reader.readLine())!= null ){
-						if (line.equals("Task finished!!")){
-							finished = true;
-						}
-						message.append(line + "\n");
-					}
-				} catch (IOException e) {
+					exitValue = process.waitFor();
+				} catch (InterruptedException e) {
 					state = JobState.INTERRUPTED;
 				}
-				if (finished == true){
+				if (exitValue == 0){
 					state = JobState.FINISHED;
-				}else {
+				}else if (state == JobState.STOPPING){
 					state = JobState.INTERRUPTED;
+				}else{
+					state = JobState.FAILED;
 				}
 			}
 		});
