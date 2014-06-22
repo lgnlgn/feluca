@@ -274,7 +274,7 @@ public abstract class Vector {
 		@Override
 		public boolean parseLine(String line) {
 			String[] labelIds = line.split("\\s+", 2);
-			this.label = Integer.parseInt(labelIds[0]);
+			this.label = Integer.parseInt(labelIds[0].startsWith("+")?labelIds[0].substring(1):labelIds[0]);
 			try{
 				Map<String, String> split = Splitter.onPattern("\\s+").withKeyValueSeparator(":").split(labelIds[1].trim());
 

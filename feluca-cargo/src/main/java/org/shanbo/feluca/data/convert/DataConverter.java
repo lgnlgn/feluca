@@ -42,11 +42,11 @@ public class DataConverter {
 		}else if (input.isDirectory()){
 			File[] files = input.listFiles();
 			
-			ArrayList<CharSource> o= new ArrayList<CharSource>();
+			ArrayList<CharSource> fileList= new ArrayList<CharSource>();
 			for(File f: files){
-				o.add(Files.asCharSource(f, Charset.defaultCharset()));
+				fileList.add(Files.asCharSource(f, Charset.defaultCharset()));
 			}
-			CharSource concat = CharSource.concat(o.iterator());
+			CharSource concat = CharSource.concat(fileList.iterator());
 			rawDataReader = concat.openBufferedStream();
 		}else{
 			throw new FileNotFoundException("path : " + inFile + " not found");
