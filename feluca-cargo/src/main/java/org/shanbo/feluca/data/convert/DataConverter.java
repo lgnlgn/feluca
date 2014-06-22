@@ -10,15 +10,22 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.Vector.VectorType;
 import org.shanbo.feluca.data.convert.DataStatistic.BasicStatistic;
 import org.shanbo.feluca.data.convert.DataStatistic.LableWeightStatistic;
 
+import com.google.common.io.CharSource;
 import com.google.common.io.Closeables;
+import com.google.common.io.Files;
 
 public class DataConverter {
+	
+	final static int CACHES_PER_BLOCK =2;
+	
 	ByteBuffer buffer;
 	
 	Vector vector;
@@ -28,8 +35,22 @@ public class DataConverter {
 	BufferedWriter globalStatWriter;
 	BufferedReader rawDataReader;
 	
-	public DataConverter(String inFile) throws FileNotFoundException{
-		rawDataReader = new BufferedReader(new FileReader(inFile));
+	public DataConverter(String inFile) throws IOException{
+		File input = new File(inFile);
+		if (input.isFile()){
+			rawDataReader = new BufferedReader(new FileReader(inFile));
+		}else if (input.isDirectory()){
+			File[] files = input.listFiles();
+			
+			ArrayList<CharSource> o= new ArrayList<CharSource>();
+			for(File f: files){
+				o.add(Files.asCharSource(f, Charset.defaultCharset()));
+			}
+			CharSource concat = CharSource.concat(o.iterator());
+			rawDataReader = concat.openBufferedStream();
+		}else{
+			throw new FileNotFoundException("path : " + inFile + " not found");
+		}
 		buffer = ByteBuffer.wrap(new byte[32 * 1024 * 1024]);
 	}
 	
@@ -69,7 +90,7 @@ public class DataConverter {
 				dataOutput.write(buffer.array());
 				buffer.clear();
 				partOfBlock += 1;
-				if (partOfBlock >= 2){
+				if (partOfBlock >= CACHES_PER_BLOCK){
 					System.out.println(count);
 					blockStatWriter.write(blockStat.toString()); //finish stat of this block
 					blockStat.clearStat();
