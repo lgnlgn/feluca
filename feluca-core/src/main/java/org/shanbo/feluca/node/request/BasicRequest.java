@@ -1,7 +1,6 @@
 package org.shanbo.feluca.node.request;
 
 
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.Handler;
 

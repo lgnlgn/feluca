@@ -2,6 +2,7 @@ package org.shanbo.feluca.node.request;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.node.RoleModule;
@@ -34,7 +35,13 @@ public class LeaderStatusRequest extends BasicRequest{
 		}else if(type.equalsIgnoreCase("localdata")){
 			//TODO
 		}else if (type.equalsIgnoreCase("distribdata")){
-			
+			//TODO
+			String dataName = req.param("name");
+			if (StringUtils.isNotBlank(dataName)){
+				
+			}else{
+				
+			}
 		}
 		
 	}

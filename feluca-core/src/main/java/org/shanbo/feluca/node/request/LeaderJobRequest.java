@@ -1,24 +1,18 @@
 package org.shanbo.feluca.node.request;
 
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
 import org.shanbo.feluca.node.job.FelucaJob;
 import org.shanbo.feluca.node.leader.LeaderModule;
-import org.shanbo.feluca.util.DateUtil;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.Strings;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.ImmutableList;
 
 public class LeaderJobRequest extends BasicRequest{
 

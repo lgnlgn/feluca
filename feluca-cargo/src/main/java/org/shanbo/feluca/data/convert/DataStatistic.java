@@ -2,10 +2,8 @@ package org.shanbo.feluca.data.convert;
 
 import java.util.Map.Entry;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.Vector.VectorType;
 

@@ -9,8 +9,6 @@ import java.util.Properties;
 
 import org.apache.zookeeper.KeeperException;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
-import org.shanbo.feluca.node.leader.LeaderServer;
-import org.shanbo.feluca.node.worker.WorkerServer;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
 import org.slf4j.Logger;

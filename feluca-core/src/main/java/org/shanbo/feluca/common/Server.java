@@ -2,7 +2,7 @@ package org.shanbo.feluca.common;
 
 import java.net.SocketException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.shanbo.feluca.util.Config;
 import org.shanbo.feluca.util.NetworkUtils;
 import org.shanbo.feluca.util.ZKClient;

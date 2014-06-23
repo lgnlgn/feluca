@@ -1,7 +1,5 @@
 package org.shanbo.feluca.node.leader;
 
-import java.io.File;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;

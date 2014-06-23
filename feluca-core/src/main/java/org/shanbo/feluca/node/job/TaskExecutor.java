@@ -1,11 +1,11 @@
 package org.shanbo.feluca.node.job;
 
-import org.apache.commons.lang.math.RandomUtils;
+import java.util.Random;
+
 import org.shanbo.feluca.common.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -25,7 +25,7 @@ public abstract class TaskExecutor {
 	public TaskExecutor(JSONObject conf) {
 		if (conf != null){
 			log = LoggerFactory.getLogger(this.getClass());
-			taskID = RandomUtils.nextLong();
+			taskID = new Random().nextLong();
 			init(conf);
 		}
 	}
