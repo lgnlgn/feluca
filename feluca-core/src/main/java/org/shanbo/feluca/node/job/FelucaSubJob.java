@@ -3,6 +3,7 @@ package org.shanbo.feluca.node.job;
 import java.lang.reflect.Constructor;
 
 import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -83,6 +84,8 @@ public abstract class FelucaSubJob{
 		if (parsedConf.getString("type").equals("local")){
 			return new LocalSubJob(parsedConf);
 		}else{
+			if (!parsedConf.containsKey(DISTRIBUTE_ADDRESS_KEY))
+				throw new FelucaException("'address' not found! impossible to launch remote job");
 			return new DistributeSubJob(parsedConf);
 		}
 	}

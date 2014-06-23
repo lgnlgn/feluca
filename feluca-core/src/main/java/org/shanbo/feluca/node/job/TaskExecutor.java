@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * execute task through running another process
+ * <p> basic task 
  * @author lgn
  *
  */
@@ -31,10 +32,8 @@ public abstract class TaskExecutor {
 	
 	
 	protected abstract void init(JSONObject initConf);
-	
-	public abstract boolean isLocalJob();
-	
 
+	
 	/**
 	 * <li>invoke by FelucaJob</li>
 	 * <li>this is just a delegator of xxxTypeSubJob</li>
@@ -45,29 +44,29 @@ public abstract class TaskExecutor {
 	 * <p><i>You may want to override this , but most of time you don't need to </i>
 	 * @return
 	 */
-	public JSONArray arrangeSubJob(JSONObject global){
-		if (!isLocalJob()){
-			if ("local".equalsIgnoreCase(global.getString("type"))){ 
-				return localTypeSubJob(global);
-			}else{
-				return distribTypeSubJob(global);
-			}
-		}else{
-			return localTypeSubJob(global);
-		}
-	}
+//	public JSONArray arrangeSubJob(JSONObject global){
+//		if (!isLocalJob()){
+//			if ("local".equalsIgnoreCase(global.getString("type"))){ 
+//				return localTypeSubJob(global);
+//			}else{
+//				return distribTypeSubJob(global);
+//			}
+//		}else{
+//			return localTypeSubJob(global);
+//		}
+//	}
 	
 	/**
 	 * <li>create a list interpret the subjob's steps & concurrent-level</li>
 	 * @return
 	 */
-	protected abstract JSONArray localTypeSubJob(JSONObject global);
+//	protected abstract JSONArray localTypeSubJob(JSONObject global);
 	
 	/**
 	 * <li>create a list interpret the subjob's steps & concurrent-level</li>
 	 * @return
 	 */
-	protected abstract JSONArray distribTypeSubJob(JSONObject global);
+//	protected abstract JSONArray distribTypeSubJob(JSONObject global);
 
 	
 	
@@ -85,27 +84,19 @@ public abstract class TaskExecutor {
 	
 	
 	/**
-	 * default
+	 * default, 
+	 * <p>almost all tasks don't need to override it
 	 * @param isExplicitLocal
 	 * @return
 	 */
-	protected JSONObject getDefaultConf(boolean isExplicitLocal){
+	public JSONObject taskSerialize(){
 		JSONObject conf = new JSONObject();
 		JSONObject para = new JSONObject();
 		para.put("repo", Constants.Base.getLeaderRepository());//default single machine job
 		conf.put("param", para);
-		
-		if (isLocalJob() || isExplicitLocal){
-			conf.put("type", "local");
-			conf.put("task",this.getClass().getName());
-		}else{
-			conf.put("type", "distrib");
-			conf.put("task",this.getTaskName());
-		}
+		conf.put("type", "local");
+		conf.put("task",this.getClass().getName());
 		return conf;
 	}
-	
-	
-	
 	
 }

@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node.task;
+package org.shanbo.feluca.node.job.task;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -8,7 +8,6 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
-import org.shanbo.feluca.node.job.FelucaSubJob;
 import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.node.job.TaskExecutor;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -17,16 +16,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 
+ * files are spread to all workers 
  * @Description TODO use additional process
  *	@author shanbo.liang
  */
-public class FileDistributeTask extends TaskExecutor{
+public class FilePullTask extends TaskExecutor{
 
 	HashMap<String, Boolean> fileNames;
 	String ftpAddress;
 	
-	public FileDistributeTask(JSONObject conf) {
+	public FilePullTask(JSONObject conf) {
 		super(conf);
 	}
 
@@ -45,10 +44,6 @@ public class FileDistributeTask extends TaskExecutor{
 		}
 	}
 
-	@Override
-	public boolean isLocalJob() {
-		return false;
-	}
 
 
 	@Override
@@ -100,38 +95,39 @@ public class FileDistributeTask extends TaskExecutor{
 		state = JobState.STOPPING;
 	}
 
-	@Override
-	protected JSONArray localTypeSubJob(JSONObject global) {
-		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-		JSONObject conf = getDefaultConf(true);
-		JSONObject param  = global.getJSONObject("param");
-		if (param != null)
-			conf.getJSONObject("param").putAll(param); //using user-def's parameter
-		concurrentLevel.add(conf);
-		subJobSteps.add(concurrentLevel);
-		return subJobSteps;
-	}
-
-	@Override
-	protected JSONArray distribTypeSubJob(JSONObject global) {
-		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-		JSONArray concurrentLevel = new JSONArray();// all worker
-		for(String worker : ClusterUtil.getWorkerList()){
-			JSONObject conf = getDefaultConf(false);
-			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
-			JSONObject param  = global.getJSONObject("param");
-			if (param != null)
-				conf.getJSONObject("param").putAll(param); //using user-def's parameter
-			concurrentLevel.add(conf);
-		}
-		subJobSteps.add(concurrentLevel);
-		return subJobSteps;
-	}
+//	@Override
+//	protected JSONArray localTypeSubJob(JSONObject global) {
+//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
+//		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
+//		JSONObject conf = getDefaultConf(true);
+//		JSONObject param  = global.getJSONObject("param");
+//		if (param != null)
+//			conf.getJSONObject("param").putAll(param); //using user-def's parameter
+//		concurrentLevel.add(conf);
+//		subJobSteps.add(concurrentLevel);
+//		return subJobSteps;
+//	}
+//
+//	@Override
+//	protected JSONArray distribTypeSubJob(JSONObject global) {
+//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
+//		JSONArray concurrentLevel = new JSONArray();// all worker
+//		for(String worker : ClusterUtil.getWorkerList()){
+//			JSONObject conf = getDefaultConf(false);
+//			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
+//			JSONObject param  = global.getJSONObject("param");
+//			if (param != null)
+//				conf.getJSONObject("param").putAll(param); //using user-def's parameter
+//			concurrentLevel.add(conf);
+//		}
+//		subJobSteps.add(concurrentLevel);
+//		return subJobSteps;
+//	}
 
 	@Override
 	public String getTaskFinalMessage() {
 		return fileNames.toString();
 	}
+
 
 }

@@ -9,11 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.shanbo.feluca.node.JobManager;
-import org.shanbo.feluca.node.task.DistribSleepTask;
-import org.shanbo.feluca.node.task.FileDistributeTask;
-import org.shanbo.feluca.node.task.LocalMultiSleepTask;
-import org.shanbo.feluca.node.task.LocalSleepTask;
-import org.shanbo.feluca.node.task.RuntimeTask;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.Strings;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -44,6 +39,7 @@ public class FelucaJob {
 	protected TaskExecutor confParser;//only for parse 
 
 	protected boolean isLegal;
+	protected boolean isLocal;
 	protected final long startTime ;
 	protected long finishTime;
 
@@ -65,21 +61,12 @@ public class FelucaJob {
 		for(JobState js : JobState.values()){
 			JOB_STATE_MAP.put(js.toString(), js);
 		}
-		addTask(new LocalSleepTask(null));
-		addTask(new LocalMultiSleepTask(null));
-		addTask(new DistribSleepTask(null));
-		addTask(new FileDistributeTask(null));
-		addTask(new RuntimeTask(null));
 	}
 
 	public static JSONArray getTaskList(){
 		return JSONUtil.fromStrings(TASKS.keySet().toArray());
 	}
 
-	private static void addTask(TaskExecutor task){
-		TASKS.put(task.getTaskName(), task);
-	}
-	
 	public static class JobMessage{
 		String logType; //info warn error
 		String logContent;
@@ -102,7 +89,7 @@ public class FelucaJob {
 	 * @return
 	 */
 	public boolean isLocal(){
-		return this.confParser.isLocalJob();
+		return this.isLocal;
 	}
 	
 	public FelucaJob(JSONObject args){	
@@ -140,7 +127,7 @@ public class FelucaJob {
 
 	private boolean generateSubJobs(){
 
-		JSONArray subJobAllocation = confParser.arrangeSubJob(properties);
+		JSONArray subJobAllocation = JobUtil.allocateSubJobs(properties);
 		
 		if (subJobAllocation == null || subJobAllocation.size() == 0){
 			return false;

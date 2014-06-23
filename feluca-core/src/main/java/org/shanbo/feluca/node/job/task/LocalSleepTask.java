@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node.task;
+package org.shanbo.feluca.node.job.task;
 
 import java.util.concurrent.Future;
 
@@ -6,7 +6,6 @@ import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.node.job.TaskExecutor;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -70,36 +69,25 @@ public class LocalSleepTask extends TaskExecutor{
 		sleep.cancel(true);
 	}
 
-	@Override
-	public boolean isLocalJob() {
-		return true;
-	}
+//
+//	@Override
+//	protected JSONArray localTypeSubJob(JSONObject global) {
+//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
+//		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
+//		JSONObject conf = getDefaultConf(true);
+//		conf.getJSONObject("param").put(SLEEP, "30000");
+//		JSONObject param  = global.getJSONObject("param");
+//		if (param != null)
+//			conf.getJSONObject("param").putAll(param); //using user-def's parameter
+//		
+//		concurrentLevel.add(conf);
+//		subJobSteps.add(concurrentLevel);
+//		return subJobSteps;
+//	}
 
-	@Override
-	protected JSONArray localTypeSubJob(JSONObject global) {
-		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-		JSONObject conf = getDefaultConf(true);
-		conf.getJSONObject("param").put(SLEEP, "30000");
-		JSONObject param  = global.getJSONObject("param");
-		if (param != null)
-			conf.getJSONObject("param").putAll(param); //using user-def's parameter
-		
-		concurrentLevel.add(conf);
-		subJobSteps.add(concurrentLevel);
-		return subJobSteps;
-	}
-
-	@Override
-	protected JSONArray distribTypeSubJob(JSONObject global) {
-		//no need
-		return null;
-	}
 
 	@Override
 	public String getTaskFinalMessage() {
-		// TODO Auto-generated method stub
 		return message;
 	}
-
 }
