@@ -73,7 +73,7 @@ public class HttpResponseUtil {
 	public static void setResponse( DefaultHttpResponse resp, Object respHead, Object respBody, HttpResponseStatus status){
 		resp.setStatus( status );
 		JSONObject json = new JSONObject();
-		if (respHead instanceof JSONObject || respHead instanceof JSONArray){
+		if (respHead instanceof JSONObject || respHead instanceof JSONArray ){
 			json.put(REQUEST, respHead);
 		}else
 			json.put(REQUEST , respHead.toString());

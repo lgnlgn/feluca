@@ -1,6 +1,12 @@
 package org.shanbo.feluca.node.http;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -12,6 +18,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
+
+import com.alibaba.fastjson.JSONObject;
 
 public class HttpClientUtil {
 	public static final String PROP_SO_TIMEOUT = "socketTimeout";
@@ -76,4 +85,39 @@ public class HttpClientUtil {
 		HttpResponse execute = client.execute(post);
 		return execute;
 	}
+	
+	public static Map<String, String> distribGet(List<String> hostPorts, final String path) throws InterruptedException, ExecutionException{
+		List<Callable<String>> getCallables = new ArrayList<Callable<String>>();
+		for(final String hostPort : hostPorts){
+			getCallables.add(new Callable<String>() {
+				public String call() throws Exception {
+					return get().doGet("http://" + hostPort + "/" +( path.startsWith("/")? path.substring(1): path));
+				}
+			});
+		}
+		List<String> response = ConcurrentExecutor.execute(getCallables);
+		Map<String, String> result = new HashMap<String, String>();
+		for(int i = 0; i < hostPorts.size(); i++){
+			result.put(hostPorts.get(i)	, response.get(i));
+		}
+		return result;
+	}
+	
+	public static Map<String, String> distribPost(List<String> hostPorts, final String path, final String body) throws InterruptedException, ExecutionException{
+		List<Callable<String>> getCallables = new ArrayList<Callable<String>>();
+		for(final String hostPort : hostPorts){
+			getCallables.add(new Callable<String>() {
+				public String call() throws Exception {
+					return get().doPost("http://" + hostPort + "/" +( path.startsWith("/")? path.substring(1): path), body);
+				}
+			});
+		}
+		List<String> response = ConcurrentExecutor.execute(getCallables);
+		Map<String, String> result = new HashMap<String, String>();
+		for(int i = 0; i < hostPorts.size(); i++){
+			result.put(hostPorts.get(i)	, response.get(i));
+		}
+		return result;
+	}
+	
 }

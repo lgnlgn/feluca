@@ -3,7 +3,13 @@ package org.shanbo.feluca.node.worker;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.JobManager;
@@ -35,7 +41,21 @@ public class WorkerModule extends RoleModule{
 	 * @return
 	 */
 	public List<String> listDataBlocks(String dataName){
-		return null;
+		File dataSet = new File(dataDir + "/" + dataName);
+		if (dataSet.isDirectory()){
+			String[] segments = dataSet.list();
+			Pattern pattern = Pattern.compile(dataName + "_(\\d+)\\.dat");
+			ArrayList<String> list = new ArrayList<String>();
+			for(String name : segments){
+				 Matcher matcher = pattern.matcher(name);
+				 if (matcher.find()){
+					 list.add(matcher.group(1));
+				 }
+			}
+			return list;
+		}else{
+			return Collections.emptyList();
+		}
 	}
 
 	/**
@@ -43,7 +63,9 @@ public class WorkerModule extends RoleModule{
 	 * @return
 	 */
 	public List<String> listDataSets(){
-		return null;
+		String[] datasets =  new File(dataDir).list();
+		return Arrays.asList(datasets);
+		
 	}
 	
 	
