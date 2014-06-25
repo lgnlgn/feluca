@@ -2,15 +2,25 @@ package org.shanbo.feluca.node.leader;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.KeeperException;
+import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
+import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.FelucaJob;
+import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.ZKClient;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableList;
 
 public class LeaderModule extends RoleModule{
 	
@@ -88,8 +98,8 @@ public class LeaderModule extends RoleModule{
 	 * TODO
 	 * @return
 	 */
-	public JSONObject localDataSet(){
-		return null;
+	public JSONArray localDataSet(){
+		return JSONUtil.fromStrings(new File(dataDir).list());
 	}
 	
 	/**
@@ -101,19 +111,47 @@ public class LeaderModule extends RoleModule{
 	}
 	
 	/**
-	 * 
+	 * //merge all workers dataSets
+	 *  TODO
 	 * @return
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	public JSONObject gatherRemoteDataSet(){
-		return null;
+	public JSONArray showClusterDataSets() throws InterruptedException, ExecutionException{
+		List<String> workers = ClusterUtil.getWorkerList();
+		Map<String, String> result = HttpClientUtil.distribGet(workers, "/state?type=data");
+		//TODO  intact checking
+		HashSet<String> dataSets = new HashSet<String>();
+		for(String responseString : result.values()){
+			JSONObject jo = JSONObject.parseObject(responseString);
+			dataSets.addAll(JSONUtil.JSONArrayToList(jo.getJSONArray("response")));
+		}
+		return JSONUtil.listToAJsonArray(dataSets);
 	}
 	
 	/**
 	 * 
 	 * @return
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	public JSONObject gatherRemoteDataSetInfo(String dataName){
-		return null;
+	public JSONObject showClusterDataInfo(String dataName) throws InterruptedException, ExecutionException{
+		List<String> workers = ClusterUtil.getWorkerList();
+		Map<String, String> result = HttpClientUtil.distribGet(workers, "/state?type=data?dataName="+ dataName);
+		//TODO  intact checking
+		JSONObject invert = new JSONObject();
+		for(Entry<String, String> addressAndBlocks: result.entrySet()){
+			JSONArray blocks = JSONObject.parseObject(addressAndBlocks.getValue()).getJSONArray("response");
+			for(Object block : blocks){
+				JSONArray addresses = invert.getJSONArray(block.toString());
+				if (addresses == null){
+					addresses = new JSONArray();
+					invert.put(block.toString(), addresses);
+				}
+				addresses.add(addressAndBlocks.getKey());
+			}
+		}
+		return invert;
 	}
 	
 	

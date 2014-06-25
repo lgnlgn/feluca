@@ -2,7 +2,6 @@ package org.shanbo.feluca.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -13,6 +12,8 @@ import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  *  in order to finish initialization(<b>the watcher is in a  asynchronous way</b>) before usage, 
@@ -66,9 +67,7 @@ public class ClusterUtil {
 	}
 	
 	public static List<String> getWorkerList(){
-		List<String> result = new ArrayList<String>();
-		result.addAll(instance.workerAddresses.keySet());
-		return result;
+		return ImmutableList.copyOf(instance.workerAddresses.keySet());
 	}
 	
 	public static String getLeaderAddress() throws InterruptedException, KeeperException{

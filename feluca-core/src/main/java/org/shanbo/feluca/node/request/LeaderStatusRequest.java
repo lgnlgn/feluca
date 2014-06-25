@@ -11,6 +11,7 @@ import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.http.HttpResponseUtil;
 import org.shanbo.feluca.node.http.NettyHttpRequest;
+import org.shanbo.feluca.node.leader.LeaderModule;
 import org.shanbo.feluca.util.JSONUtil;
 
 import com.alibaba.fastjson.JSONArray;
@@ -28,6 +29,7 @@ public class LeaderStatusRequest extends BasicRequest{
 	}
 
 	public void handle(NettyHttpRequest req, DefaultHttpResponse resp) {
+		
 		String type = req.param("type");
 		List<String> workers = ClusterUtil.getWorkerList();
 		if (type.equalsIgnoreCase("cluster")){
@@ -42,36 +44,14 @@ public class LeaderStatusRequest extends BasicRequest{
 			//TODO more robust
 			String dataName = req.param("dataName");
 			if (StringUtils.isBlank(dataName)){
-				//merge all workers dataSets
 				try {
-					Map<String, String> result = HttpClientUtil.distribGet(workers, "/state?type=data");
-					//TODO  intact checking
-					HashSet<String> dataSets = new HashSet<String>();
-					for(String responseString : result.values()){
-						JSONObject jo = JSONObject.parseObject(responseString);
-						dataSets.addAll(JSONUtil.JSONArrayToList(jo.getJSONArray("response")));
-					}
-					HttpResponseUtil.setResponse(resp, "cluster data list", JSONUtil.listToAJsonArray(dataSets));
+					HttpResponseUtil.setResponse(resp, "cluster data list", ((LeaderModule)module).showClusterDataSets());
 				} catch (Exception e) {
 					HttpResponseUtil.setExceptionResponse(resp, "fetch cluster data list", "cause exception", e);
 				}
 			}else{
 				try {
-					Map<String, String> result = HttpClientUtil.distribGet(workers, "/state?type=data?dataName="+ dataName);
-					//TODO  intact checking
-					JSONObject invert = new JSONObject();
-					for(Entry<String, String> addressAndBlocks: result.entrySet()){
-						JSONArray blocks = JSONObject.parseObject(addressAndBlocks.getValue()).getJSONArray("response");
-						for(Object block : blocks){
-							JSONArray addresses = invert.getJSONArray(block.toString());
-							if (addresses == null){
-								addresses = new JSONArray();
-								invert.put(block.toString(), addresses);
-							}
-							addresses.add(addressAndBlocks.getKey());
-						}
-					}
-					HttpResponseUtil.setResponse(resp, "cluster data list", invert);
+					HttpResponseUtil.setResponse(resp, "cluster data list", ((LeaderModule)module).showClusterDataInfo(dataName));
 				} catch (Exception e) {
 					HttpResponseUtil.setExceptionResponse(resp, "fetch cluster dataset : [" + dataName + "]", "cause exception", e);
 				}
