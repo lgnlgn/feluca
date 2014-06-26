@@ -1,16 +1,24 @@
 package org.shanbo.feluca.node.job;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.JobState;
+import org.shanbo.feluca.node.job.distrib.DistribSleepJob;
+import org.shanbo.feluca.node.job.distrib.FileDistributeJob;
+import org.shanbo.feluca.node.job.distrib.RemoteDeleteJob;
+import org.shanbo.feluca.node.job.local.LocalSleepJob;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * task is a special kind of job, i.e. , leaf of the leader's job-tree;
@@ -22,6 +30,27 @@ public abstract class FelucaSubJob{
 	final static int CHECK_TASK_INTERVAL_MS = 200;
 	public final static String DISTRIBUTE_ADDRESS_KEY = "address";
 
+	private static Map<String, SubJobAllocator> SUBJOBS = new HashMap<String, SubJobAllocator>();
+	
+
+	private static void addJob(SubJobAllocator job){
+		SUBJOBS.put(job.getName(), job);
+	}
+	
+	public static String getTaskClass(String abbrTaskName){
+		return SUBJOBS.get(abbrTaskName).getClass().getName();
+	}
+	
+	
+	
+	static{
+		addJob(new LocalSleepJob());
+		addJob(new DistribSleepJob());
+		addJob(new RemoteDeleteJob());
+		addJob(new FileDistributeJob());
+	}
+	
+	
 	protected TaskExecutor taskExecutor;
 	protected volatile JobState state ;
 	protected Logger log ;
@@ -79,17 +108,40 @@ public abstract class FelucaSubJob{
 		ConcurrentExecutor.submit(createStoppableTask());
 	}
 
+	public static JSONArray allocateSubJobs(JSONObject udConf){
+		return SUBJOBS.get(udConf.get("task")).allocateSubJobs(udConf);
+	}
+	
+	
+	public static Set<String> showJobList(){
+		return ImmutableSet.copyOf(SUBJOBS.keySet());
+	}
+	
+	public static void distribToLocal(JSONObject parsedConf){
+		parsedConf.remove(DISTRIBUTE_ADDRESS_KEY);
+		parsedConf.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
+		parsedConf.getJSONObject("param").put("repo", Constants.Base.getWorkerRepository()); //change repo for workers
 
+	}
+	
+	public static boolean isSubJobLocal(JSONObject udConf){
+		if ("local".equals(udConf.getString("type"))){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
 	/**
 	 * 
 	 * @param parsedConf
 	 * @return
 	 */
 	public static FelucaSubJob decideSubJob(JSONObject parsedConf){
-		if (parsedConf.containsKey(DISTRIBUTE_ADDRESS_KEY))
-			return new DistributeSubJob(parsedConf);
-		else{
+		if (isSubJobLocal(parsedConf)){
 			return new LocalSubJob(parsedConf);
+		}else{
+			return new DistributeSubJob(parsedConf);
 		}
 	}
 
@@ -137,7 +189,7 @@ public abstract class FelucaSubJob{
 
 		@Override
 		protected void init() {
-			String taskClass = this.properties.getString("task");
+			String taskClass = SUBJOBS.get(this.properties.getString("task")).getClass().getName();
 			try {
 				@SuppressWarnings("unchecked")
 				Class<? extends TaskExecutor> clz = (Class<? extends TaskExecutor>) Class.forName(taskClass);
@@ -164,8 +216,7 @@ public abstract class FelucaSubJob{
 		private void startRemoteTask() throws Exception{
 			String url = address + WORKER_JOB_PATH + "?action=submit";
 			try{
-				this.properties.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
-				this.properties.getJSONObject("param").put("repo", Constants.Base.getWorkerRepository()); //change repo for workers
+				distribToLocal(properties);
 				remoteJobName = JSONObject.parseObject(HttpClientUtil.get().doPost(url, properties.toString())).getString("response");
 			}catch (Exception e){
 				Thread.sleep(2000);
@@ -200,33 +251,31 @@ public abstract class FelucaSubJob{
 			}
 		}
 
+		private JobState retryStatus(){
+			retries -= 1;
+			if (retries < 0){
+				return JobState.FAILED;
+			}else{
+				return JobState.RUNNING;
+			}
+		}
+		
 		private JobState getRemoteTaskStatus(){
 			try {
 				JSONObject remoteResult = JSONObject.parseObject(HttpClientUtil.get().doGet(address + WORKER_JOB_PATH + "?action=info&jobName=" + remoteJobName));
 				if (remoteResult.containsValue("null")){ //remote task is not started yet
-					retries -= 1;
-					return JobState.RUNNING;
+					return retryStatus();
 				}
 				String jobStateString = remoteResult.getJSONObject("response").getString("jobState");
 				JobState state = FelucaJob.parseStateText(jobStateString);
 				if (state == null ){
-					retries -= 1;
-					if (retries < 0){
-						return JobState.FAILED;
-					}else{
-						return JobState.RUNNING;
-					}
+					return retryStatus();
 				}else{
 					retries = 2;
 				}
 				return state;
 			} catch (Exception e) {
-				retries -= 1;
-				if (retries < 0){
-					return JobState.FAILED;
-				}else{
-					return JobState.RUNNING;
-				}
+				return retryStatus();
 			}
 		}
 

@@ -46,7 +46,7 @@ public class FilePullTask extends TaskExecutor{
 
 	@Override
 	public String getTaskName() {
-		return "file";
+		return "filepull";
 	}
 
 	@Override
@@ -89,35 +89,6 @@ public class FilePullTask extends TaskExecutor{
 	public void kill() {
 		state = JobState.STOPPING;
 	}
-
-	//	@Override
-	//	protected JSONArray localTypeSubJob(JSONObject global) {
-	//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-	//		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-	//		JSONObject conf = getDefaultConf(true);
-	//		JSONObject param  = global.getJSONObject("param");
-	//		if (param != null)
-	//			conf.getJSONObject("param").putAll(param); //using user-def's parameter
-	//		concurrentLevel.add(conf);
-	//		subJobSteps.add(concurrentLevel);
-	//		return subJobSteps;
-	//	}
-	//
-	//	@Override
-	//	protected JSONArray distribTypeSubJob(JSONObject global) {
-	//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-	//		JSONArray concurrentLevel = new JSONArray();// all worker
-	//		for(String worker : ClusterUtil.getWorkerList()){
-	//			JSONObject conf = getDefaultConf(false);
-	//			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
-	//			JSONObject param  = global.getJSONObject("param");
-	//			if (param != null)
-	//				conf.getJSONObject("param").putAll(param); //using user-def's parameter
-	//			concurrentLevel.add(conf);
-	//		}
-	//		subJobSteps.add(concurrentLevel);
-	//		return subJobSteps;
-	//	}
 
 	@Override
 	public String getTaskFinalMessage() {

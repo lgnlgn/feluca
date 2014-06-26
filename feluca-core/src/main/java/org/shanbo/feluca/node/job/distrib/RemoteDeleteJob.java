@@ -9,7 +9,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class RemoteDeleteJob extends SubJobAllocator{
-
+	final static String TaskName = "filedelete";
+	
 	@Override
 	public JSONArray allocateSubJobs(JSONObject udConf) {
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
@@ -17,7 +18,7 @@ public class RemoteDeleteJob extends SubJobAllocator{
 		JSONArray toDeleteFiles = udConf.getJSONArray("files");
 		if (toDeleteFiles != null ){
 			for(String worker : ClusterUtil.getWorkerList()){// all workers
-				JSONObject conf = TASKS.get("filedelete").taskSerialize();
+				JSONObject conf = getTask(TaskName).taskSerialize(TaskName);
 				conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
 				conf.getJSONObject("param").put("files", toDeleteFiles);
 				concurrentLevel.add(conf);
@@ -28,7 +29,7 @@ public class RemoteDeleteJob extends SubJobAllocator{
 			if (workerDetail!=null){
 				for(String hostPort : workerDetail.keySet()){
 					JSONArray workerToDeleteFiles = workerDetail.getJSONArray(hostPort);
-					JSONObject conf = TASKS.get("filedelete").taskSerialize();
+					JSONObject conf = getTask(TaskName).taskSerialize(TaskName);
 					conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, hostPort);
 					conf.getJSONObject("param").put("files", workerToDeleteFiles);
 					concurrentLevel.add(conf);

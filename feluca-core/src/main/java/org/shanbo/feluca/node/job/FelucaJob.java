@@ -3,8 +3,6 @@ package org.shanbo.feluca.node.job;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -25,8 +23,6 @@ import com.alibaba.fastjson.JSONObject;
  *	@author shanbo.liang
  */
 public class FelucaJob {
-
-	private static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
 	final static int SUBJOB_CHECK_INTERVAL = 888;
 
 	public static final String JOB_NAME = "jobName";
@@ -36,7 +32,7 @@ public class FelucaJob {
 
 	protected Logger log ;
 
-	protected TaskExecutor confParser;//only for parse 
+//	protected TaskExecutor confParser;//only for parse 
 
 	protected boolean isLegal;
 	protected boolean isLocal;
@@ -64,7 +60,7 @@ public class FelucaJob {
 	}
 
 	public static JSONArray getTaskList(){
-		return JSONUtil.fromStrings(TASKS.keySet().toArray());
+		return JSONUtil.fromStrings(FelucaSubJob.showJobList());
 	}
 
 	public static class JobMessage{
@@ -106,9 +102,9 @@ public class FelucaJob {
 			}
 		}
 		this.log = LoggerFactory.getLogger(this.getClass());
-		this.confParser = TASKS.get(properties.get("task"));
+
 		try{
-			this.jobName = this.confParser.getTaskName() + "___" + new DateTime().toString(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss_SSS"));
+			this.jobName = properties.getString("task") + "___" + new DateTime().toString(DateTimeFormat.forPattern("yyyy_MM_dd_HH_mm_ss_SSS"));
 			this.logPipe = new ArrayList<JobMessage>(); //you may need to share it with sub jobs
 			this.generateSubJobs(); //fill subJobs
 			this.subJobStates = new ArrayList<List<JobState>>(this.subJobs.size());
@@ -127,7 +123,7 @@ public class FelucaJob {
 
 	private boolean generateSubJobs(){
 
-		JSONArray subJobAllocation = JobUtil.allocateSubJobs(properties);
+		JSONArray subJobAllocation = FelucaSubJob.allocateSubJobs(properties);
 		
 		if (subJobAllocation == null || subJobAllocation.size() == 0){
 			return false;

@@ -93,22 +93,39 @@ public abstract class TaskExecutor {
 	}
 	
 	
+//	/**
+//	 * default, to change to remote type, use {@link #taskSerialize(String)}
+//	 * <p>almost all tasks don't need to override it
+//	 * @param isExplicitLocal
+//	 * @return
+//	 */
+//	public JSONObject taskSerialize(){
+//		JSONObject conf = new JSONObject();
+//		JSONObject para = new JSONObject();
+//		para.put("repo", Constants.Base.getLeaderRepository());//default single machine job
+//		conf.put("param", para);
+//		conf.put("type", "local"); 
+//		//change type to distribute by add a new 'address' to this conf
+//		// conf.put("address", [...])
+//		conf.put("task",this.getClass().getName());
+//		return conf;
+//	}
+	
 	/**
-	 * default, 
-	 * <p>almost all tasks don't need to override it
-	 * @param isExplicitLocal
+	 * remote task ticket
+	 * @param distribTask
 	 * @return
 	 */
-	public JSONObject taskSerialize(){
+	public JSONObject taskSerialize(String distribTask){
 		JSONObject conf = new JSONObject();
 		JSONObject para = new JSONObject();
-		para.put("repo", Constants.Base.getLeaderRepository());//default single machine job
+		para.put("repo", Constants.Base.getWorkerRepository());//default single machine job
 		conf.put("param", para);
-		conf.put("type", "local"); 
 		//change type to distribute by add a new 'address' to this conf
 		// conf.put("address", [...])
-		conf.put("task",this.getClass().getName());
+		conf.put("task", distribTask);
 		return conf;
 	}
+	
 	
 }

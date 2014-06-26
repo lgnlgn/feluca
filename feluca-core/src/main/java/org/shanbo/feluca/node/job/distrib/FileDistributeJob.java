@@ -19,8 +19,11 @@ public class FileDistributeJob extends SubJobAllocator{
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
 		JSONArray concurrentLevel = new JSONArray();     // all workers
 		for(String worker : ClusterUtil.getWorkerList()){// all workers
-			JSONObject conf = TASKS.get("file").taskSerialize();
+			JSONObject conf;
+
+			conf = getTask("filepull").taskSerialize("filepull");
 			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
+		
 			JSONObject param  = udConf.getJSONObject("param");
 			if (param != null)
 				conf.getJSONObject("param").putAll(param); //using user-def's parameter
@@ -33,7 +36,7 @@ public class FileDistributeJob extends SubJobAllocator{
 
 	@Override
 	public String getName() {
-		return "file";
+		return "filepull";
 	}
 
 

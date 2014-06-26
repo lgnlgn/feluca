@@ -19,7 +19,8 @@ public class DistribSleepJob extends SubJobAllocator{
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
 		JSONArray concurrentLevel = new JSONArray();     // all workers
 		for(String worker : ClusterUtil.getWorkerList()){// all workers
-			JSONObject conf = TASKS.get("lsleep").taskSerialize();
+			JSONObject conf = getTask("lsleep").taskSerialize("lsleep"); //distribute sleep -> local sleep
+			conf.put("task", "lsleep");
 			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker); //more
 			JSONObject param  = udConf.getJSONObject("param");
 			if (param != null)

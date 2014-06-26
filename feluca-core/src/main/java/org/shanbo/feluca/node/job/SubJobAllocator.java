@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public abstract class SubJobAllocator {
-	protected static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
+	private static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
 	static{
 		addTask(new LocalSleepTask(null));
 		addTask(new FilePullTask(null));
@@ -23,8 +23,20 @@ public abstract class SubJobAllocator {
 		TASKS.put(task.getTaskName(), task);
 	}
 	
-
+	protected  TaskExecutor getTask(String taskName){
+		return TASKS.get(taskName);
+	}
 	
+
+	/**
+	 * implement function that meets taskSer decide 
+	 * <li> if this is a localJob : simply put parameter into taskSerialize() result
+	 * <li> if this is a distributeJob : you need:
+	 *  <li><b> 1. check if this is a leader sent job which contains a 'type':"local" ;
+	 *  <li><b> 2. else you have to decide what to send 
+	 * @param properties
+	 * @return
+	 */
 	public abstract JSONArray allocateSubJobs(JSONObject properties);
 	
 	public abstract String getName();
