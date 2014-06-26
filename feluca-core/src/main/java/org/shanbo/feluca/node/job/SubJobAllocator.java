@@ -23,7 +23,7 @@ public abstract class SubJobAllocator {
 		TASKS.put(task.getTaskName(), task);
 	}
 	
-	protected  TaskExecutor getTask(String taskName){
+	public static TaskExecutor getTask(String taskName){
 		return TASKS.get(taskName);
 	}
 	

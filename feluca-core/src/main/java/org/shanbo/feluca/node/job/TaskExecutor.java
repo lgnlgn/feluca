@@ -119,7 +119,7 @@ public abstract class TaskExecutor {
 	public JSONObject taskSerialize(String distribTask){
 		JSONObject conf = new JSONObject();
 		JSONObject para = new JSONObject();
-		para.put("repo", Constants.Base.getWorkerRepository());//default single machine job
+		para.put("repo", Constants.Base.getLeaderRepository());//default single machine job
 		conf.put("param", para);
 		//change type to distribute by add a new 'address' to this conf
 		// conf.put("address", [...])

@@ -117,12 +117,18 @@ public abstract class FelucaSubJob{
 		return ImmutableSet.copyOf(SUBJOBS.keySet());
 	}
 	
-	public static void distribToLocal(JSONObject parsedConf){
+	public static void typeToWorker(JSONObject parsedConf){
 		parsedConf.remove(DISTRIBUTE_ADDRESS_KEY);
 		parsedConf.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
 		parsedConf.getJSONObject("param").put("repo", Constants.Base.getWorkerRepository()); //change repo for workers
-
 	}
+	
+	public static void typeToLeader(JSONObject parsedConf){
+		parsedConf.remove(DISTRIBUTE_ADDRESS_KEY);
+		parsedConf.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
+		parsedConf.getJSONObject("param").put("repo", Constants.Base.getLeaderRepository()); //change repo for workers
+	}
+	
 	
 	public static boolean isSubJobLocal(JSONObject udConf){
 		if ("local".equals(udConf.getString("type"))){
@@ -189,7 +195,7 @@ public abstract class FelucaSubJob{
 
 		@Override
 		protected void init() {
-			String taskClass = SUBJOBS.get(this.properties.getString("task")).getClass().getName();
+			String taskClass = SubJobAllocator.getTask(this.properties.getString("task")).getClass().getName();
 			try {
 				@SuppressWarnings("unchecked")
 				Class<? extends TaskExecutor> clz = (Class<? extends TaskExecutor>) Class.forName(taskClass);
@@ -216,7 +222,7 @@ public abstract class FelucaSubJob{
 		private void startRemoteTask() throws Exception{
 			String url = address + WORKER_JOB_PATH + "?action=submit";
 			try{
-				distribToLocal(properties);
+				typeToWorker(properties);
 				remoteJobName = JSONObject.parseObject(HttpClientUtil.get().doPost(url, properties.toString())).getString("response");
 			}catch (Exception e){
 				Thread.sleep(2000);
