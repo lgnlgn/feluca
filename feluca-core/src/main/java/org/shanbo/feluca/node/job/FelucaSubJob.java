@@ -80,13 +80,16 @@ public abstract class FelucaSubJob{
 	}
 
 
+	/**
+	 * 
+	 * @param parsedConf
+	 * @return
+	 */
 	public static FelucaSubJob decideSubJob(JSONObject parsedConf){
-		if (parsedConf.getString("type").equals("local")){
-			return new LocalSubJob(parsedConf);
-		}else{
-			if (!parsedConf.containsKey(DISTRIBUTE_ADDRESS_KEY))
-				throw new FelucaException("'address' not found! impossible to launch remote job");
+		if (parsedConf.containsKey(DISTRIBUTE_ADDRESS_KEY))
 			return new DistributeSubJob(parsedConf);
+		else{
+			return new LocalSubJob(parsedConf);
 		}
 	}
 
@@ -106,7 +109,7 @@ public abstract class FelucaSubJob{
 						return;
 					}
 					System.out.println("local taskExecutor----------run (say by LocalSubJob)" );
-					taskExecutor.execute();
+					taskExecutor.execute(); //
 					boolean killed = false;
 					while(true){
 						if (killed == false && state == JobState.STOPPING){

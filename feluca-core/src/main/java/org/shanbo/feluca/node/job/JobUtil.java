@@ -3,8 +3,8 @@ package org.shanbo.feluca.node.job;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.shanbo.feluca.node.job.subjob.LeaderSleepJob;
-import org.shanbo.feluca.node.job.subjob.SubJobAllocator;
+import org.shanbo.feluca.node.job.local.LocalSleepJob;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -23,7 +23,7 @@ public class JobUtil {
 	}
 	
 	static{
-		addJob(new LeaderSleepJob());
+		addJob(new LocalSleepJob());
 	}
 		
 	

@@ -10,8 +10,6 @@ import org.shanbo.feluca.datasys.DataClient;
 import org.shanbo.feluca.datasys.ftp.DataFtpClient;
 import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.node.job.TaskExecutor;
-import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -24,7 +22,7 @@ public class FilePullTask extends TaskExecutor{
 
 	HashMap<String, Boolean> fileNames;
 	String ftpAddress;
-	
+
 	public FilePullTask(JSONObject conf) {
 		super(conf);
 	}
@@ -52,77 +50,74 @@ public class FilePullTask extends TaskExecutor{
 	}
 
 	@Override
-	public void execute() {
-		ConcurrentExecutor.submit(new Runnable() {
-			public void run() {
-				state = JobState.RUNNING;
-				System.out.println("----------run :" + taskID );
-				DataClient client = null;
-				try {
-					client = new DataFtpClient(ftpAddress.split(":")[0]);
-					System.out.println("...........client opened......................");
-				} catch (Exception e) {
-					System.out.println("...........client failed......................");
-					state = JobState.FAILED;
-					return;
-				}
-				for(String fileName : fileNames.keySet()){
-					if (state == JobState.STOPPING){
-						break;
-					}
-					try {
-						System.out.println("pulling " + fileName);
-						client.downFromRemote(fileName, Constants.Base.getWorkerRepository());
-						fileNames.put(fileName, true); //mark success
-					} catch (IOException e) {
-						log.error("downFromRemote error",e);
-					}
-				}
-				if (client != null){
-					client.close();
-				}
-				if (state == JobState.STOPPING){
-					state = JobState.INTERRUPTED;
-				}else
-					state = JobState.FINISHED;
-				System.out.println("-----------awake~~~~~~~~ " + state);
+	protected void _exec() {
+		state = JobState.RUNNING;
+		System.out.println("----------run :" + taskID );
+		DataClient client = null;
+		try {
+			client = new DataFtpClient(ftpAddress.split(":")[0]);
+			System.out.println("...........client opened......................");
+		} catch (Exception e) {
+			System.out.println("...........client failed......................");
+			state = JobState.FAILED;
+			return;
+		}
+		for(String fileName : fileNames.keySet()){
+			if (state == JobState.STOPPING){
+				break;
 			}
-		});
+			try {
+				System.out.println("pulling " + fileName);
+				client.downFromRemote(fileName, Constants.Base.getWorkerRepository());
+				fileNames.put(fileName, true); //mark success
+			} catch (IOException e) {
+				log.error("downFromRemote error",e);
+			}
+		}
+		if (client != null){
+			client.close();
+		}
+		if (state == JobState.STOPPING){
+			state = JobState.INTERRUPTED;
+		}else
+			state = JobState.FINISHED;
+		System.out.println("-----------awake~~~~~~~~ " + state);
 	}
+
 
 	@Override
 	public void kill() {
 		state = JobState.STOPPING;
 	}
 
-//	@Override
-//	protected JSONArray localTypeSubJob(JSONObject global) {
-//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-//		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-//		JSONObject conf = getDefaultConf(true);
-//		JSONObject param  = global.getJSONObject("param");
-//		if (param != null)
-//			conf.getJSONObject("param").putAll(param); //using user-def's parameter
-//		concurrentLevel.add(conf);
-//		subJobSteps.add(concurrentLevel);
-//		return subJobSteps;
-//	}
-//
-//	@Override
-//	protected JSONArray distribTypeSubJob(JSONObject global) {
-//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-//		JSONArray concurrentLevel = new JSONArray();// all worker
-//		for(String worker : ClusterUtil.getWorkerList()){
-//			JSONObject conf = getDefaultConf(false);
-//			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
-//			JSONObject param  = global.getJSONObject("param");
-//			if (param != null)
-//				conf.getJSONObject("param").putAll(param); //using user-def's parameter
-//			concurrentLevel.add(conf);
-//		}
-//		subJobSteps.add(concurrentLevel);
-//		return subJobSteps;
-//	}
+	//	@Override
+	//	protected JSONArray localTypeSubJob(JSONObject global) {
+	//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
+	//		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
+	//		JSONObject conf = getDefaultConf(true);
+	//		JSONObject param  = global.getJSONObject("param");
+	//		if (param != null)
+	//			conf.getJSONObject("param").putAll(param); //using user-def's parameter
+	//		concurrentLevel.add(conf);
+	//		subJobSteps.add(concurrentLevel);
+	//		return subJobSteps;
+	//	}
+	//
+	//	@Override
+	//	protected JSONArray distribTypeSubJob(JSONObject global) {
+	//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
+	//		JSONArray concurrentLevel = new JSONArray();// all worker
+	//		for(String worker : ClusterUtil.getWorkerList()){
+	//			JSONObject conf = getDefaultConf(false);
+	//			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
+	//			JSONObject param  = global.getJSONObject("param");
+	//			if (param != null)
+	//				conf.getJSONObject("param").putAll(param); //using user-def's parameter
+	//			concurrentLevel.add(conf);
+	//		}
+	//		subJobSteps.add(concurrentLevel);
+	//		return subJobSteps;
+	//	}
 
 	@Override
 	public String getTaskFinalMessage() {

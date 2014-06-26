@@ -113,7 +113,7 @@ public class DataConverter {
 		//end of 
 		dataOutput.write(buffer.array(), 0, buffer.position());
 		blockStatWriter.write(blockStat.toString());
-		globalStatWriter.write(globalStat.toString());
+		globalStatWriter.write(globalStat.toString() + "totalBlocks=" + blockId + "\n");
 		
 		Closeables.close(dataOutput, true);
 		Closeables.close(rawDataReader, true);

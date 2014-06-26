@@ -2,7 +2,9 @@ package org.shanbo.feluca.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -54,6 +56,9 @@ public class JSONUtil {
 	}
 	
 	public static List<String> JSONArrayToList(JSONArray ja){
+		if (ja == null){
+			return Collections.emptyList();
+		}
 		List<String> result = new ArrayList<String>();
 		for(Object obj : ja){
 			result.add((obj instanceof String )?(String)obj : obj .toString());
@@ -67,5 +72,13 @@ public class JSONUtil {
 		ja.add("bbb");
 		JSONObject qJsonObject = new JSONObject();
 		System.out.println(qJsonObject.getJSONArray("a"));
+	}
+	
+	public static JSONObject fromProperties(Properties p){
+		JSONObject json = new JSONObject();
+		for(Object key : p.keySet()){
+			json.put(key.toString(), p.getProperty(key.toString()));
+		}
+		return json;
 	}
 }

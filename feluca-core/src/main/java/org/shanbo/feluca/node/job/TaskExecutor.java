@@ -3,6 +3,7 @@ package org.shanbo.feluca.node.job;
 import java.util.Random;
 
 import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +74,16 @@ public abstract class TaskExecutor {
 	
 	public abstract String getTaskName();
 	
-	public abstract void execute();
+	public void execute(){
+		ConcurrentExecutor.submit(new Runnable() {
+			@Override
+			public void run() {
+				_exec();
+			}
+		});
+	}
+	
+	protected abstract void _exec();
 	
 	public abstract void kill();
 	
@@ -94,7 +104,9 @@ public abstract class TaskExecutor {
 		JSONObject para = new JSONObject();
 		para.put("repo", Constants.Base.getLeaderRepository());//default single machine job
 		conf.put("param", para);
-		conf.put("type", "local");
+		conf.put("type", "local"); 
+		//change type to distribute by add a new 'address' to this conf
+		// conf.put("address", [...])
 		conf.put("task",this.getClass().getName());
 		return conf;
 	}

@@ -13,55 +13,53 @@ import java.util.List;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.node.job.TaskExecutor;
-import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
-
 import com.alibaba.fastjson.JSONObject;
 
 public class RuntimeTask extends TaskExecutor{
 
 	//TODO 
 	public static class StreamGobbler extends Thread {
-	    InputStream is;
-	    String      type;
-	    OutputStream os;
-	    StreamGobbler(InputStream is, String type) {
-	        this(is, type, null);
-	    }
-	    StreamGobbler(InputStream is, String type, OutputStream redirect) {
-	        this.is = is;
-	        this.type = type;
-	        this.os = redirect;
-	    }
-	    public void run() {
-	        try {
-	            PrintWriter pw = null;
-	            if (os != null)
-	                pw = new PrintWriter(os);
-	            InputStreamReader isr = new InputStreamReader(is);
-	            BufferedReader br = new BufferedReader(isr);
-	            String line = null;
-	            while ((line = br.readLine()) != null) {
-	                if (pw != null)
-	                    pw.println(line);
-//	                System.out.println(type + ">" + line);
-	            }
-	            if (pw != null)
-	                pw.flush();
-	        } catch (IOException ioe) {
-	            ioe.printStackTrace();
-	        }
-	    }
+		InputStream is;
+		String      type;
+		OutputStream os;
+		StreamGobbler(InputStream is, String type) {
+			this(is, type, null);
+		}
+		StreamGobbler(InputStream is, String type, OutputStream redirect) {
+			this.is = is;
+			this.type = type;
+			this.os = redirect;
+		}
+		public void run() {
+			try {
+				PrintWriter pw = null;
+				if (os != null)
+					pw = new PrintWriter(os);
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr);
+				String line = null;
+				while ((line = br.readLine()) != null) {
+					if (pw != null)
+						pw.println(line);
+					//	                System.out.println(type + ">" + line);
+				}
+				if (pw != null)
+					pw.flush();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+		}
 	}
-	
+
 	public final static String CLASSPATH = "-cp";
 	public final static String ARGUMENTS = "-arg";
-	
+
 	String taskName;
 	Process process;
 	StringBuilder message;
 	String[] cmd;
 
-	
+
 	public RuntimeTask(JSONObject conf) {
 		super(conf);
 	}
@@ -97,20 +95,6 @@ public class RuntimeTask extends TaskExecutor{
 	}
 
 
-//	@Override
-//	protected JSONArray localTypeSubJob(JSONObject global) {
-//		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
-//		JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
-//		JSONObject conf = getDefaultConf(true);
-//		JSONObject param  = global.getJSONObject("param");
-//		if (param != null)
-//			conf.getJSONObject("param").putAll(param); //using user-def's parameter
-//		
-//		concurrentLevel.add(conf);
-//		subJobSteps.add(concurrentLevel);
-//		return subJobSteps;
-//	}
-
 
 	@Override
 	public String getTaskName() {
@@ -118,32 +102,29 @@ public class RuntimeTask extends TaskExecutor{
 	}
 
 	@Override
-	public void execute() {
-		ConcurrentExecutor.submit(new Runnable() {
-			public void run() {
-				state = JobState.RUNNING;
-				try {
-					process = Runtime.getRuntime().exec(cmd);
-				} catch (IOException e) {
-					state = JobState.FAILED;
-				}
-				
-				int exitValue = 1;
-				try {
-					exitValue = process.waitFor();
-				} catch (InterruptedException e) {
-					state = JobState.INTERRUPTED;
-				}
-				if (exitValue == 0){
-					state = JobState.FINISHED;
-				}else if (state == JobState.STOPPING){
-					state = JobState.INTERRUPTED;
-				}else{
-					state = JobState.FAILED;
-				}
-			}
-		});
+	public void _exec() {
+		state = JobState.RUNNING;
+		try {
+			process = Runtime.getRuntime().exec(cmd);
+		} catch (IOException e) {
+			state = JobState.FAILED;
+		}
+
+		int exitValue = 1;
+		try {
+			exitValue = process.waitFor();
+		} catch (InterruptedException e) {
+			state = JobState.INTERRUPTED;
+		}
+		if (exitValue == 0){
+			state = JobState.FINISHED;
+		}else if (state == JobState.STOPPING){
+			state = JobState.INTERRUPTED;
+		}else{
+			state = JobState.FAILED;
+		}
 	}
+
 
 	@Override
 	public void kill() {

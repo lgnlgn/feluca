@@ -1,11 +1,13 @@
 package org.shanbo.feluca.node.leader;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +18,12 @@ import org.shanbo.feluca.node.JobManager;
 import org.shanbo.feluca.node.RoleModule;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.FelucaJob;
+import org.shanbo.feluca.util.FileUtil;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.ZKClient;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 public class LeaderModule extends RoleModule{
@@ -105,9 +109,11 @@ public class LeaderModule extends RoleModule{
 	/**
 	 * TODO
 	 * @return
+	 * @throws IOException 
 	 */
-	public JSONObject localDataSetInfo(String dataName){
-		return null;
+	public JSONObject localDataSetInfo(String dataName) throws IOException{
+		Properties dataStatus = FileUtil.loadProperties(dataDir + "/" + dataName + "/" + dataName + ".sta");
+		return JSONUtil.fromProperties(dataStatus);
 	}
 	
 	/**
@@ -136,6 +142,7 @@ public class LeaderModule extends RoleModule{
 	 * @throws InterruptedException 
 	 */
 	public JSONObject showClusterDataInfo(String dataName) throws InterruptedException, ExecutionException{
+		//TODO 
 		List<String> workers = ClusterUtil.getWorkerList();
 		Map<String, String> result = HttpClientUtil.distribGet(workers, "/state?type=data?dataName="+ dataName);
 		//TODO  intact checking

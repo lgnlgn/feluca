@@ -1,13 +1,14 @@
-package org.shanbo.feluca.node.job.subjob;
+package org.shanbo.feluca.node.job.distrib;
 
 import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.node.job.FelucaSubJob;
+import org.shanbo.feluca.node.job.SubJobAllocator;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * send files to all workers
+ * send file-pull action to all workers
  * @author lgn
  *
  */
