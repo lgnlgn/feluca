@@ -27,6 +27,10 @@ public abstract class SubJobAllocator {
 		return TASKS.get(taskName);
 	}
 	
+	public static JSONObject getTaskTicket(String taskName){
+		return getTask(taskName).taskSerialize(taskName);
+	}
+	
 
 	/**
 	 * implement function that meets taskSer decide 

@@ -11,10 +11,16 @@ import org.shanbo.feluca.util.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * delete files 
+ * @author lgn
+ *
+ */
 public class FileDeleteTask extends TaskExecutor{
 
 	JSONObject message;
 	List<String> toDeleteFiles;
+	String repo; 
 	boolean stop = false;
 	public FileDeleteTask(JSONObject conf) {
 		super(conf);
@@ -29,6 +35,7 @@ public class FileDeleteTask extends TaskExecutor{
 	protected void init(JSONObject initConf) {
 		JSONArray toDel =  initConf.getJSONObject("param").getJSONArray("files");
 		toDeleteFiles = JSONUtil.JSONArrayToList(toDel);
+		repo = initConf.getJSONObject("param").getString("repo");
 		message = new JSONObject();
 	}
 
@@ -44,7 +51,7 @@ public class FileDeleteTask extends TaskExecutor{
 			if (stop == true){
 				break;
 			}
-			File toDel = new File(toDeleteFiles.get(i));
+			File toDel = new File((repo + "/" + toDeleteFiles.get(i)).replace("//", "/"));
 			if (!toDel.exists()){
 				message.put(toDeleteFiles.get(i), "not exist");
 			}else{

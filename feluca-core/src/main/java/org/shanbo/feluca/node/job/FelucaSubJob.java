@@ -11,6 +11,7 @@ import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.node.job.distrib.DistribSleepJob;
 import org.shanbo.feluca.node.job.distrib.FileDistributeJob;
 import org.shanbo.feluca.node.job.distrib.RemoteDeleteJob;
+import org.shanbo.feluca.node.job.local.LocalDeleteJob;
 import org.shanbo.feluca.node.job.local.LocalSleepJob;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
@@ -45,9 +46,10 @@ public abstract class FelucaSubJob{
 	
 	static{
 		addJob(new LocalSleepJob());
+		addJob(new LocalDeleteJob());
 		addJob(new DistribSleepJob());
-		addJob(new RemoteDeleteJob());
-		addJob(new FileDistributeJob());
+//		addJob(new RemoteDeleteJob());
+//		addJob(new FileDistributeJob());
 	}
 	
 	
@@ -117,17 +119,14 @@ public abstract class FelucaSubJob{
 		return ImmutableSet.copyOf(SUBJOBS.keySet());
 	}
 	
-	public static void typeToWorker(JSONObject parsedConf){
-		parsedConf.remove(DISTRIBUTE_ADDRESS_KEY);
-		parsedConf.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
-		parsedConf.getJSONObject("param").put("repo", Constants.Base.getWorkerRepository()); //change repo for workers
-	}
-	
-	public static void typeToLeader(JSONObject parsedConf){
+
+	public static void toLeaderBeforeDecide(JSONObject parsedConf){
 		parsedConf.remove(DISTRIBUTE_ADDRESS_KEY);
 		parsedConf.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
 		parsedConf.getJSONObject("param").put("repo", Constants.Base.getLeaderRepository()); //change repo for workers
 	}
+	
+
 	
 	
 	public static boolean isSubJobLocal(JSONObject udConf){
@@ -202,8 +201,8 @@ public abstract class FelucaSubJob{
 				Constructor<? extends TaskExecutor> constructor = clz.getConstructor(JSONObject.class);
 				taskExecutor = constructor.newInstance(this.properties);
 			} catch (Exception e) {
-				System.out.println(".? error??????????");
-				log.error("init error");
+				System.err.println("init class error??????????" + e.getMessage());
+				log.error("init class error??????????", e);
 			}
 
 		}
@@ -219,10 +218,17 @@ public abstract class FelucaSubJob{
 		String remoteJobName ;
 		int retries = 2;
 
+		static void ticketToWorker(JSONObject parsedConf){
+			parsedConf.remove(DISTRIBUTE_ADDRESS_KEY);
+			parsedConf.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
+			parsedConf.getJSONObject("param").put("repo", Constants.Base.getWorkerRepository()); //change repo for workers
+		}
+		
+		
 		private void startRemoteTask() throws Exception{
 			String url = address + WORKER_JOB_PATH + "?action=submit";
 			try{
-				typeToWorker(properties);
+				ticketToWorker(properties);
 				remoteJobName = JSONObject.parseObject(HttpClientUtil.get().doPost(url, properties.toString())).getString("response");
 			}catch (Exception e){
 				Thread.sleep(2000);

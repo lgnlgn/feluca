@@ -8,12 +8,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * send file-pull action to all workers
+ * send same file list to all workers
  * @author lgn
  *
  */
 public class FileDistributeJob extends SubJobAllocator{
 
+	final static String TaskName = "filepull";
+	
 	@Override
 	public JSONArray allocateSubJobs(JSONObject udConf) {
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
@@ -21,9 +23,9 @@ public class FileDistributeJob extends SubJobAllocator{
 		for(String worker : ClusterUtil.getWorkerList()){// all workers
 			JSONObject conf;
 
-			conf = getTask("filepull").taskSerialize("filepull");
+			conf = getTaskTicket(TaskName);
 			conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker);
-		
+
 			JSONObject param  = udConf.getJSONObject("param");
 			if (param != null)
 				conf.getJSONObject("param").putAll(param); //using user-def's parameter

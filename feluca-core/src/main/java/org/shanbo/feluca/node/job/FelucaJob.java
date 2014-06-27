@@ -113,7 +113,7 @@ public class FelucaJob {
 			}
 			isLegal = true;
 		}catch(Exception e){
-			log.error("", e);
+			log.error("generateSubJobs error", e);
 			isLegal = false;
 		}finally{
 			this.startTime = System.currentTimeMillis();
