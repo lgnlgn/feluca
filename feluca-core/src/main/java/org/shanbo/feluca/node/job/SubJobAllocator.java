@@ -23,7 +23,7 @@ public abstract class SubJobAllocator {
 		TASKS.put(task.getTaskName(), task);
 	}
 	
-	public static TaskExecutor getTask(String taskName){
+    static TaskExecutor getTask(String taskName){
 		return TASKS.get(taskName);
 	}
 	
@@ -34,9 +34,9 @@ public abstract class SubJobAllocator {
 
 	/**
 	 * implement function that meets taskSer decide 
-	 * <li> if this is a localJob : simply put parameter into taskSerialize() result
-	 * <li> if this is a distributeJob : you need:
-	 *  <li><b> 1. check if this is a leader sent job which contains a 'type':"local" ;
+	 * <li> if this is a localJob : simply put parameter into {@link #getTaskTicket(String)} result
+	 * <li> if this is a distributeJob : you need 2 cases :
+	 *  <li><b> 1. check if this is a leader-sent job which contains a 'type':"local" ?;
 	 *  <li><b> 2. else you have to decide what to send 
 	 * @param properties
 	 * @return

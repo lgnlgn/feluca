@@ -45,18 +45,7 @@ public abstract class TaskExecutor {
 	 * <p><i>You may want to override this , but most of time you don't need to </i>
 	 * @return
 	 */
-//	public JSONArray arrangeSubJob(JSONObject global){
-//		if (!isLocalJob()){
-//			if ("local".equalsIgnoreCase(global.getString("type"))){ 
-//				return localTypeSubJob(global);
-//			}else{
-//				return distribTypeSubJob(global);
-//			}
-//		}else{
-//			return localTypeSubJob(global);
-//		}
-//	}
-	
+
 	/**
 	 * <li>create a list interpret the subjob's steps & concurrent-level</li>
 	 * @return
@@ -67,10 +56,7 @@ public abstract class TaskExecutor {
 	 * <li>create a list interpret the subjob's steps & concurrent-level</li>
 	 * @return
 	 */
-//	protected abstract JSONArray distribTypeSubJob(JSONObject global);
 
-	
-	
 	
 	public abstract String getTaskName();
 	
@@ -92,24 +78,6 @@ public abstract class TaskExecutor {
 		return  state;
 	}
 	
-	
-//	/**
-//	 * default, to change to remote type, use {@link #taskSerialize(String)}
-//	 * <p>almost all tasks don't need to override it
-//	 * @param isExplicitLocal
-//	 * @return
-//	 */
-//	public JSONObject taskSerialize(){
-//		JSONObject conf = new JSONObject();
-//		JSONObject para = new JSONObject();
-//		para.put("repo", Constants.Base.getLeaderRepository());//default single machine job
-//		conf.put("param", para);
-//		conf.put("type", "local"); 
-//		//change type to distribute by add a new 'address' to this conf
-//		// conf.put("address", [...])
-//		conf.put("task",this.getClass().getName());
-//		return conf;
-//	}
 	
 	/**
 	 * remote task ticket

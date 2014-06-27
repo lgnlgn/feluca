@@ -48,8 +48,8 @@ public abstract class FelucaSubJob{
 		addJob(new LocalSleepJob());
 		addJob(new LocalDeleteJob());
 		addJob(new DistribSleepJob());
-//		addJob(new RemoteDeleteJob());
-//		addJob(new FileDistributeJob());
+		addJob(new RemoteDeleteJob());
+		addJob(new FileDistributeJob());
 	}
 	
 	
@@ -120,6 +120,10 @@ public abstract class FelucaSubJob{
 	}
 	
 
+	/**
+	 * only invoke by <b>local-type</b> SubjobAllocators 
+	 * @param parsedConf
+	 */
 	public static void toLeaderBeforeDecide(JSONObject parsedConf){
 		parsedConf.remove(DISTRIBUTE_ADDRESS_KEY);
 		parsedConf.put("type", "local"); //change 'local' type job for worker, worker uses it to start local tasks
