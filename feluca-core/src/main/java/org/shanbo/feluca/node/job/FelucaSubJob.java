@@ -43,12 +43,13 @@ public abstract class FelucaSubJob{
 	
 	
 	static{
-		addJob(new LocalOneStepJob("ldelete", "filedelete"));
-		addJob(new LocalOneStepJob("lsleep", "sleep"));
-		addJob(new LocalOneStepJob("lruntime", "runtime"));
-		addJob(new RemoteAllOneStepJob("ldelete", "filedelete"));
+		addJob(new LocalOneStepJob("ldelete", "filedelete")); //delete files in leader_repo
+		addJob(new LocalOneStepJob("lsleep", "sleep"));       // simple sleep test
+		addJob(new LocalOneStepJob("lruntime", "runtime"));   // 	
+		//---------------------
 		addJob(new RemoteAllOneStepJob("dsleep", "sleep"));
 		addJob(new RemoteAllOneStepJob("rruntime", "runtime"));
+		addJob(new RemoteAllOneStepJob("filepull", "filepull"));
 
 	}
 	
