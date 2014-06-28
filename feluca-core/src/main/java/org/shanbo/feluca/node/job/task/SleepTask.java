@@ -11,14 +11,14 @@ import com.alibaba.fastjson.JSONObject;
  * @author lgn
  *
  */
-public class LocalSleepTask extends TaskExecutor{
+public class SleepTask extends TaskExecutor{
 	public final static String SLEEP = "sleep";
 
 	String message = null;
 	protected int sleepMs ;
 	private Future<?> sleep;
 
-	public LocalSleepTask(JSONObject conf) {
+	public SleepTask(JSONObject conf) {
 		super(conf);
 	}
 
@@ -29,7 +29,7 @@ public class LocalSleepTask extends TaskExecutor{
 
 	@Override
 	public String getTaskName() {
-		return "lsleep";
+		return "sleep";
 	}
 
 	@Override

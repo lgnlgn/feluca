@@ -8,11 +8,9 @@ import java.util.Set;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.JobState;
-import org.shanbo.feluca.node.job.distrib.DistribSleepJob;
-import org.shanbo.feluca.node.job.distrib.FileDistributeJob;
-import org.shanbo.feluca.node.job.distrib.RemoteDeleteJob;
-import org.shanbo.feluca.node.job.local.LocalDeleteJob;
-import org.shanbo.feluca.node.job.local.LocalSleepJob;
+import org.shanbo.feluca.node.job.local.LocalOneStepJob;
+import org.shanbo.feluca.node.job.remote.RemoteAllOneStepJob;
+
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,7 @@ public abstract class FelucaSubJob{
 	
 
 	private static void addJob(SubJobAllocator job){
-		SUBJOBS.put(job.getName(), job);
+		SUBJOBS.put(job.getJobName(), job);
 	}
 	
 	public static String getTaskClass(String abbrTaskName){
@@ -45,11 +43,13 @@ public abstract class FelucaSubJob{
 	
 	
 	static{
-		addJob(new LocalSleepJob());
-		addJob(new LocalDeleteJob());
-		addJob(new DistribSleepJob());
-		addJob(new RemoteDeleteJob());
-		addJob(new FileDistributeJob());
+		addJob(new LocalOneStepJob("ldelete", "filedelete"));
+		addJob(new LocalOneStepJob("lsleep", "sleep"));
+		addJob(new LocalOneStepJob("lruntime", "runtime"));
+		addJob(new RemoteAllOneStepJob("ldelete", "filedelete"));
+		addJob(new RemoteAllOneStepJob("dsleep", "sleep"));
+		addJob(new RemoteAllOneStepJob("rruntime", "runtime"));
+
 	}
 	
 	

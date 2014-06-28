@@ -1,4 +1,4 @@
-package org.shanbo.feluca.node.job.distrib;
+package org.shanbo.feluca.node.job.remote;
 
 import org.shanbo.feluca.node.job.SubJobAllocator;
 
@@ -21,7 +21,7 @@ public class DataBalanceJob extends SubJobAllocator{
 	}
 
 	@Override
-	public String getName() {
+	public String getJobName() {
 		return "databalance";
 	}
 

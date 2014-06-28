@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * add a inputstream loading entry
+ * add a InputStream config entry
  * @author shanbo.liang
  *
  */

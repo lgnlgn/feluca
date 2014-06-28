@@ -6,7 +6,11 @@ import org.apache.ftpserver.usermanager.Md5PasswordEncryptor;
 import org.apache.ftpserver.usermanager.PasswordEncryptor;
 import org.apache.ftpserver.usermanager.UserManagerFactory;
 
-
+/**
+ * add a InputStream user properties entry
+ * @author lgn
+ *
+ */
 public class PropertiesUserManagerFactory implements UserManagerFactory {
 
     private String adminName = "admin";

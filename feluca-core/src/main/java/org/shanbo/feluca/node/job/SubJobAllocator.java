@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.shanbo.feluca.node.job.task.FileDeleteTask;
 import org.shanbo.feluca.node.job.task.FilePullTask;
-import org.shanbo.feluca.node.job.task.LocalSleepTask;
+import org.shanbo.feluca.node.job.task.SleepTask;
 import org.shanbo.feluca.node.job.task.RuntimeTask;
 
 import com.alibaba.fastjson.JSONArray;
@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 public abstract class SubJobAllocator {
 	private static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
 	static{
-		addTask(new LocalSleepTask(null));
+		addTask(new SleepTask(null));
 		addTask(new FilePullTask(null));
 		addTask(new FileDeleteTask(null));
 		addTask(new RuntimeTask(null));
@@ -43,5 +43,5 @@ public abstract class SubJobAllocator {
 	 */
 	public abstract JSONArray allocateSubJobs(JSONObject properties);
 	
-	public abstract String getName();
+	public abstract String getJobName();
 }
