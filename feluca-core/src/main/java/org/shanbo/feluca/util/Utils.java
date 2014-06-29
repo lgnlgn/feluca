@@ -212,7 +212,10 @@ public class Utils{
 	}
 	
 	public static void main(String[] args){
-		System.out.println(hashAllocate(25, 5));
+//		System.out.println(hashAllocate(25, 5));
+		File f = new File(".\\worker_repo\\data\\real-sim\\real-sim_1.dat");
+		System.out.println(f.getParent());
+		System.out.println(f.getParentFile().mkdirs());
 	}
 	
 //	public static String RAMEstimation(CommandLine cmd, Properties parameters, MemoryEstimater algo, String dbPath) throws IOException{

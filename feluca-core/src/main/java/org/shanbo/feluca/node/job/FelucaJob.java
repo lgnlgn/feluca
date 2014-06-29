@@ -32,7 +32,7 @@ public class FelucaJob {
 
 	protected Logger log ;
 
-//	protected TaskExecutor confParser;//only for parse 
+	//	protected TaskExecutor confParser;//only for parse 
 
 	protected boolean isLegal;
 	protected boolean isLocal;
@@ -77,7 +77,7 @@ public class FelucaJob {
 		public String toString(){
 			return logContent;
 		}
-		
+
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class FelucaJob {
 	public boolean isLocal(){
 		return this.isLocal;
 	}
-	
+
 	public FelucaJob(JSONObject args){	
 		this.properties = new JSONObject();
 
@@ -124,11 +124,10 @@ public class FelucaJob {
 	private boolean generateSubJobs(){
 
 		JSONArray subJobAllocation = FelucaSubJob.allocateSubJobs(properties);
-		
+
 		if (subJobAllocation == null || subJobAllocation.size() == 0){
 			return false;
-		}else {
-			if (subJobAllocation.getJSONArray(0).size() == 0 || subJobAllocation.getJSONArray(0).getJSONObject(0).getString("task") == null)
+		}else if (subJobAllocation.getJSONArray(0).size() == 0){
 				return false;
 		}
 		this.subJobs = new ArrayList<List<FelucaSubJob>>(subJobAllocation.size());
@@ -140,7 +139,7 @@ public class FelucaJob {
 				for(int j = 0; j < concurrentJobAllocation.size(); j++){
 					concurrentJobs.add(
 							FelucaSubJob.decideSubJob(concurrentJobAllocation.getJSONObject(j))
-								);
+							);
 					concurrentJobs.get(concurrentJobs.size()-1).setParent(this);//share with Job
 				}
 			}
@@ -276,7 +275,7 @@ public class FelucaJob {
 
 					try {
 						Thread.sleep(SUBJOB_CHECK_INTERVAL);
-//						log.debug("checking~~~~" + currentJobState.toString() + " ->" + getJobDuration());
+						//						log.debug("checking~~~~" + currentJobState.toString() + " ->" + getJobDuration());
 					} catch (InterruptedException e) {
 					}
 				}

@@ -120,11 +120,12 @@ public class DataFtpClient implements DataClient{
 
 
 	public boolean downFromRemote(String remoteFileName, String localDires) throws IOException {
-		String[] paths = remoteFileName.split("/+");
-		
-		File localDir = new File(localDires + "/" + StringUtils.join(Arrays.copyOfRange(paths, 0, paths.length-1)));
-		if(!localDir.exists() || !localDir.isDirectory())
-			localDir.mkdirs();
+//		String[] paths = remoteFileName.split("/+");
+//		
+//		File localDir = new File(localDires + "/" + StringUtils.join(Arrays.copyOfRange(paths, 0, paths.length-1)));
+//		if(!localDir.exists() || !localDir.isDirectory())
+//			localDir.mkdirs();
+		new File((localDires + "/" + remoteFileName).replaceAll("/+", "/")).getParentFile().mkdirs();
 		
 		String strFilePath = localDires + "/" + remoteFileName;
 		BufferedOutputStream outStream = null;  
@@ -137,7 +138,7 @@ public class DataFtpClient implements DataClient{
 				return success;  
 			}  
 		} catch (IOException e) {  
-			log.error("down load file" + remoteFileName + " error" ,e);
+			log.error("down load file :'" + remoteFileName + "' error" ,e);
 		} finally {  
 			if (null != outStream) {  
 				try {  

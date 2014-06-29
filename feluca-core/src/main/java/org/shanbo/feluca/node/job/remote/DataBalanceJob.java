@@ -26,57 +26,50 @@ import com.google.common.collect.ImmutableList;
  *
  */
 public class DataBalanceJob extends SubJobAllocator{
-	
+
 	@Override
 	public JSONArray allocateSubJobs(JSONObject udConf) {
 		String dataName = udConf.getJSONObject("param").getString("dataName");
 		if (dataName == null)
 			throw new FelucaException("'dataName' is require in 'param'");
-		if (FelucaSubJob.isSubJobLocal(udConf)){ // seen by worker ; prepare for execution conf
-			JSONArray subJobSteps = new JSONArray(1);//local step. delete or pull 
-			JSONArray concurrentLevel = new JSONArray();     // all workers
-			concurrentLevel.add(udConf); //received ticket(modified by FelucaSubJob); directly use it
-			subJobSteps.add(concurrentLevel);
-			return subJobSteps;
-		}else{
-			JSONArray subJobSteps = new JSONArray(2);//2 steps: 1. delete & 2.pull 
-			JSONArray deleteStep= new JSONArray();
-			JSONArray pullStep= new JSONArray();
-			try {
-				List<String> workers = ClusterUtil.getWorkerList();
-				//---------------step 1
-				List<String> toDelete = ImmutableList.of(dataName);
-				for(String worker : workers){
-					JSONObject conf = getTaskTicket("filedelete"); //distribute sleep
-					conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker); //more
-					conf.getJSONObject("param").put("files", JSONUtil.listToAJsonArray(toDelete));
-					deleteStep.add(conf);
-				}
-				//----------------step2
-				Properties dataStatus = FileUtil.loadProperties(Constants.Base.getLeaderRepository() + Constants.Base.DATA_DIR + "/" + dataName + "/" + dataName + ".sta");
-				int totalBlocks = Utils.getIntFromProperties(dataStatus, "totalBlocks");
-				
-				List<List<Integer>> allocationList = Utils.hashAllocate(totalBlocks, workers.size());
-				for(int i = 0 ; i < allocationList.size(); i++ ){// all workers
-					JSONObject conf = getTaskTicket("filepull"); //distribute sleep -> local sleep
-					conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, workers.get(i)); //more
-					JSONArray pullFiles = new JSONArray();
-					for(int id : allocationList.get(i)){ //each block
-						pullFiles.add(Constants.Base.DATA_DIR + "/" + dataName + "/" + dataName + "_" + id + ".sta");
-						pullFiles.add(Constants.Base.DATA_DIR + "/" + dataName + "/" + dataName + "_" + id + ".dat");
-					}
-					pullFiles.add(Constants.Base.DATA_DIR + "/" + dataName + "/" + dataName + ".sta");//global statistic
-					conf.getJSONObject("param").put("files", pullFiles);
-					pullStep.add(conf);
-				}
-				
-			} catch (IOException e) {
-				throw new FelucaException("check dataset error", e);
+
+		JSONArray subJobSteps = new JSONArray(2);//2 steps: 1. delete & 2.pull 
+		JSONArray deleteStep= new JSONArray();
+		JSONArray pullStep= new JSONArray();
+		try {
+			List<String> workers = ClusterUtil.getWorkerList();
+			//---------------step 1
+			List<String> toDelete = ImmutableList.of(dataName);
+			for(String worker : workers){
+				JSONObject conf = getTaskTicket("filedelete"); //distribute sleep
+				conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, worker); //more
+				conf.getJSONObject("param").put("files", JSONUtil.listToAJsonArray(toDelete));
+				deleteStep.add(conf);
 			}
-			subJobSteps.add(deleteStep);
-			subJobSteps.add(pullStep);
-			return subJobSteps;
+			//----------------step2
+			Properties dataStatus = FileUtil.loadProperties(Constants.Base.getLeaderRepository() + Constants.Base.DATA_DIR + "/" + dataName + "/" + dataName + ".sta");
+			int totalBlocks = Utils.getIntFromProperties(dataStatus, "totalBlocks");
+
+			List<List<Integer>> allocationList = Utils.hashAllocate(totalBlocks, workers.size());
+			for(int i = 0 ; i < allocationList.size(); i++ ){// all workers
+				JSONObject conf = getTaskTicket("filepull"); //distribute sleep -> local sleep
+				conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, workers.get(i)); //more
+				JSONArray pullFiles = new JSONArray();
+				for(int id : allocationList.get(i)){ //each block
+					pullFiles.add(Constants.Base.DATA_DIR + "/" + dataName + "/" + dataName + "_" + id + ".sta");
+					pullFiles.add(Constants.Base.DATA_DIR + "/" + dataName + "/" + dataName + "_" + id + ".dat");
+				}
+				pullFiles.add(Constants.Base.DATA_DIR + "/" + dataName + "/" + dataName + ".sta");//global statistic
+				conf.getJSONObject("param").put("files", pullFiles);
+				pullStep.add(conf);
+			}
+
+		} catch (IOException e) {
+			throw new FelucaException("check dataset error", e);
 		}
+		subJobSteps.add(deleteStep);
+		subJobSteps.add(pullStep);
+		return subJobSteps;
 	}
 
 	@Override

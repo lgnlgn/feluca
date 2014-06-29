@@ -47,11 +47,12 @@ public class FileDeleteTask extends TaskExecutor{
 	@Override
 	protected void _exec() {	
 		state = JobState.RUNNING;
+		System.out.println("delete : " + toDeleteFiles);
 		for(int i = 0 ; i < toDeleteFiles.size();i += 1){
 			if (stop == true){
 				break;
 			}
-			File toDel = new File((repo + "/" + toDeleteFiles.get(i)).replace("//", "/"));
+			File toDel = new File((repo + "/" + toDeleteFiles.get(i)).replaceAll("/+", "/"));
 			if (!toDel.exists()){
 				message.put(toDeleteFiles.get(i), "not exist");
 			}else{

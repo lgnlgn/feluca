@@ -9,6 +9,7 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.node.job.JobState;
 import org.shanbo.feluca.node.job.local.LocalOneStepJob;
+import org.shanbo.feluca.node.job.remote.DataBalanceJob;
 import org.shanbo.feluca.node.job.remote.RemoteAllOneStepJob;
 
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -50,7 +51,22 @@ public abstract class FelucaSubJob{
 		addJob(new RemoteAllOneStepJob("dsleep", "sleep"));
 		addJob(new RemoteAllOneStepJob("rruntime", "runtime"));
 		addJob(new RemoteAllOneStepJob("filepull", "filepull"));
+		addJob(new RemoteAllOneStepJob("ddelete", "filedelete"));
+		
+		addJob(new DataBalanceJob());
 
+	}
+	
+	public static JSONArray allocateSubJobs(JSONObject udConf){
+		if (isSubJobLocal(udConf)){
+			JSONArray subJobSteps = new JSONArray(1);//only 1 step 
+			JSONArray concurrentLevel = new JSONArray(1);// needs only 1 thread 
+			concurrentLevel.add(udConf);
+			subJobSteps.add(concurrentLevel);
+			return subJobSteps;
+		}else{
+			return SUBJOBS.get(udConf.get("task")).allocateSubJobs(udConf);
+		}
 	}
 	
 	
@@ -111,10 +127,7 @@ public abstract class FelucaSubJob{
 		ConcurrentExecutor.submit(createStoppableTask());
 	}
 
-	public static JSONArray allocateSubJobs(JSONObject udConf){
-		return SUBJOBS.get(udConf.get("task")).allocateSubJobs(udConf);
-	}
-	
+
 	
 	public static Set<String> showJobList(){
 		return ImmutableSet.copyOf(SUBJOBS.keySet());
