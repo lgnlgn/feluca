@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.paddle.common.Utilities;

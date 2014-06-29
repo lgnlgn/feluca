@@ -38,10 +38,10 @@ public abstract class SubJobAllocator {
 	 * <li> if this is a distributeJob : you need 2 cases :
 	 *  <li><b> 1. check if this is a leader-sent job which contains a 'type':"local" ?;
 	 *  <li><b> 2. else you have to decide what to send 
-	 * @param properties
+	 * @param udConf
 	 * @return
 	 */
-	public abstract JSONArray allocateSubJobs(JSONObject properties);
+	public abstract JSONArray allocateSubJobs(JSONObject udConf);
 	
 	public abstract String getJobName();
 }

@@ -21,6 +21,7 @@ public class RemoteAllOneStepJob extends SubJobAllocator{
 		JSONArray subJobSteps = new JSONArray(1);//only 1 step 
 		JSONArray concurrentLevel = new JSONArray();     // all workers
 		if (FelucaSubJob.isSubJobLocal(udConf)){
+			//almost same as localOneStepJob, but this will be seen by worker 
 			concurrentLevel.add(udConf); //received ticket(modified by FelucaSubJob); directly use it
 		}else{
 			for(String worker : ClusterUtil.getWorkerList()){// all workers

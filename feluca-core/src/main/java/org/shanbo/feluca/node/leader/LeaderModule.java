@@ -23,8 +23,6 @@ import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.ZKClient;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 
 public class LeaderModule extends RoleModule{
 	
@@ -123,7 +121,7 @@ public class LeaderModule extends RoleModule{
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
-	public JSONArray showClusterDataSets() throws InterruptedException, ExecutionException{
+	public static JSONArray showClusterDataSets() throws InterruptedException, ExecutionException{
 		List<String> workers = ClusterUtil.getWorkerList();
 		Map<String, String> result = HttpClientUtil.distribGet(workers, "/state?type=data");
 		//TODO  intact checking
@@ -141,7 +139,7 @@ public class LeaderModule extends RoleModule{
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
-	public JSONObject showClusterDataInfo(String dataName) throws InterruptedException, ExecutionException{
+	public static JSONObject showClusterDataInfo(String dataName) throws InterruptedException, ExecutionException{
 		//TODO 
 		List<String> workers = ClusterUtil.getWorkerList();
 		Map<String, String> result = HttpClientUtil.distribGet(workers, "/state?type=data?dataName="+ dataName);
