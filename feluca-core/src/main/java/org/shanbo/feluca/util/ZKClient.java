@@ -233,12 +233,12 @@ public class ZKClient
 
 	public static interface LongValueWatcher
 	{
-		void valueChaned(long l);
+		void valueChanged(long l);
 
 	}
 	public static interface StringValueWatcher
 	{
-		void valueChaned(String l);
+		void valueChanged(String l);
 	}
 
 
@@ -761,7 +761,7 @@ public class ZKClient
 							{
 								public void run()
 								{
-									lw.valueChaned(s);
+									lw.valueChanged(s);
 								}
 							}, "StringWatcher-trigger-thread").start();
 						}
@@ -865,7 +865,7 @@ public class ZKClient
 							{
 								public void run()
 								{
-									lw.valueChaned(lv);
+									lw.valueChanged(lv);
 								}
 							}, "LongWatcher-trigger-thread").start();
 						}
