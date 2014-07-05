@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * not seen by algorithms
+ * 
  * TODO 
  * @author lgn
  *
@@ -67,9 +68,6 @@ public class StartingGun {
 						log.error("all workers are ready. but error here :" + loop, e);
 					}
 					loop += 1;
-				}
-				if (loop >= maxLoop){
-					close();
 				}
 			}
 		};
