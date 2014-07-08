@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * public use
@@ -12,12 +13,15 @@ import java.util.Arrays;
  */
 public class BytesPark {
 	
-	final int SIZE_STEP = 16 * 1024 * 1024; //1m per
+	final int SIZE_STEP = 256 * 1024; //1m per
 	byte[] array;
+	
+	int startIndex;
+	int endIndex;
+	
 	int arraySize;
 
-	int index;
-
+	
 	
 	public BytesPark(){
 		arraySize = 0;
@@ -66,7 +70,7 @@ public class BytesPark {
 	
 	/**
 	 * you must ensure the capacity
-	 * @param offset
+	 * @param offset 8 bytes per position
 	 * @param id
 	 * @param value
 	 * @param array
@@ -84,7 +88,7 @@ public class BytesPark {
 	}
 	
 	/**
-	 * be careful, after swallow the index will move to next
+	 * be careful, after swallowed the arraySize will increase 8
 	 * @param id
 	 * @param value
 	 */
@@ -104,7 +108,7 @@ public class BytesPark {
 	}
 	
 	/**
-	 * be careful, after swallow the index will move to next
+	 * be careful, after swallowed the arraySize will increase 4
 	 * @param id
 	 * @param value
 	 */
