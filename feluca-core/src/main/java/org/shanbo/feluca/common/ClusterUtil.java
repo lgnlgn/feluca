@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.KeeperException;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.shanbo.feluca.util.ZKClient;
@@ -54,6 +55,7 @@ public class ClusterUtil {
 			}
 		} catch (Exception e) {
 			log.error("init failed ",e);
+			throw new FelucaException("init failed ",e);
 		} 
 	}
 	
@@ -83,4 +85,18 @@ public class ClusterUtil {
 	public static String getProperties(String key, String defaultValue){
 		return instance.defaultProp.getProperty(key, defaultValue);
 	}
+	
+	/**
+	 * 
+	 * @param fullPath 
+	 * @throws KeeperException
+	 * @throws InterruptedException
+	 */
+	public static void createZKPaths(String fullPath) throws KeeperException, InterruptedException{
+		String[] paths = fullPath.split("/");
+		for(int i = 0 ; i < paths.length  ; i++){
+			ZKClient.get().createIfNotExist(StringUtils.join(paths, "/", 0, i+1));
+		}
+	}
+	
 }
