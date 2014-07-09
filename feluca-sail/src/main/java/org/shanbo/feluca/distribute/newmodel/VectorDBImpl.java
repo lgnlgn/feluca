@@ -15,7 +15,7 @@ public class VectorDBImpl implements VectorDB{
 		collection = new HashMap<String, float[]>(3); 
 	}
 
-	public void createVector(String collName, int vectorSize, float defaultValue,boolean overwrite) {
+	public synchronized void createVector(String collName, int vectorSize, float defaultValue,boolean overwrite) {
 		if (overwrite || !collection.containsKey(collName)){
 			float[] values = new float[vectorSize];
 			Arrays.fill(values, defaultValue);

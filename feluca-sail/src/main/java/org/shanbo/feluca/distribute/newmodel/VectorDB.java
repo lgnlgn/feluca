@@ -6,7 +6,7 @@ package org.shanbo.feluca.distribute.newmodel;
  *
  */
 public interface VectorDB {
-	public void createVector(String collName, int globalVectorSize, float defaultValue, boolean overwrite);
+	public void createVector(String collName, int vectorSize, float defaultValue, boolean overwrite);
 	
 	/**
 	 * id will be array's index; in server side, a more compact structure should be used;

@@ -16,6 +16,7 @@ public class TestShardedVectorServer {
 		EventLoop loop = EventLoop.defaultEventLoop();
 
 		Server svr = new Server();
+		
 		svr.serve(new VectorDBImpl());
 		svr.listen(1985);
 		System.out.println("!1");

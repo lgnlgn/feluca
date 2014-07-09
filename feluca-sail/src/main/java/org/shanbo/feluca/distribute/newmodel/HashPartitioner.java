@@ -6,6 +6,7 @@ package org.shanbo.feluca.distribute.newmodel;
  * @author lgn
  *
  */
+@Deprecated
 public class HashPartitioner{
 	
 	public static ShardDecider createShardDecider(int maxShards){

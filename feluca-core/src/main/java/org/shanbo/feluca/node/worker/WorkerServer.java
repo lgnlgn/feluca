@@ -6,20 +6,15 @@ import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
-import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.common.Server;
 import org.shanbo.feluca.node.http.BaseChannelHandler;
 import org.shanbo.feluca.node.http.BaseNioServer;
 import org.shanbo.feluca.node.http.Handler;
 import org.shanbo.feluca.node.http.Handlers;
-import org.shanbo.feluca.node.job.FelucaJob;
-import org.shanbo.feluca.node.request.LeaderJobRequest;
 import org.shanbo.feluca.node.request.WorkerJobRequest;
 import org.shanbo.feluca.node.request.WorkerStatusRequest;
 import org.shanbo.feluca.util.GlobalInitializer;
 import org.shanbo.feluca.util.ZKClient;
-import org.slf4j.LoggerFactory;
 
 public class WorkerServer extends BaseNioServer{
 	WorkerModule module;
@@ -78,7 +73,7 @@ public class WorkerServer extends BaseNioServer{
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
 		ZKClient.get().createIfNotExist(zkRegisterPath() );
 		
-		module = new WorkerModule();
+		module = new WorkerModule(getServerAddress());
 		
 		this.addHandler(new WorkerJobRequest(module));
 		this.addHandler(new WorkerStatusRequest(module));

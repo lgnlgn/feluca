@@ -23,8 +23,10 @@ public class WorkerModule extends RoleModule{
 	private String dataDir; //
 	
 	private JobManager jobManager;
+	private String workerName;
 	
-	public WorkerModule(){
+	public WorkerModule(String workerName){
+		this.workerName = workerName;
 		this.dataDir = Constants.Base.getWorkerRepository() + Constants.Base.DATA_DIR;
 		this.jobManager = new JobManager();
 		
