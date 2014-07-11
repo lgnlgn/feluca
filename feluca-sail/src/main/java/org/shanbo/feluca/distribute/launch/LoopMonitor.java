@@ -3,6 +3,7 @@ package org.shanbo.feluca.distribute.launch;
 
 import java.util.concurrent.Future;
 
+import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.util.NetworkUtils;
 import org.shanbo.feluca.util.ZKClient;
@@ -14,8 +15,10 @@ public class LoopMonitor {
 	private boolean loopOk = false;
 	private StringValueWatcher loopWatcher;
 	private String path ;
-	public LoopMonitor(String taskName){
+	private String workerName;
+	public LoopMonitor(String taskName, String workerName){
 		this.path = Constants.Algorithm.ZK_ALGO_CHROOT + "/" + taskName;
+		this.workerName = workerName;
 		watchLoopSignal();
 	}
 	
@@ -29,7 +32,7 @@ public class LoopMonitor {
 	}
 	
 	public void waitForLoopStart(){
-		while(!loopOk){
+		while(!loopOk){ //until watched value changed 
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
@@ -38,17 +41,31 @@ public class LoopMonitor {
 		loopOk = false;
 	}
 	
+	public void waitForSignalEquals(String signal, long timeOutMills) throws KeeperException, InterruptedException{
+		long t = System.currentTimeMillis();
+		while(true){
+			long t2 = System.currentTimeMillis() - t;
+			if (t2 > timeOutMills){
+				throw new InterruptedException("waitForSignalEquals   time out!");
+			}
+			if (ZKClient.get().getStringData(path).equals(signal)){
+				break;
+			}else{
+				Thread.sleep(10);
+			}
+		}
+	}
+	
+	
 	public void confirmLoopFinish() throws Exception{
-		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_WAITING_PATH + "/" + NetworkUtils.ipv4Host());
+		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_WAITING_PATH + "/" + workerName);
 	}
 	
 	public void close(){
+		
 		ZKClient.get().destoryWatch(loopWatcher);
 	}
 	
-	public void beforeStart(Runnable runnable) throws InterruptedException{
-		Future<?> submit = ConcurrentExecutor.submit(runnable);
-		submit.wait(5000);
-	}
+
 	
 }

@@ -50,7 +50,7 @@ public abstract class FelucaSubJob{
 		//---------------------
 		addJob(new RemoteAllOneStepJob("dsleep", "sleep"));
 		addJob(new RemoteAllOneStepJob("rruntime", "runtime"));
-		addJob(new RemoteAllOneStepJob("filepull", "filepull"));
+		addJob(new RemoteAllOneStepJob("file", "file"));
 		addJob(new RemoteAllOneStepJob("ddelete", "filedelete"));
 		
 		addJob(new DataBalanceJob());

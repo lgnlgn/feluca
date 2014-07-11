@@ -9,15 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.datasys.DataClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,13 +74,16 @@ public class DataFtpClient implements DataClient{
 
 	}
 
-	public boolean copyToRemote(String dataName, File toCopy) throws IOException {
+	/**
+	 * you must specify relative path to the 'dir' if you want to put files into some children dir;
+	 */
+	public boolean copyToRemote(String dirPath, File toCopy) throws IOException {
 		boolean flag = false;
 		try{
 
 			InputStream input = new FileInputStream(toCopy); 
 			input = new BufferedInputStream(input);
-			flag = ftpClient.storeFile(dataName + "/" + toCopy.getName(), input); 
+			flag = ftpClient.storeFile(dirPath + "/" + toCopy.getName(), input); 
 			if (flag) { 
 				System.out.println("上传文件成功！"); 
 			} else { 
@@ -164,10 +164,11 @@ public class DataFtpClient implements DataClient{
 	}
 
 	public static void main(String[] args) throws SocketException, IOException {
-		DataFtpClient client = new DataFtpClient("10.249.9.252");
+		DataFtpClient client = new DataFtpClient("192.168.1.100");
 		System.out.println("----");
 		long t = System.currentTimeMillis();
-		client.downFromRemote("/data/Instructions_and_VPN_files.rar", Constants.Base.getWorkerRepository());
+//		client.downFromRemote("/data/Instructions_and_VPN_files.rar", Constants.Base.getWorkerRepository());
+		client.copyToRemote("./", new File("model/config.properties"));
 		client.close();
 		System.out.println("----------");
 	}

@@ -15,8 +15,8 @@ public class AlgoDeployConf {
 		this.startingGun = isStartingGun;
 		this.dataClient = isClient;
 		this.dataManager = isDataManager;
-		if (dataServer == false && startingGun == true ){
-			throw new FelucaException("startingGun must be with dataServer");
+		if (dataClient == false && startingGun == true ){
+			throw new FelucaException("startingGun must be with dataClient");
 		}
 		if (dataClient == false && dataManager == true){
 			throw new FelucaException("dataManager must be with dataClient");

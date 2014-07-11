@@ -5,15 +5,18 @@ import java.io.IOException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.data.DataReader;
 
+@Deprecated
 public abstract class DataIterator {
 	LoopMonitor monitor;
 	protected DataReader dataReader;
 	protected int loops;
 	protected String dataName;
-	public DataIterator(String dataName, int loops){
+	public DataIterator(String dataName, LoopMonitor monitor, int loops){
 		this.dataName=dataName;
+		this.monitor = monitor;
 	}
 
+	
 
 	public void run() throws Exception{
 		monitor.confirmLoopFinish();

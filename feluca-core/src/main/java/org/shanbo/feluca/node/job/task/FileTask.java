@@ -1,5 +1,6 @@
 package org.shanbo.feluca.node.job.task;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -14,16 +15,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * files are spread to all workers 
+ * do file upload/download task
  * @Description TODO use additional process
  *	@author shanbo.liang
  */
-public class FilePullTask extends TaskExecutor{
+public class FileTask extends TaskExecutor{
 
 	HashMap<String, Boolean> fileNames;
 	String ftpAddress;
-
-	public FilePullTask(JSONObject conf) {
+	boolean isDownload = true;
+	public FileTask(JSONObject conf) {
 		super(conf);
 	}
 
@@ -37,6 +38,7 @@ public class FilePullTask extends TaskExecutor{
 			for(int i = 0; i < files.size();i++){
 				fileNames.put(files.getString(i), false);
 			}
+			isDownload = param.getBoolean("down");
 		} catch (Exception e) {
 			throw new FelucaException("fdfs address not found!", e);
 		}
@@ -46,7 +48,7 @@ public class FilePullTask extends TaskExecutor{
 
 	@Override
 	public String getTaskName() {
-		return "filepull";
+		return "file";
 	}
 
 	@Override
@@ -67,8 +69,14 @@ public class FilePullTask extends TaskExecutor{
 				break;
 			}
 			try {
-				System.out.println("pulling " + fileName);
-				client.downFromRemote(fileName, Constants.Base.getWorkerRepository());
+				if (isDownload){
+					System.out.println("downloading " + fileName);
+					client.downFromRemote(fileName, Constants.Base.getWorkerRepository());
+				}else{
+					System.out.println("uploading " + fileName);
+					File toCopy =  new File( Constants.Base.getWorkerRepository() + "/" + fileName);
+					client.copyToRemote( toCopy.getParent() == null ? "./" : toCopy.getParent(), toCopy);
+				}
 				fileNames.put(fileName, true); //mark success
 			} catch (IOException e) {
 				log.error("downFromRemote error",e);

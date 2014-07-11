@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.shanbo.feluca.node.job.task.FileDeleteTask;
-import org.shanbo.feluca.node.job.task.FilePullTask;
+import org.shanbo.feluca.node.job.task.FileTask;
 import org.shanbo.feluca.node.job.task.SleepTask;
 import org.shanbo.feluca.node.job.task.RuntimeTask;
 
@@ -15,7 +15,7 @@ public abstract class SubJobAllocator {
 	private static Map<String, TaskExecutor> TASKS = new HashMap<String, TaskExecutor>();
 	static{
 		addTask(new SleepTask(null));
-		addTask(new FilePullTask(null));
+		addTask(new FileTask(null));
 		addTask(new FileDeleteTask(null));
 		addTask(new RuntimeTask(null));
 	}
