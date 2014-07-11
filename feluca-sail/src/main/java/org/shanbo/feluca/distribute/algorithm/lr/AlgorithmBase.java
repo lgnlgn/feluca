@@ -11,7 +11,7 @@ import java.util.List;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.data.DataReader;
 import org.shanbo.feluca.data.Vector;
-import org.shanbo.feluca.distribute.model.GlobalConfig;
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.distribute.model.ModelClient;
 import org.shanbo.feluca.distribute.model.ModelServer;
 import org.shanbo.feluca.util.NetworkUtils;

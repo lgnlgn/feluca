@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.convert.DataStatistic;
-import org.shanbo.feluca.distribute.model.GlobalConfig;
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
 
 import com.alibaba.fastjson.JSONObject;
 

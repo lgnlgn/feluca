@@ -10,6 +10,7 @@ import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.node.http.BaseNioServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -11,12 +11,17 @@ import java.util.concurrent.ExecutionException;
 import org.msgpack.rpc.Client;
 import org.msgpack.rpc.loop.EventLoop;
 import org.shanbo.feluca.common.FelucaException;
-import org.shanbo.feluca.distribute.model.GlobalConfig;
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
+/**
+ * manage the sharding strategy here; i.e. server side is just a vector collection; 
+ * @author lgn
+ *
+ */
 public class VectorClient {
 	
 	
@@ -55,9 +60,7 @@ public class VectorClient {
 			String[] hostPort = globalConfig.getModelServers().get(i).split(":");
 			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]), loop);
 			vectorDBs[i] = clients[i].proxy(VectorDB.class);
-			//
 		}
-
 	}
 
 	public synchronized void createVector(final String vectorName, int globalVectorSize, final float defaultValue) throws InterruptedException, ExecutionException{
@@ -89,6 +92,23 @@ public class VectorClient {
 		}
 		ConcurrentExecutor.execute(createCallables);
 	}
+	
+	public synchronized  void dumpVector(final String vectorName, final String path) throws InterruptedException, ExecutionException{
+		ArrayList<Callable<Void>> createCallables = new ArrayList<Callable<Void>>(clients.length);
+		for(int shardId = 0; shardId < clients.length; shardId++){
+
+			final int toShardId = shardId;
+			createCallables.add(new Callable<Void>() {
+				public Void call() throws Exception {
+				     vectorDBs[toShardId].dumpToDisk(vectorName, path);
+				     return null ;
+				}
+			});
+
+		}
+		ConcurrentExecutor.execute(createCallables);
+	}
+	
 	
 
 	public synchronized void fetchVector(final String vectorName, int[] fids) throws InterruptedException, ExecutionException{
@@ -167,6 +187,8 @@ public class VectorClient {
 
 		}
 	}
+	
+	
 	
 	
 	public synchronized void close(){

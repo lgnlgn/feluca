@@ -4,6 +4,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
+
 /**
  * cache a delta model within
  * @author shanbo.liang

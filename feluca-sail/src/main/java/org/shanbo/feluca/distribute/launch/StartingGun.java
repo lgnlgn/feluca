@@ -3,6 +3,7 @@ package org.shanbo.feluca.distribute.launch;
 import java.util.List;
 
 import org.apache.zookeeper.KeeperException;
+import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
@@ -27,20 +28,17 @@ public class StartingGun {
 	private int waitingWorkers;
 	private  String path;
 	private int loop;
-	private int maxLoop;
 	
-	public StartingGun(String taskName, int totalWorkers, int maxLoop) {
+	public StartingGun(String taskName, int totalWorkers) {
 		this.path = Constants.Algorithm.ZK_ALGO_CHROOT + "/" + taskName;
-		
 		this.totalWorkers = totalWorkers;
-		this.maxLoop = maxLoop;
+
 	}
 	
 	private void createZKPath() throws KeeperException, InterruptedException{
-		ZKClient.get().createIfNotExist(this.path);
+		ClusterUtil.createZKPaths(path);
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_LOOP_PATH); 
-		
-		ZKClient.get().createIfNotExist(this.path + Constants.Algorithm.ZK_WAITING_PATH);
+		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_WAITING_PATH);
 		
 		
 	}
@@ -80,7 +78,7 @@ public class StartingGun {
 		this.startWatch();
 	}
 	
-	private void close(){
+	public void close(){
 		ZKClient.get().destoryWatch(workerWatcher);
 		
 	}

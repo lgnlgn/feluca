@@ -4,7 +4,7 @@ import org.msgpack.rpc.loop.EventLoop;
 import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.Server;
-import org.shanbo.feluca.distribute.model.GlobalConfig;
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.util.NetworkUtils;
 
 public class VectorServer extends Server{
@@ -12,10 +12,14 @@ public class VectorServer extends Server{
 	org.msgpack.rpc.Server server;
 	GlobalConfig conf;
 	String host ;
-	int modelSegmentID;
+	int port = 0;
 	
-	public VectorServer(GlobalConfig conf){
+	public VectorServer(GlobalConfig conf, String workerName){
 		this.conf = conf;
+		host = workerName.split(":")[0];
+		port = Integer.parseInt(workerName.split(":")[1]) + 100;
+		
+		
 	}
 	
 	@Override
@@ -25,7 +29,7 @@ public class VectorServer extends Server{
 
 	@Override
 	public int defaultPort() {
-		return 12800;
+		return port;
 	}
 
 	@Override

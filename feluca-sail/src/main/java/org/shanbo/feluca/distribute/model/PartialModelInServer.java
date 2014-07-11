@@ -21,10 +21,11 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data.convert.DataStatistic;
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Deprecated
 public class PartialModelInServer {
 	static Logger log = LoggerFactory.getLogger(PartialModelInServer.class);
 	
@@ -35,7 +36,7 @@ public class PartialModelInServer {
 	String modelPrefix;
 	public PartialModelInServer(GlobalConfig conf, int thisBlockId){
 		serverChannel = new BytesChannelHandler();
-		partitioner = conf.getPartitioner();
+		partitioner = new Partitioner.HashPartitioner(1);
 		init(conf.getModelServers().size(), 
 				thisBlockId, 
 				conf.getDataStatistic().getIntValue(DataStatistic.MAX_FEATURE_ID));

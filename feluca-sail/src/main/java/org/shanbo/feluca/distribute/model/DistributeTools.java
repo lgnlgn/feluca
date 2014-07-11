@@ -20,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultBackoffStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.node.http.HttpClientUtil;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
