@@ -5,19 +5,20 @@ import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.Server;
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
-import org.shanbo.feluca.util.NetworkUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VectorServer extends Server{
+	static Logger log = LoggerFactory.getLogger(VectorServer.class);
 	EventLoop loop;
 	org.msgpack.rpc.Server server;
 	GlobalConfig conf;
-	String host ;
 	int port = 0;
 	
-	public VectorServer(GlobalConfig conf, String workerName){
+	public VectorServer(GlobalConfig conf){
 		this.conf = conf;
-		host = workerName.split(":")[0];
-		port = Integer.parseInt(workerName.split(":")[1]) + 100;
+		port = Integer.parseInt(conf.getWorkerName().split(":")[1]) 
+				+ Constants.Algorithm.ALGO_DATA_SERVER_PORTAWAY;
 		
 		
 	}
@@ -44,13 +45,14 @@ public class VectorServer extends Server{
 		server = new org.msgpack.rpc.Server(loop);
 		server.serve(new VectorDBImpl());
 		server.listen("0.0.0.0", defaultPort());
+		System.out.println("dataServer started");
 	}
 
 	@Override
 	public void postStop() throws Exception {
 		server.close();
 		loop.shutdown();
-		
+		System.out.println("dataServer closed");
 	}
 	
 }

@@ -37,7 +37,7 @@ public class VectorClient {
 	
 	Client[] clients;
 	VectorDB[] vectorDBs;
-
+	List<String> dataServerAddresses;
 
 	FidPartitioner partitioner;
 
@@ -51,18 +51,23 @@ public class VectorClient {
 	 */
 	public VectorClient(GlobalConfig globalConfig) throws NumberFormatException, UnknownHostException{
 		loop = EventLoop.defaultEventLoop();
+		
 		globalVectorSizeMap = new HashMap<String, Integer>(3);
 		currentVectorsMap = new HashMap<String, PartialVectorModel>(3);
 		tmpConvertedFidsMap = new HashMap<String, TIntArrayList[]>(3);
 		tmpToUpdateValuesMap = new HashMap<String, TFloatArrayList[]>(3);
 		clients = new Client[globalConfig.getModelServers().size()];
+		vectorDBs = new VectorDB[globalConfig.getModelServers().size()];
+		dataServerAddresses =  globalConfig.getModelServers();
+	}
+
+	public void open() throws NumberFormatException, UnknownHostException{
 		for(int i = 0; i < clients.length; i++){
-			String[] hostPort = globalConfig.getModelServers().get(i).split(":");
+			String[] hostPort = dataServerAddresses.get(i).split(":");
 			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]), loop);
 			vectorDBs[i] = clients[i].proxy(VectorDB.class);
 		}
 	}
-
 	public synchronized void createVector(final String vectorName, int globalVectorSize, final float defaultValue) throws InterruptedException, ExecutionException{
 		this.globalVectorSizeMap.put(vectorName, globalVectorSize);
 		if (!tmpConvertedFidsMap.containsKey(vectorName)){

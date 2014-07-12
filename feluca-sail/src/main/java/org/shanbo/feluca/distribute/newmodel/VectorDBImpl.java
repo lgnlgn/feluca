@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class VectorDBImpl implements VectorDB{
 
 	HashMap<String, float[]> collection ;
-	int idMax = -1; //id as index
+	int fidMax = -1; //id as index
 	public VectorDBImpl(){
 		collection = new HashMap<String, float[]>(3); 
 	}
@@ -30,7 +30,7 @@ public class VectorDBImpl implements VectorDB{
 		}else{
 			float[] result = new float[ids.length];
 			for(int i = 0 ; i < ids.length; i++){
-				idMax = ids[i] > idMax ? ids[i] : idMax;
+				fidMax = ids[i] > fidMax ? ids[i] : fidMax;
 				result[i] = vector[ids[i]];
 			}
 			return result;
@@ -41,7 +41,7 @@ public class VectorDBImpl implements VectorDB{
 		float[] vector = collection.get(collName);
 		if (vector != null){
 			for(int i = 0; i < ids.length; i ++){
-				idMax = ids[i] > idMax ? ids[i] : idMax;
+				fidMax = ids[i] > fidMax ? ids[i] : fidMax;
 				vector[ids[i]] += deltaValues[i];
 			}
 		}

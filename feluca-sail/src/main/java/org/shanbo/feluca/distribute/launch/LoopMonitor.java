@@ -58,8 +58,8 @@ public class LoopMonitor {
 	}
 	
 	public void close(){
-		
 		ZKClient.get().destoryWatch(loopWatcher);
+		System.out.println("loopMonitor of [" + workerName + "] closed");
 	}
 	
 

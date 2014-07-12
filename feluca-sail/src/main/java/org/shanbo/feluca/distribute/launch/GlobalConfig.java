@@ -1,6 +1,5 @@
 package org.shanbo.feluca.distribute.launch;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -9,7 +8,6 @@ import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.util.AlgoDeployConf;
 import org.shanbo.feluca.util.JSONUtil;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.ImmutableList;
 
@@ -95,7 +93,9 @@ public class GlobalConfig {
 	public List<String> getModelServers(){
 		return dataServers;
 	}
-
+	public List<String> getWorkers(){
+		return workers;
+	}
 	
 	/**
 	 * do not modify it
@@ -124,6 +124,10 @@ public class GlobalConfig {
 	
 	public String getString(String key){
 		return conf.getString(key);
+	}
+	
+	public String getWorkerName(){
+		return conf.getString("workerName");
 	}
 	
 	public String getDataName(){

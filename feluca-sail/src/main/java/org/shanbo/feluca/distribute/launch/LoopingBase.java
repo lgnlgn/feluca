@@ -8,6 +8,7 @@ import org.shanbo.feluca.data.DataReader;
 import org.shanbo.feluca.distribute.newmodel.VectorClient;
 import org.shanbo.feluca.distribute.newmodel.VectorServer;
 import org.shanbo.feluca.util.AlgoDeployConf;
+import org.shanbo.feluca.util.ZKClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public abstract class LoopingBase{
 	LoopMonitor loopMonitor;
 	protected DataReader dataReader; //auto close;
 	protected VectorClient vectorClient;
-	boolean isDataManager = false;
+	boolean isDataManager;
 
 	//server & startingGun(with one of the server)
 	private VectorServer vectorServer;
@@ -48,18 +49,19 @@ public abstract class LoopingBase{
 
 	public LoopingBase(GlobalConfig conf) throws Exception{
 		log = LoggerFactory.getLogger(this.getClass());
-		init();
+		init(conf);
 	}
 
 	/**
 	 * 
 	 * @throws Exception
 	 */
-	private void init() throws Exception{
+	private void init(GlobalConfig conf) throws Exception{
+		this.conf = conf;
+		loops = conf.getAlgorithmConf().getInteger("loops");
 		AlgoDeployConf deployConf = conf.getDeployConf();
 		if (deployConf.isDataServer()){
-			vectorServer = new VectorServer(conf, conf.getString("worker"));
-			vectorServer.start();
+			vectorServer = new VectorServer(conf);
 		}
 		if (deployConf.isStartingGun()){
 			startingGun = new StartingGun(conf.getAlgorithmName(), conf.getModelServers().size());
@@ -68,6 +70,7 @@ public abstract class LoopingBase{
 			vectorClient = new VectorClient(conf);
 		}
 		isDataManager = deployConf.isDataManager();
+		loopMonitor = new LoopMonitor(conf.getAlgorithmName(), conf.getWorkerName());
 	}
 
 	private void openDataInput() throws IOException{
@@ -76,20 +79,21 @@ public abstract class LoopingBase{
 				"/" + dataName);
 	}
 
-	public abstract void createVectorDB() throws Exception;
+	protected void createVectorDB() throws Exception{}
 
-	public abstract void dumpVectorDB() throws Exception;
+	protected void dumpVectorDB() throws Exception{}
 
 	public final void run() throws Exception{
 		if (vectorServer!= null){
-			System.out.println("vectorServerStart");
 			vectorServer.start();
 		}
 		if (vectorClient != null){
+			vectorClient.open();
 			if (startingGun!= null){
-				startingGun.wait(new Runnable() {
+				startingGun.submitAndWait(new Runnable() {
 					public void run() {
 						try {
+							ZKClient.get().setData(Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() , new byte[]{});
 							createVectorDB();
 						} catch (Exception e) {
 							throw new FelucaException("createVectorDB error ",e);
@@ -109,7 +113,7 @@ public abstract class LoopingBase{
 			}
 			if (isDataManager){
 				if (startingGun != null){
-					startingGun.wait(new Runnable() {
+					startingGun.submitAndWait(new Runnable() {
 						public void run() {
 							try {
 								dumpVectorDB();
@@ -124,7 +128,7 @@ public abstract class LoopingBase{
 			
 		}
 		loopMonitor.waitForSignalEquals("finish", 10000);
-		close();
+		closeAll();
 	}
 
 
@@ -132,17 +136,17 @@ public abstract class LoopingBase{
 	 * todo 
 	 * @throws InterruptedException 
 	 */
-	public void close() throws InterruptedException{
-
-		if (vectorServer!= null){
-			vectorServer.stop();
-		}
+	private void closeAll() throws InterruptedException{
+		loopMonitor.close();
 		if (vectorClient != null){
 			vectorClient.close();
 		}
+		if (vectorServer!= null){
+			vectorServer.stop();
+		}
 	}
 
-	public abstract boolean earlyStop();
+	protected boolean earlyStop(){return false;}
 
 	/**
 	 * A batch of vectors are loaded into memory,

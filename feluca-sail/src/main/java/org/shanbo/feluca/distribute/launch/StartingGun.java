@@ -1,7 +1,10 @@
 package org.shanbo.feluca.distribute.launch;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.ClusterUtil;
@@ -81,12 +84,14 @@ public class StartingGun {
 	
 	public void close() throws InterruptedException{
 		ZKClient.get().destoryWatch(workerWatcher);
-
+		System.out.println("startingGun of [" + path + "] closed"  );
 	}
 	
-	public void wait(Runnable runnable) throws InterruptedException{
+	public void submitAndWait(Runnable runnable) throws InterruptedException, ExecutionException, TimeoutException{
 		Future<?> submit = ConcurrentExecutor.submit(runnable);
-		submit.wait(5000);
+		
+		submit.get(5000, TimeUnit.MILLISECONDS);
+		
 	}
 	
 	public void setFinish() throws KeeperException, InterruptedException{

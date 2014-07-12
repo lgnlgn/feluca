@@ -52,7 +52,7 @@ public class Constants {
 		public final static String LOOPS = "loops";
 		public final static String DATANAME = "dataName";
 		
-		
+		public final static int ALGO_DATA_SERVER_PORTAWAY = Integer.parseInt(ClusterUtil.getProperties("dataServer.portAway", "100"));
 		
 	}
 	

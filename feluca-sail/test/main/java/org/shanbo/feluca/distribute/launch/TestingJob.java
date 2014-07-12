@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.util.AlgoDeployConf;
 import org.shanbo.feluca.util.FileUtil;
+import org.shanbo.feluca.util.JSONUtil;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.ImmutableList;
@@ -57,9 +58,9 @@ public class TestingJob {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		GlobalConfig globalConfig = GlobalConfig.build("sleep", new JSONObject(),
+		GlobalConfig globalConfig = GlobalConfig.build("sleep", JSONUtil.basicAlgoConf(2),
 				"covtype", FileUtil.loadProperties("data/covtype/covtype.sta"),
-				ImmutableList.of("192.168.1.100"), ImmutableList.of("192.168.1.100"), 
+				ImmutableList.of("192.168.1.100:12030"), ImmutableList.of("192.168.1.100:12130"), 
 				"192.168.1.100:12030", new AlgoDeployConf(true, true, true, true));
 		SleepJob sj = new SleepJob(globalConfig);
 		sj.run();
