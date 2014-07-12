@@ -43,7 +43,7 @@ public class VectorServer extends Server{
 		loop = EventLoop.defaultEventLoop();
 		server = new org.msgpack.rpc.Server(loop);
 		server.serve(new VectorDBImpl());
-		server.listen(NetworkUtils.ipv4Host(), defaultPort());
+		server.listen("0.0.0.0", defaultPort());
 	}
 
 	@Override

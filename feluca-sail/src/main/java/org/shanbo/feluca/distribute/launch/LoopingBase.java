@@ -3,24 +3,40 @@ package org.shanbo.feluca.distribute.launch;
 import java.io.IOException;
 
 import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data.DataReader;
 import org.shanbo.feluca.distribute.newmodel.VectorClient;
 import org.shanbo.feluca.distribute.newmodel.VectorServer;
 import org.shanbo.feluca.util.AlgoDeployConf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO more dataType support !
+ * 
+ * 	<p> A batch of vectors are loaded into memory,
+ * <p><b> !Remember! Vector is just a ref of byte[], DO NOT store each one by yourself; </b></p>
+ *  <p><b> to shuffle or partition this batch, just copy the [offsetArray] and do that to it;</b></p>
+ *  <p>basic usage in  {@link #compute()}:
+ * <p> {
+ *  <p>      long[] offsetArray = dataReader.getOffsetArray();
+ *  <p>      
+ *  <p>      for(int o = 0 ; o < offsetArray.length; o++){
+ *  <p>	        Vector v = dataReader.getVectorByOffset(offsetArray[o]);
  * @author lgn
  *
  */
 public abstract class LoopingBase{
+	
+	Logger log ;
+	
 	protected GlobalConfig conf;
 	protected int loops;
 	protected String dataName;
 
 
 	//data & computation
-	LoopMonitor monitor;
+	LoopMonitor loopMonitor;
 	protected DataReader dataReader; //auto close;
 	protected VectorClient vectorClient;
 	boolean isDataManager = false;
@@ -31,9 +47,14 @@ public abstract class LoopingBase{
 
 
 	public LoopingBase(GlobalConfig conf) throws Exception{
+		log = LoggerFactory.getLogger(this.getClass());
 		init();
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	private void init() throws Exception{
 		AlgoDeployConf deployConf = conf.getDeployConf();
 		if (deployConf.isDataServer()){
@@ -55,44 +76,54 @@ public abstract class LoopingBase{
 				"/" + dataName);
 	}
 
-	public abstract void createVectorDB();
+	public abstract void createVectorDB() throws Exception;
 
-	public abstract void dumpVectorDB();
+	public abstract void dumpVectorDB() throws Exception;
 
-	public void run() throws Exception{
+	public final void run() throws Exception{
 		if (vectorServer!= null){
+			System.out.println("vectorServerStart");
 			vectorServer.start();
 		}
 		if (vectorClient != null){
 			if (startingGun!= null){
 				startingGun.wait(new Runnable() {
 					public void run() {
-						createVectorDB();
+						try {
+							createVectorDB();
+						} catch (Exception e) {
+							throw new FelucaException("createVectorDB error ",e);
+						}
 					}
 				});
 			}
-			monitor.confirmLoopFinish();
+			loopMonitor.confirmLoopFinish();
 			for(int i = 0 ; i < loops && earlyStop()== false;i++){
-				monitor.waitForLoopStart();
+				loopMonitor.waitForLoopStart();
 				openDataInput();
 				while(dataReader.hasNext()){
 					compute();
 					dataReader.releaseHolding();
 				}
-				monitor.confirmLoopFinish();
+				loopMonitor.confirmLoopFinish();
 			}
 			if (isDataManager){
 				if (startingGun != null){
 					startingGun.wait(new Runnable() {
 						public void run() {
-							dumpVectorDB();
+							try {
+								dumpVectorDB();
+							} catch (Exception e) {
+								throw new FelucaException("dumpVectorDB error ",e);
+							}
 						}
 					});
 					startingGun.setFinish();
 				}
 			}
-			monitor.waitForSignalEquals("finish", 10000);
+			
 		}
+		loopMonitor.waitForSignalEquals("finish", 10000);
 		close();
 	}
 
@@ -102,7 +133,7 @@ public abstract class LoopingBase{
 	 * @throws InterruptedException 
 	 */
 	public void close() throws InterruptedException{
-		
+
 		if (vectorServer!= null){
 			vectorServer.stop();
 		}
@@ -125,5 +156,5 @@ public abstract class LoopingBase{
 	 *  <p>	        Vector v = dataReader.getVectorByOffset(offsetArray[o]);
 	 *  <p>}
 	 */
-	protected abstract void compute();
+	protected abstract void compute() throws Exception;
 }
