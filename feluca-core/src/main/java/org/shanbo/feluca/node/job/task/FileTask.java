@@ -20,10 +20,10 @@ import com.alibaba.fastjson.JSONObject;
  *	@author shanbo.liang
  */
 public class FileTask extends TaskExecutor{
-
+	//define not initialize 
 	HashMap<String, Boolean> fileNames;
 	String ftpAddress;
-	boolean isDownload = true;
+	boolean isDownload;
 	public FileTask(JSONObject conf) {
 		super(conf);
 	}
@@ -38,7 +38,12 @@ public class FileTask extends TaskExecutor{
 			for(int i = 0; i < files.size();i++){
 				fileNames.put(files.getString(i), false);
 			}
-			isDownload = param.getBoolean("down");
+			if (param.getBoolean("down" )!= null){
+				isDownload = param.getBoolean("down" );
+			}else{
+				isDownload = true;
+			}
+			
 		} catch (Exception e) {
 			throw new FelucaException("fdfs address not found!", e);
 		}
@@ -73,9 +78,15 @@ public class FileTask extends TaskExecutor{
 					System.out.println("downloading " + fileName);
 					client.downFromRemote(fileName, Constants.Base.getWorkerRepository());
 				}else{
-					System.out.println("uploading " + fileName);
 					File toCopy =  new File( Constants.Base.getWorkerRepository() + "/" + fileName);
-					client.copyToRemote( toCopy.getParent() == null ? "./" : toCopy.getParent(), toCopy);
+					if (!toCopy.isFile()){
+						System.out.println(Constants.Base.getWorkerRepository() + "/" + fileName + "   not exist");
+						fileNames.put(fileName, false); //mark success
+						continue;
+					}	
+					String dirPath = "./" +  new File(fileName).getParent() == null ? "./" : new File(fileName).getParent();
+					System.out.println("uploading " + fileName  + "   to remote -> " + dirPath );
+					client.copyToRemote( dirPath , toCopy);
 				}
 				fileNames.put(fileName, true); //mark success
 			} catch (IOException e) {

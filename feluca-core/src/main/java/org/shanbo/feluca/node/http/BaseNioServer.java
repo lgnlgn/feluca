@@ -70,7 +70,7 @@ public abstract class BaseNioServer extends Server {
 
 	protected final SocketAddress getSocketAddress() {
 
-		return new InetSocketAddress(this.getServerAddress().split(":")[0],
+		return new InetSocketAddress("0.0.0.0",
 				Integer.parseInt(this.getServerAddress().split(":")[1]));
 	}
 

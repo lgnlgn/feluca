@@ -78,6 +78,10 @@ public class DataFtpClient implements DataClient{
 	 * you must specify relative path to the 'dir' if you want to put files into some children dir;
 	 */
 	public boolean copyToRemote(String dirPath, File toCopy) throws IOException {
+		if (toCopy == null || !toCopy.isFile()){
+			log.warn("file not exist :[" + toCopy);
+			return false;
+		}
 		boolean flag = false;
 		try{
 
@@ -85,9 +89,11 @@ public class DataFtpClient implements DataClient{
 			input = new BufferedInputStream(input);
 			flag = ftpClient.storeFile(dirPath + "/" + toCopy.getName(), input); 
 			if (flag) { 
+				log.info("uploading success!");
 				System.out.println("上传文件成功！"); 
 			} else { 
-				System.out.println("上传文件失败！"); 
+				log.warn("uploading failed!");
+				System.out.println("uploading failed"); 
 			} 
 			input.close(); 
 			flag = true;
@@ -120,11 +126,6 @@ public class DataFtpClient implements DataClient{
 
 
 	public boolean downFromRemote(String remoteFileName, String localDires) throws IOException {
-//		String[] paths = remoteFileName.split("/+");
-//		
-//		File localDir = new File(localDires + "/" + StringUtils.join(Arrays.copyOfRange(paths, 0, paths.length-1)));
-//		if(!localDir.exists() || !localDir.isDirectory())
-//			localDir.mkdirs();
 		new File((localDires + "/" + remoteFileName).replaceAll("/+", "/")).getParentFile().mkdirs();
 		
 		String strFilePath = localDires + "/" + remoteFileName;
@@ -168,7 +169,7 @@ public class DataFtpClient implements DataClient{
 		System.out.println("----");
 		long t = System.currentTimeMillis();
 //		client.downFromRemote("/data/Instructions_and_VPN_files.rar", Constants.Base.getWorkerRepository());
-		client.copyToRemote("./", new File("model/config.properties"));
+		client.copyToRemote("./model", new File("model/config.properties"));
 		client.close();
 		System.out.println("----------");
 	}

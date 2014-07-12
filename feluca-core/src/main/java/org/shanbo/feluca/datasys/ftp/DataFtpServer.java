@@ -53,7 +53,7 @@ public class DataFtpServer extends DataServer{
 
 		// set the ip, port of the listener
 		factory.setPort(port);
-		factory.setServerAddress(getServerAddress().split(":")[0]);
+		factory.setServerAddress("0.0.0.0");
 		
 		// replace the default listener
 		PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
