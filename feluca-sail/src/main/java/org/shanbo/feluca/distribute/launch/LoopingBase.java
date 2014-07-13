@@ -1,11 +1,18 @@
 package org.shanbo.feluca.distribute.launch;
 
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data.DataReader;
+import org.shanbo.feluca.data.Vector;
+import org.shanbo.feluca.data.util.CollectionUtil;
 import org.shanbo.feluca.distribute.newmodel.VectorClient;
 import org.shanbo.feluca.distribute.newmodel.VectorServer;
 import org.shanbo.feluca.util.AlgoDeployConf;
@@ -45,6 +52,27 @@ public abstract class LoopingBase{
 	private VectorServer vectorServer;
 	StartingGun startingGun;
 
+	public static void distinct(TIntHashSet idSet, Vector v){
+		for(int i = 0; i < v.getSize(); i ++){
+			idSet.add(v.getFId(i));
+		}
+	}
+
+	public static List<long[]> splitLongs(long[] offsetArray, int numPerBlock, boolean shuffled){
+		List<long[]> result = new ArrayList<long[]>(offsetArray.length / numPerBlock + 1);
+		long[] tmp = Arrays.copyOf(offsetArray, offsetArray.length);
+		if (shuffled){
+			CollectionUtil.shuffle(tmp, 0, tmp.length);
+		}
+		int i = 0;
+		for( ; i < offsetArray.length / numPerBlock; i++){
+			result.add(Arrays.copyOfRange(tmp, i * numPerBlock, (i+1) * numPerBlock));
+		}
+		if ( (i) * numPerBlock <= tmp.length){
+			result.add(Arrays.copyOfRange(tmp, i * numPerBlock, tmp.length));
+		}
+		return result;
+	}
 
 	public LoopingBase(GlobalConfig conf) throws Exception{
 		log = LoggerFactory.getLogger(this.getClass());
@@ -80,9 +108,9 @@ public abstract class LoopingBase{
 				"/" + conf.getDataName());
 	}
 
-	protected void createVectorDB() throws Exception{}
+	protected void startup() throws Exception{}
 
-	protected void dumpVectorDB() throws Exception{}
+	protected void cleanup() throws Exception{}
 
 	public final void run() throws Exception{
 		if (vectorServer!= null){
@@ -96,7 +124,7 @@ public abstract class LoopingBase{
 					public void run() {
 						try {
 							ZKClient.get().setData(Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() , new byte[]{});
-							createVectorDB();
+							startup();
 						} catch (Exception e) {
 							throw new FelucaException("createVectorDB error ",e);
 						}
@@ -121,7 +149,7 @@ public abstract class LoopingBase{
 					startingGun.submitAndWait(new Runnable() {
 						public void run() {
 							try {
-								dumpVectorDB();
+								cleanup();
 							} catch (Exception e) {
 								throw new FelucaException("dumpVectorDB error ",e);
 							}

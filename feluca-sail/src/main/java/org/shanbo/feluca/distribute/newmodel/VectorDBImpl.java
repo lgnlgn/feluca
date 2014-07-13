@@ -2,17 +2,29 @@ package org.shanbo.feluca.distribute.newmodel;
 
 import gnu.trove.list.array.TFloatArrayList;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
 public class VectorDBImpl implements VectorDB{
 
+	Logger log = LoggerFactory.getLogger(VectorDBImpl.class);
 	HashMap<String, float[]> collection ;
-	int fidMax = -1; //id as index
+	HashMap<String, Float> defaultValues;
+	Map<String, Integer> fidMaxMap;
+	
 	public VectorDBImpl(){
 		collection = new HashMap<String, float[]>(3); 
+		defaultValues = new HashMap<String, Float>(3);
+		fidMaxMap = new HashMap<String, Integer>(3);
 	}
 
 	public synchronized void createVector(String collName, int vectorSize, float defaultValue,boolean overwrite) {
@@ -20,20 +32,26 @@ public class VectorDBImpl implements VectorDB{
 			float[] values = new float[vectorSize];
 			Arrays.fill(values, defaultValue);
 			collection.put(collName, values);
+			defaultValues.put(collName, defaultValue);
 		}
 	}
 
 	public float[] multiGet(String collName, int[] ids) {
 		float[] vector = collection.get(collName);
+		Integer fid = fidMaxMap.get(collName);
+		
 		if (vector == null){
 			return null;
 		}else{
+			int fidMax = fid.intValue();
 			float[] result = new float[ids.length];
 			for(int i = 0 ; i < ids.length; i++){
 				fidMax = ids[i] > fidMax ? ids[i] : fidMax;
 				result[i] = vector[ids[i]];
 			}
+			fidMaxMap.put(collName, fidMax);
 			return result;
+			
 		}
 	}
 
@@ -41,7 +59,6 @@ public class VectorDBImpl implements VectorDB{
 		float[] vector = collection.get(collName);
 		if (vector != null){
 			for(int i = 0; i < ids.length; i ++){
-				fidMax = ids[i] > fidMax ? ids[i] : fidMax;
 				vector[ids[i]] += deltaValues[i];
 			}
 		}
@@ -50,9 +67,25 @@ public class VectorDBImpl implements VectorDB{
 	/**
 	 * TODO
 	 */
-	public void dumpToDisk(String collName, String path) {
+	public synchronized void dumpToDisk(String collName, String path, int maxShards, int shardId) {
 		TFloatArrayList list = new TFloatArrayList(collection.get(collName));
 		System.out.println(list.toString());
+		File out = new File(path);
+		out.getParentFile().mkdirs();
+		FidPartitioner partitioner = new FidPartitioner.HashPartitioner(maxShards);
+		try{
+			float[] values = collection.get(collName);
+			int fidMax = fidMaxMap.get(collName).intValue();
+			float defaultValue = defaultValues.get(collName).floatValue();
+			BufferedWriter writer = new BufferedWriter(new FileWriter(out));
+			for(int i = 0 ; i <= fidMax; i++){
+				if (values[i] != defaultValue)
+					writer.write(String.format("%d\t%.6f\n", partitioner.indexToFeatureId(i, shardId), values[i]));
+			}
+			writer.close();
+		}catch (Exception e) {
+			log.error("dump vector error !" , e);
+		}
 	}
 
 }

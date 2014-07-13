@@ -1,5 +1,8 @@
 package org.shanbo.feluca.data.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 
@@ -29,4 +32,21 @@ public class CollectionUtil {
 		}
 
 	}
+	
+	public static List<long[]> splitLongs(long[] offsetArray, int numPerBlock, boolean shuffled){
+		List<long[]> result = new ArrayList<long[]>(offsetArray.length / numPerBlock + 1);
+		long[] tmp = Arrays.copyOf(offsetArray, offsetArray.length);
+		if (shuffled){
+			CollectionUtil.shuffle(tmp, 0, tmp.length);
+		}
+		int i = 0;
+		for( ; i < offsetArray.length / numPerBlock; i++){
+			result.add(Arrays.copyOfRange(tmp, i * numPerBlock, (i+1) * numPerBlock));
+		}
+		if ( (i) * numPerBlock < tmp.length){
+			result.add(Arrays.copyOfRange(tmp, i * numPerBlock, tmp.length));
+		}
+		return result;
+	}
+	
 }
