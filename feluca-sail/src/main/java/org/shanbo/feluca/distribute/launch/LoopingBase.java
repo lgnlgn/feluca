@@ -2,6 +2,7 @@ package org.shanbo.feluca.distribute.launch;
 
 import java.io.IOException;
 
+import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data.DataReader;
@@ -58,6 +59,8 @@ public abstract class LoopingBase{
 		this.conf = conf;
 		loops = conf.getAlgorithmConf().getInteger("loops");
 		AlgoDeployConf deployConf = conf.getDeployConf();
+		//data server and client can be separated from a worker-node.
+		//
 		if (deployConf.isDataServer()){
 			vectorServer = new VectorServer(conf);
 		}
@@ -68,7 +71,6 @@ public abstract class LoopingBase{
 			vectorClient = new VectorClient(conf);
 		}
 		isDataManager = deployConf.isDataManager();
-//		ZKClient.get().createIfNotExist(Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() + "/workers/" + conf.getWorkerName());
 		loopMonitor = new LoopMonitor(conf.getAlgorithmName(), conf.getWorkerName());
 	}
 
@@ -101,7 +103,7 @@ public abstract class LoopingBase{
 					}
 				});
 			}
-			System.out.println("----1-----");
+			loopMonitor.watchLoopSignal();
 			loopMonitor.confirmLoopFinish();
 			
 			for(int i = 0 ; i < loops && earlyStop()== false;i++){
@@ -138,14 +140,19 @@ public abstract class LoopingBase{
 	/**
 	 * todo 
 	 * @throws InterruptedException 
+	 * @throws KeeperException 
 	 */
-	private void closeAll() throws InterruptedException{
+	private void closeAll() throws InterruptedException, KeeperException{
 		loopMonitor.close();
 		if (vectorClient != null){
 			vectorClient.close();
+			
 		}
 		if (vectorServer!= null){
 			vectorServer.stop();
+		}
+		if (isDataManager){
+			startingGun.close();
 		}
 	}
 

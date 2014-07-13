@@ -88,9 +88,7 @@ public class StartingGun {
 	
 	public void submitAndWait(Runnable runnable) throws InterruptedException, ExecutionException, TimeoutException{
 		Future<?> submit = ConcurrentExecutor.submit(runnable);
-		
 		submit.get(5000, TimeUnit.MILLISECONDS);
-		
 	}
 	
 	public void setFinish() throws KeeperException, InterruptedException{

@@ -44,7 +44,7 @@ public class TestingJob {
 				Vector v = dataReader.getVectorByOffset(offsetArray[o]);
 			}
 			try {
-				Thread.sleep(r.nextInt(3000) + 3000);
+				Thread.sleep(r.nextInt(2000) + 1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

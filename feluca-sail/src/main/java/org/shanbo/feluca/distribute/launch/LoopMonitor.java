@@ -17,10 +17,9 @@ public class LoopMonitor {
 	public LoopMonitor(String taskName, String workerName){
 		this.path = Constants.Algorithm.ZK_ALGO_CHROOT + "/" + taskName;
 		this.workerName = workerName;
-		watchLoopSignal();
 	}
 	
-	private void watchLoopSignal(){
+	public void watchLoopSignal(){
 		loopWatcher = new StringValueWatcher() {
 			public void valueChanged(String l) {
 				loopOk = true;
@@ -58,7 +57,6 @@ public class LoopMonitor {
 	public void confirmLoopFinish() throws Exception{
 		String workingNode = path + Constants.Algorithm.ZK_WAITING_PATH + "/" + workerName;
 		ZKClient.get().createIfNotExist(workingNode);
-		ZKClient.get().getZooKeeper().create(workingNode, new byte[]{0x1}, ZooDefs.Ids.READ_ACL_UNSAFE, CreateMode.PERSISTENT);
 	}
 	
 	public void close(){
