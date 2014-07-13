@@ -23,8 +23,8 @@ public abstract class Server {
 	public void start(){
 		try{
 			this.preStart();
-			ClusterUtil.createZKPaths(zkRegisterPath());
-			ZKClient.get().registerEphemeralNode(zkRegisterPath(), getServerAddress());
+			ZKClient.get().createIfNotExist(zkPathRegisterTo());
+			ZKClient.get().registerEphemeralNode(zkPathRegisterTo(), getServerAddress());
 		}catch (Exception e) {
 			log.error("Server [" + this.getClass().getName() + "] start failed", e);
 			throw new FelucaException("Server [" + this.getClass().getName() + "] start failed",e);
@@ -35,7 +35,7 @@ public abstract class Server {
 	public  void stop(){
 		try{
 			this.postStop();
-			ZKClient.get().unRegisterEphemeralNode(zkRegisterPath(), getServerAddress());
+			ZKClient.get().unRegisterEphemeralNode(zkPathRegisterTo(), getServerAddress());
 		}catch (Exception e) {
 			log.error("Server [" + this.getClass().getName() + "] stop failed", e);
 			throw new FelucaException("Server [" + this.getClass().getName() + "] stop failed");
@@ -46,7 +46,7 @@ public abstract class Server {
 
 	public abstract int defaultPort();
 	
-	public abstract String zkRegisterPath();
+	public abstract String zkPathRegisterTo();
 	
 	public abstract void preStart() throws Exception;
 	

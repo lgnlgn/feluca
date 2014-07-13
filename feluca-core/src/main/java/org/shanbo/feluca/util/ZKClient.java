@@ -50,9 +50,9 @@ public class ZKClient
 	private List<RetryRun> tries=Collections.synchronizedList( new LinkedList<RetryRun>());
 	private List<RetryRun> watchTries=Collections.synchronizedList( new LinkedList<RetryRun>());
 
-	
+
 	private String[] connectAddress = null;
-	
+
 	final Watcher defaultWatch = new Watcher()
 	{
 		public void process(WatchedEvent e)
@@ -408,9 +408,9 @@ public class ZKClient
 		//        zooKeeper = new ZooKeeper(SystemConfig.getProperty("zk.quorum"), Integer.parseInt(SystemConfig.getProperty("zk.session.timeout", "30000")), defaultWatch);
 		String zkQuorum = Config.get().get("zk.quorum", "localhost:2181");
 
-//		zooKeeper = new ZooKeeper(StringUtils.join(zkHostList, ","), new Integer(BaseConfig.getValue("zk.session.timeout", "30000")), defaultWatch);
+		//		zooKeeper = new ZooKeeper(StringUtils.join(zkHostList, ","), new Integer(BaseConfig.getValue("zk.session.timeout", "30000")), defaultWatch);
 		zooKeeper = new ZooKeeperRetry(zkQuorum, new Integer(Config.get().get("zk.session.timeout", "30000")), defaultWatch);
-	}
+			}
 
 
 
@@ -1196,7 +1196,7 @@ public class ZKClient
 
 		catch (KeeperException.NoNodeException e)
 		{
-			//do nothinh
+			//do nothing
 		}
 
 			}
@@ -1208,16 +1208,12 @@ public class ZKClient
 
 			}
 
-	public byte[] getData(String path)
-			throws KeeperException, InterruptedException
-			{
+	public byte[] getData(String path)	throws KeeperException, InterruptedException	{
 		return zooKeeper.getData(path, false, null);
-			}
+	}
 
 
-	public void createIfNotExist(String p)
-			throws KeeperException, InterruptedException
-			{
+	public void createIfNotExist(String p)	throws KeeperException, InterruptedException{
 		String[] paths = p.split("/");
 		String path = "";
 
@@ -1232,11 +1228,12 @@ public class ZKClient
 
 			if (null == zooKeeper.exists(path, false))
 			{
-				zooKeeper.create(path, new byte[]
-						{ }, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+				String node = zooKeeper.create(path, new byte[]{ }, 
+						ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+//				log.debug(node);
 			}
 		}
-			}
+	}
 
 	public String create(String path, byte[] data)
 			throws KeeperException, InterruptedException
@@ -1272,7 +1269,7 @@ public class ZKClient
 			v.put(s, getStringData(path + "/" + s));
 		}
 		return v;
-}
+			}
 	/**
 	 * DO NOT cache ZooKeeper Object!!!
 	 * @return
@@ -1460,7 +1457,7 @@ public class ZKClient
 			}catch(Exception e){
 				log.error("write data to ZK error?", e);
 			}
-//			throw new RuntimeException("The specific folder id empty!");
+			//			throw new RuntimeException("The specific folder id empty!");
 		}else{
 			File[] indexes = dir.listFiles();
 			for(File index : indexes){
@@ -1494,9 +1491,9 @@ public class ZKClient
 			return "inserted";
 		}
 	}
-	
+
 	public String getConnAddress(){
 		return StringUtils.join(connectAddress, ",");
 	}
-	
+
 }

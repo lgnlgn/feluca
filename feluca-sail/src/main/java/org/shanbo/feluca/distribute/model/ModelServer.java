@@ -46,7 +46,7 @@ public class ModelServer extends BaseNioServer{
 	}
 
 	@Override
-	public String zkRegisterPath() {
+	public String zkPathRegisterTo() {
 		return Constants.Algorithm.ZK_ALGO_CHROOT  + "/" + conf.getAlgorithmName();
 	}
 

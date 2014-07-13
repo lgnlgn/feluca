@@ -72,19 +72,19 @@ public class LeaderServer extends BaseNioServer{
 
 
 	@Override
-	public String zkRegisterPath() {
+	public String zkPathRegisterTo() {
 		return Constants.Base.ZK_LEADER_PATH ;
 	}
 
 	@Override
 	public void preStart() throws Exception {
 		GlobalInitializer.call();
-		ZKClient.get().createIfNotExist(zkRegisterPath());
+		ZKClient.get().createIfNotExist(zkPathRegisterTo());
 
 		module = new LeaderModule();
 		this.addHandler(new LeaderJobRequest(module));
 		this.addHandler(new LeaderStatusRequest(module));
-		module.init(zkRegisterPath(), getServerAddress());
+		module.init(zkPathRegisterTo(), getServerAddress());
 		super.preStart(); //start http server
 		
 		ZKClient.get().createIfNotExist(Constants.Base.FDFS_ZK_ROOT);

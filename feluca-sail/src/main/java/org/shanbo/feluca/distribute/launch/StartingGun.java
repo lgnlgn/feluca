@@ -41,11 +41,8 @@ public class StartingGun {
 	}
 	
 	private void createZKPath() throws KeeperException, InterruptedException{
-		ClusterUtil.createZKPaths(path);
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_LOOP_PATH); 
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_WAITING_PATH);
-		
-		
 	}
 	
 	private void startWatch() {
@@ -59,7 +56,7 @@ public class StartingGun {
 				}
 			}
 		};
-		ZKClient.get().watchChildren(path + "/workers", workerWatcher);
+		ZKClient.get().watchChildren(path + Constants.Algorithm.ZK_WAITING_PATH, workerWatcher);
 	}
 	
 	private void setSignal(){
@@ -82,8 +79,10 @@ public class StartingGun {
 		this.startWatch();
 	}
 	
-	public void close() throws InterruptedException{
+	public void close() throws InterruptedException, KeeperException{
 		ZKClient.get().destoryWatch(workerWatcher);
+		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_LOOP_PATH);
+		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_WAITING_PATH);
 		System.out.println("startingGun of [" + path + "] closed"  );
 	}
 	

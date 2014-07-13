@@ -5,6 +5,9 @@ import java.util.Random;
 
 import java.util.Random;
 
+import org.apache.zookeeper.KeeperException;
+import org.shanbo.feluca.util.ZKClient;
+
 public class TestCompute {
 	static int[] f = new int[129];
 	
@@ -41,9 +44,11 @@ public class TestCompute {
 
 	/**
 	 * @param args
+	 * @throws InterruptedException 
+	 * @throws KeeperException 
 	 */
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws KeeperException, InterruptedException {
+		ZKClient.get().createIfNotExist("/a/b/c");
 		int[] array = new int[1000000];
 		for(int i = 0 ; i < array.length; i++){
 			array[i] = r.nextInt(1000000);

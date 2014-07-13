@@ -5,7 +5,7 @@ import org.shanbo.feluca.common.Server;
 
 public abstract  class DataServer extends Server{
 	
-	public final String zkRegisterPath(){
+	public final String zkPathRegisterTo(){
 		return Constants.Base.FDFS_ZK_ROOT;
 	}
 	

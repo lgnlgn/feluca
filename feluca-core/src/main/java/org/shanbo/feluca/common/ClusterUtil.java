@@ -92,11 +92,11 @@ public class ClusterUtil {
 	 * @throws KeeperException
 	 * @throws InterruptedException
 	 */
-	public static void createZKPaths(String fullPath) throws KeeperException, InterruptedException{
-		String[] paths = fullPath.split("/");
-		for(int i = 0 ; i < paths.length  ; i++){
-			ZKClient.get().createIfNotExist(StringUtils.join(paths, "/", 0, i+1));
-		}
-	}
+//	public static void createZKPaths(String fullPath) throws KeeperException, InterruptedException{
+//		String[] paths = fullPath.split("/");
+//		for(int i = 0 ; i < paths.length  ; i++){
+//			ZKClient.get().createIfNotExist(StringUtils.join(paths, "/", 0, i+1));
+//		}
+//	}
 	
 }

@@ -39,7 +39,7 @@ public class WorkerServer extends BaseNioServer{
 	}
 
 	@Override
-	public String zkRegisterPath() {
+	public String zkPathRegisterTo() {
 		return Constants.Base.ZK_WORKER_PATH;
 	}
 
@@ -71,14 +71,14 @@ public class WorkerServer extends BaseNioServer{
 		GlobalInitializer.call();
 		
 		ZKClient.get().createIfNotExist(Constants.Base.ZK_CHROOT);
-		ZKClient.get().createIfNotExist(zkRegisterPath() );
+		ZKClient.get().createIfNotExist(zkPathRegisterTo() );
 		
 		module = new WorkerModule(getServerAddress());
 		
 		this.addHandler(new WorkerJobRequest(module));
 		this.addHandler(new WorkerStatusRequest(module));
 		super.preStart(); //start http server
-		module.init(zkRegisterPath(), getServerAddress());
+		module.init(zkPathRegisterTo(), getServerAddress());
 	}
 
 	@Override

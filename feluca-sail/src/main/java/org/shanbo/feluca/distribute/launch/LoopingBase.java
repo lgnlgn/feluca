@@ -33,8 +33,6 @@ public abstract class LoopingBase{
 	
 	protected GlobalConfig conf;
 	protected int loops;
-	protected String dataName;
-
 
 	//data & computation
 	LoopMonitor loopMonitor;
@@ -70,13 +68,14 @@ public abstract class LoopingBase{
 			vectorClient = new VectorClient(conf);
 		}
 		isDataManager = deployConf.isDataManager();
+//		ZKClient.get().createIfNotExist(Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() + "/workers/" + conf.getWorkerName());
 		loopMonitor = new LoopMonitor(conf.getAlgorithmName(), conf.getWorkerName());
 	}
 
 	private void openDataInput() throws IOException{
 		dataReader = DataReader.createDataReader(false, 
 				Constants.Base.getWorkerRepository()+ Constants.Base.DATA_DIR +
-				"/" + dataName);
+				"/" + conf.getDataName());
 	}
 
 	protected void createVectorDB() throws Exception{}
@@ -90,6 +89,7 @@ public abstract class LoopingBase{
 		if (vectorClient != null){
 			vectorClient.open();
 			if (startingGun!= null){
+				startingGun.start();
 				startingGun.submitAndWait(new Runnable() {
 					public void run() {
 						try {
@@ -101,8 +101,11 @@ public abstract class LoopingBase{
 					}
 				});
 			}
+			System.out.println("----1-----");
 			loopMonitor.confirmLoopFinish();
+			
 			for(int i = 0 ; i < loops && earlyStop()== false;i++){
+				System.out.println("loop--:----" + i);
 				loopMonitor.waitForLoopStart();
 				openDataInput();
 				while(dataReader.hasNext()){

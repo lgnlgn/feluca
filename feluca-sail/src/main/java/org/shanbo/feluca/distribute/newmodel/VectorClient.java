@@ -201,6 +201,7 @@ public class VectorClient {
 			client.close();
 		}
 		loop.shutdown();
+		System.out.println("vectorClients of #" + clients.length + " all closed");
 	}
 	
 	public PartialVectorModel getVector(String vectorName){
