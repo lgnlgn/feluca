@@ -107,7 +107,7 @@ public class VectorClient {
 			final int toShardId = shardId;
 			createCallables.add(new Callable<Void>() {
 				public Void call() throws Exception {
-				     vectorDBs[toShardId].dumpToDisk(vectorName, (path + "." + toShardId), clients.length, toShardId);
+				     vectorDBs[toShardId].dumpToDisk(vectorName, path, clients.length, toShardId);
 				     return null ;
 				}
 			});

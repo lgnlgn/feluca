@@ -77,7 +77,7 @@ public interface FidPartitioner{
 	}
 	
 	/**
-	 * not tested yet
+	 * not tested yet. no more use
 	 * @author lgn
 	 *
 	 */

@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.zookeeper.KeeperException;
-import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
+import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.ChildrenWatcher;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -30,13 +30,15 @@ public class StartingGun {
 	private ChildrenWatcher workerWatcher;
 	
 	private int totalWorkers; 
+	private int totalModelServers;
 	private int waitingWorkers;
 	private  String path;
 	private int loop;
 	
-	public StartingGun(String taskName, int totalWorkers) {
+	public StartingGun(String taskName, int totalModelServers, int totalWorkers) {
 		this.path = Constants.Algorithm.ZK_ALGO_CHROOT + "/" + taskName;
 		this.totalWorkers = totalWorkers;
+		this.totalModelServers = totalModelServers;
 
 	}
 	
@@ -52,14 +54,14 @@ public class StartingGun {
 			public void nodeAdded(String node) {
 				waitingWorkers += 1;
 				if (waitingWorkers  == totalWorkers){
-					setSignal();
+					setLoopSignal();
 				}
 			}
 		};
 		ZKClient.get().watchChildren(path + Constants.Algorithm.ZK_WAITING_PATH, workerWatcher);
 	}
 	
-	private void setSignal(){
+	private void setLoopSignal(){
 		waitingWorkers = 0;
 		String workerPath = path + Constants.Algorithm.ZK_WAITING_PATH;
 		try {
@@ -87,8 +89,30 @@ public class StartingGun {
 	}
 	
 	public void submitAndWait(Runnable runnable) throws InterruptedException, ExecutionException, TimeoutException{
+		submitAndWait(runnable, 5000);
+	}
+	
+	public void waitForModelServersStarted() throws InterruptedException, ExecutionException, TimeoutException{
+		submitAndWait(new Runnable() {
+			public void run() {
+				try {
+					while(ZKClient.get().getChildren(path +  Constants.Algorithm.ZK_MODELSERVER_PATH).size()< totalModelServers){
+						Thread.sleep(10);
+					}
+				} catch (InterruptedException e) {
+					throw new FelucaException("waitForModelServerStarted  InterruptedException ",e );
+				} catch (KeeperException e) {
+					throw new FelucaException("waitForModelServerStarted  KeeperException ",e );
+				}
+			}
+		}, 10000);
+
+	}
+	
+	
+	public void submitAndWait(Runnable runnable, long timeOutMills) throws InterruptedException, ExecutionException, TimeoutException{
 		Future<?> submit = ConcurrentExecutor.submit(runnable);
-		submit.get(5000, TimeUnit.MILLISECONDS);
+		submit.get(timeOutMills, TimeUnit.MILLISECONDS);
 	}
 	
 	public void setFinish() throws KeeperException, InterruptedException{

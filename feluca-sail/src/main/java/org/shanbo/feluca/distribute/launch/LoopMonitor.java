@@ -1,9 +1,9 @@
 package org.shanbo.feluca.distribute.launch;
 
 
-import org.apache.zookeeper.CreateMode;
+import java.util.concurrent.TimeoutException;
+
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.ZKClient.StringValueWatcher;
@@ -38,12 +38,12 @@ public class LoopMonitor {
 		loopOk = false;
 	}
 	
-	public void waitForSignalEquals(String signal, long timeOutMills) throws KeeperException, InterruptedException{
+	public void waitForSignalEquals(String signal, long timeOutMills) throws KeeperException, InterruptedException, TimeoutException{
 		long t = System.currentTimeMillis();
 		while(true){
 			long t2 = System.currentTimeMillis() - t;
 			if (t2 > timeOutMills){
-				throw new InterruptedException("waitForSignalEquals   time out!");
+				throw new TimeoutException("waitForSignalEquals   time out!");
 			}
 			if (ZKClient.get().getStringData(path).equals(signal)){
 				break;

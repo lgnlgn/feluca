@@ -70,9 +70,10 @@ public class VectorDBImpl implements VectorDB{
 	 * TODO
 	 */
 	public synchronized void dumpToDisk(String collName, String path, int maxShards, int shardId) {
+		//
 		TFloatArrayList list = new TFloatArrayList(collection.get(collName));
 		System.out.println(list.toString());
-		File out = new File(path);
+		File out = new File(path + "." + collName + "." + shardId);
 		out.getParentFile().mkdirs();
 		FidPartitioner partitioner = new FidPartitioner.HashPartitioner(maxShards);
 		try{

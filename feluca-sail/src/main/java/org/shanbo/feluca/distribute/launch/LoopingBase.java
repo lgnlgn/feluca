@@ -43,14 +43,14 @@ public abstract class LoopingBase{
 	protected int loops;
 
 	//data & computation
-	LoopMonitor loopMonitor;
+	LoopMonitor loopMonitor; //with all worker, no matter model or data
 	protected DataReader dataReader; //auto close;
 	protected VectorClient vectorClient;
 	boolean isDataManager;
 
 	//server & startingGun(with one of the server)
 	private VectorServer vectorServer;
-	StartingGun startingGun;
+	StartingGun startingGun; //one and only one with a job
 
 	public static void distinct(TIntHashSet idSet, Vector v){
 		for(int i = 0; i < v.getSize(); i ++){
@@ -93,7 +93,7 @@ public abstract class LoopingBase{
 			vectorServer = new VectorServer(conf);
 		}
 		if (deployConf.isStartingGun()){
-			startingGun = new StartingGun(conf.getAlgorithmName(), conf.getModelServers().size());
+			startingGun = new StartingGun(conf.getAlgorithmName(), conf.getModelServers().size(), conf.getWorkers().size());
 		}
 		if (deployConf.isDataClient()){
 			vectorClient = new VectorClient(conf);
@@ -118,9 +118,10 @@ public abstract class LoopingBase{
 		}
 		if (vectorClient != null){
 			vectorClient.open();
-			if (startingGun!= null){
-				startingGun.start();
-				startingGun.submitAndWait(new Runnable() {
+			if (startingGun!= null){//only one will be started
+				startingGun.start();//start watch
+				startingGun.waitForModelServersStarted(); //wait for model servers started
+				startingGun.submitAndWait(new Runnable() { //wait for startup() finished
 					public void run() {
 						try {
 							ZKClient.get().setData(Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() , new byte[]{});
@@ -129,14 +130,14 @@ public abstract class LoopingBase{
 							throw new FelucaException("createVectorDB error ",e);
 						}
 					}
-				});
+				}, 10000);
 			}
-			loopMonitor.watchLoopSignal();
-			loopMonitor.confirmLoopFinish();
+			loopMonitor.watchLoopSignal(); //start watching
+			loopMonitor.confirmLoopFinish(); //tell startingGun I'm ok
 			
 			for(int i = 0 ; i < loops && earlyStop() == false;i++){
 				System.out.println("loop--:----" + i);
-				loopMonitor.waitForLoopStart();
+				loopMonitor.waitForLoopStart();   //wait for other workers; according to startingGun's action 
 				openDataInput();
 				while(dataReader.hasNext()){
 					compute();
@@ -144,8 +145,8 @@ public abstract class LoopingBase{
 				}
 				loopMonitor.confirmLoopFinish();
 			}
-			if (isDataManager){
-				if (startingGun != null){
+			if (isDataManager){ //the only one
+				if (startingGun != null){  //do cleanup() first 
 					startingGun.submitAndWait(new Runnable() {
 						public void run() {
 							try {
@@ -155,12 +156,12 @@ public abstract class LoopingBase{
 							}
 						}
 					});
-					startingGun.setFinish();
+					startingGun.setFinish(); //tell all workers to finish job
 				}
 			}
 			
 		}
-		loopMonitor.waitForSignalEquals("finish", 10000);
+		loopMonitor.waitForSignalEquals("finish", 10000); //wait for finish signal
 		closeAll();
 	}
 

@@ -48,6 +48,7 @@ public class Constants {
 		public final static String ZK_ALGO_CHROOT = Base.ZK_CHROOT + "/algorithm";
 		public final static String ZK_WAITING_PATH = "/workers";
 		public final static String ZK_LOOP_PATH = "/loop";
+		public final static String ZK_MODELSERVER_PATH = "/model";
 		
 		public final static String LOOPS = "loops";
 		public final static String DATANAME = "dataName";

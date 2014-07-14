@@ -35,7 +35,7 @@ public class VectorServer extends Server{
 
 	@Override
 	public String zkPathRegisterTo() {
-		return Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() + "/model" ;
+		return Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() + Constants.Algorithm.ZK_MODELSERVER_PATH ;
 	}
 
 	@Override
@@ -45,14 +45,14 @@ public class VectorServer extends Server{
 		server = new org.msgpack.rpc.Server(loop);
 		server.serve(new VectorDBImpl());
 		server.listen("0.0.0.0", defaultPort());
-		System.out.println("dataServer started");
+		System.out.println("modelServer started");
 	}
 
 	@Override
 	public void postStop() throws Exception {
 		server.close();
 		loop.shutdown();
-		System.out.println("dataServer closed");
+		System.out.println("modelServer closed");
 	}
 	
 }
