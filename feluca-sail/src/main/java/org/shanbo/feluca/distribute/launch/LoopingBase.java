@@ -122,25 +122,29 @@ public abstract class LoopingBase{
 				startup();
 				vectorClient.open();
 				if (startingGun!= null){//only one will be started
-					startingGun.start();//start watch
 					startingGun.waitForModelServersStarted(); //wait for model servers started
+					System.out.println("StartingGun saw ModelServersStarted");
 					ConcurrentExecutor.submitAndWait(new Runnable() { //wait for startup() finished
 						public void run() {
 							try {
-								ZKClient.get().setData(Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() , new byte[]{});
 								modelStart();
 							} catch (Exception e) {
 								throw new FelucaException("createVectorDB error ",e);
 							}
 						}
 					}, 10000);
+					System.out.println("modelStarted");
+					startingGun.start();//start watch, workers can register it's confirmation
+					System.out.println("startingGun.started");
 				}
-				loopMonitor.start(); //wait until '/workers' node ready & start watching 
+				
+				loopMonitor.start(); //wait until start signal & start loop watching 
+				System.out.println("loopMonitor.started");
 				loopMonitor.confirmLoopFinish(); //tell startingGun I'm ok
-
 				for(int i = 0 ; i < loops && earlyStop() == false;i++){
-					System.out.println("loop--:----" + i);
+					System.out.print("loop--:----(" + i);
 					loopMonitor.waitForLoopStart();   //wait for other workers; according to startingGun's action 
+					System.out.println(")");
 					openDataInput();
 					while(dataReader.hasNext()){
 						compute();
@@ -164,7 +168,9 @@ public abstract class LoopingBase{
 				}
 				cleanup();
 			}
-			loopMonitor.waitForSignalEquals("finish", 10000); //wait for finish signal
+			loopMonitor.waitForFinish(); //wait for finish signal
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		finally	{
 			closeAll();

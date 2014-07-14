@@ -35,23 +35,8 @@ public class LoopMonitor {
 	 * @throws TimeoutException
 	 */
 	public void start() throws KeeperException, InterruptedException, ExecutionException, TimeoutException{
-		ConcurrentExecutor.submitAndWait(new Runnable() { 
-			public void run() {
-				while(true){
-					try{
-						if (ZKClient.get().getStringData(path + Constants.Algorithm.ZK_WAITING_PATH) == null){
-							Thread.sleep(10);
-						}
-					}catch (InterruptedException e) {
-						log.error("watch /worker path first occur InterruptedException", e);
-						break;
-					}catch (KeeperException e) {
-						log.error("watch /worker path first occur KeeperException", e);
-						break;
-					}
-				}
-			}
-		}, 20000);
+		ZKClient.get().createIfNotExist(path);
+		waitForSignalEquals(StartingGun.START_SIGNAL, 10000);
 		loopWatcher = new StringValueWatcher() {
 			public void valueChanged(String l) {
 				loopOk = true;
@@ -71,31 +56,42 @@ public class LoopMonitor {
 		loopOk = false;
 	}
 
-	public void waitForSignalEquals(final String signal, long timeOutMills) throws KeeperException, InterruptedException, TimeoutException, ExecutionException{
+	/**
+	 * 
+	 * @param signal
+	 * @param timeOutMills
+	 * @throws KeeperException
+	 * @throws InterruptedException
+	 * @throws TimeoutException
+	 * @throws ExecutionException
+	 */
+	private void waitForSignalEquals(final String signal, long timeOutMills) throws KeeperException, InterruptedException, TimeoutException, ExecutionException{
 		ConcurrentExecutor.submitAndWait(new Runnable() {
 			public void run() {
 				while(true){
 					try {
-						if (ZKClient.get().getStringData(path).equals(signal)){
-							return;
-						}else{
+						if (!ZKClient.get().getStringData(path).equals(signal)){
 							Thread.sleep(10);
+						}else{
+							return ;
 						}
 					} catch (KeeperException e) {
 						break;
 					} catch (InterruptedException e) {
 						break;
-					}
-					throw new FelucaException("break from waitForSignalEquals");
+					}		
 				}
+				throw new FelucaException("break from waitForSignalEquals");
 			}
 		}, timeOutMills);
 	}
 
+	public void waitForFinish() throws KeeperException, InterruptedException, TimeoutException, ExecutionException{
+		this.waitForSignalEquals(StartingGun.FINISH_SIGNAL, 10000);
+	}
 
 	public void confirmLoopFinish() throws Exception{
-		String workingNode = path + Constants.Algorithm.ZK_WAITING_PATH + "/" + workerName;
-		ZKClient.get().createIfNotExist(workingNode);
+		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_WAITING_PATH  + "/" +  workerName);
 	}
 
 	public void close(){

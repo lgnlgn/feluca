@@ -24,6 +24,9 @@ public class StartingGun {
 
 	Logger log = LoggerFactory.getLogger(StartingGun.class);
 
+	public final static String START_SIGNAL = "start";
+	public final static String FINISH_SIGNAL = "finish";
+	
 	
 	private ChildrenWatcher workerWatcher;
 	
@@ -40,14 +43,16 @@ public class StartingGun {
 
 	}
 	
-	private void createZKPath() throws KeeperException, InterruptedException{
+	private void prepare() throws KeeperException, InterruptedException{
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_LOOP_PATH); 
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_WAITING_PATH);
-		//DO NOT delete '/worker' node! It will cause a bug that this ZKclient will not be able to create children  
+		//DO NOT delete '/worker' and recreate it! It will cause a bug that this ZKclient will not be able to create children  
+		// Instead, delete it's children 
 		List<String> waitingList = ZKClient.get().getChildren(path + Constants.Algorithm.ZK_WAITING_PATH);
 		for(String workerNode : waitingList){
 			ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_WAITING_PATH + "/" + workerNode);
 		}
+		ZKClient.get().setData(path, START_SIGNAL.getBytes());
 	}
 	
 	private void startWatch() {
@@ -80,7 +85,7 @@ public class StartingGun {
 	}
 	
 	public void start() throws KeeperException, InterruptedException{
-		this.createZKPath();
+		this.prepare();
 		this.startWatch();
 	}
 	
@@ -115,7 +120,7 @@ public class StartingGun {
 
 	
 	public void setFinish() throws KeeperException, InterruptedException{
-		ZKClient.get().setData(path, "finish".getBytes());
+		ZKClient.get().setData(path, FINISH_SIGNAL.getBytes());
 	}
 	
 	
