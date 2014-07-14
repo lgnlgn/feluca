@@ -70,8 +70,8 @@ public class VectorClient {
 			vectorDBs[i] = clients[i].proxy(VectorDB.class);
 		}
 	}
-	public synchronized void createVector(final String vectorName, int globalVectorSize, final float defaultValue) throws InterruptedException, ExecutionException{
-		this.globalVectorSizeMap.put(vectorName, globalVectorSize);
+	
+	public void createPartialModel(String vectorName){
 		if (!tmpConvertedFidsMap.containsKey(vectorName)){
 			TIntArrayList[] tmpConvertedFidsList = new TIntArrayList[clients.length];
 			tmpConvertedFidsMap.put(vectorName, tmpConvertedFidsList);
@@ -83,8 +83,24 @@ public class VectorClient {
 			}
 			currentVectorsMap.put(vectorName, new PartialVectorModel());
 		}
-		final int perVectorSize = globalVectorSize / clients.length + 2;
+	}
+	
+	public synchronized void createVector(final String vectorName, int globalVectorSize, final float defaultValue) throws InterruptedException, ExecutionException{
+//		this.globalVectorSizeMap.put(vectorName, globalVectorSize);
+//		if (!tmpConvertedFidsMap.containsKey(vectorName)){
+//			TIntArrayList[] tmpConvertedFidsList = new TIntArrayList[clients.length];
+//			tmpConvertedFidsMap.put(vectorName, tmpConvertedFidsList);
+//			TFloatArrayList[] tmpToUpdateValuesList = new TFloatArrayList[clients.length];
+//			tmpToUpdateValuesMap.put(vectorName, tmpToUpdateValuesList);
+//			for(int i = 0 ; i < tmpConvertedFidsList.length; i++){
+//				tmpConvertedFidsList[i] = new TIntArrayList(1000);
+//				tmpToUpdateValuesList[i]= new TFloatArrayList(1000);
+//			}
+//			currentVectorsMap.put(vectorName, new PartialVectorModel());
+//		}
 		
+		
+		final int perVectorSize = globalVectorSize / clients.length + 2;
 		ArrayList<Callable<Void>> createCallables = new ArrayList<Callable<Void>>(clients.length);
 		for(int shardId = 0; shardId < clients.length; shardId++){
 

@@ -19,12 +19,13 @@ public class LoopMonitor {
 		this.workerName = workerName;
 	}
 	
-	public void watchLoopSignal(){
+	public void watchLoopSignal() throws KeeperException, InterruptedException{
 		loopWatcher = new StringValueWatcher() {
 			public void valueChanged(String l) {
 				loopOk = true;
 			}
 		};
+		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_LOOP_PATH);
 		ZKClient.get().watchStrValueNode(path + Constants.Algorithm.ZK_LOOP_PATH, loopWatcher);
 	}
 	

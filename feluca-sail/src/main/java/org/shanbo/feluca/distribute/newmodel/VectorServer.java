@@ -45,14 +45,14 @@ public class VectorServer extends Server{
 		server = new org.msgpack.rpc.Server(loop);
 		server.serve(new VectorDBImpl());
 		server.listen("0.0.0.0", defaultPort());
-		System.out.println("modelServer started");
+		System.out.println("modelServer[" + conf.getWorkerName()+ "] started");
 	}
 
 	@Override
 	public void postStop() throws Exception {
 		server.close();
 		loop.shutdown();
-		System.out.println("modelServer closed");
+		System.out.println("modelServer[" + conf.getWorkerName()+ "] closed");
 	}
 	
 }

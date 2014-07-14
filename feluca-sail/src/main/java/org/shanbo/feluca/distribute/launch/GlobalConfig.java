@@ -22,7 +22,7 @@ public class GlobalConfig {
 	
 	public final static  String  DATA_STATUS = "dataStatus";
 	
-	public final static  String  DATA_SERVERS = "dataServers";
+	public final static  String  MODEL_SERVERS = "modelServers";
 	public final static  String  WORKERS = "workers";
 
 	public final static  String  MODEL_PREFIX = "modelPrifex";
@@ -35,13 +35,13 @@ public class GlobalConfig {
 	
 	private GlobalConfig(String json){
 		conf = JSONObject.parseObject(json);
-		if (!conf.containsKey(ALGO_CONF) || !conf.containsKey(DATA_SERVERS) || !conf.containsKey(ALGO_NAME)){
-			throw new FelucaException(String.format("config missing parameters : '%s' OR '%s' OR '%s'!", DATA_SERVERS, ALGO_CONF, ALGO_NAME));
+		if (!conf.containsKey(ALGO_CONF) || !conf.containsKey(MODEL_SERVERS) || !conf.containsKey(ALGO_NAME)){
+			throw new FelucaException(String.format("config missing parameters : '%s' OR '%s' OR '%s'!", MODEL_SERVERS, ALGO_CONF, ALGO_NAME));
 		}
 		if (!conf.containsKey(Constants.Algorithm.DATANAME) || !conf.containsKey(DATA_STATUS)){
 			throw new FelucaException("config missing data parameters ");
 		}
-		dataServers = ImmutableList.copyOf(JSONUtil.JSONArrayToList(conf.getJSONArray(DATA_SERVERS)));
+		dataServers = ImmutableList.copyOf(JSONUtil.JSONArrayToList(conf.getJSONArray(MODEL_SERVERS)));
 		workers = ImmutableList.copyOf(JSONUtil.JSONArrayToList(conf.getJSONArray(WORKERS)));
 		
 	}
@@ -56,7 +56,7 @@ public class GlobalConfig {
 	
 	public static GlobalConfig build(String algoName, JSONObject algoConf, 
 			String dataName, Properties dataStatistic, 
-			List<String> workers, List<String> dataServers,  
+			List<String> workers, List<String> modelServers,  
 			String workerName, AlgoDeployConf deployConf){
 		JSONObject json = new JSONObject();
 		//-------algorithm
@@ -70,7 +70,7 @@ public class GlobalConfig {
 		}
 		json.put(DATA_STATUS, dataStatus);
 		//--------worker & dataServer
-		json.put(DATA_SERVERS, dataServers);
+		json.put(MODEL_SERVERS, modelServers);
 		json.put("workers", workers);
 		
 		//------detail info

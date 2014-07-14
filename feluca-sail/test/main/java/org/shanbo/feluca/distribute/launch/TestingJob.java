@@ -34,14 +34,11 @@ public class TestingJob {
 
 		@Override
 		public void startup() throws InterruptedException, ExecutionException {
-			vectorClient.createVector(VECTOR_MODEL_NAME, 
-					conf.getDataStatistic().getIntValue(DataStatistic.MAX_FEATURE_ID), 0f);
+			vectorClient.createPartialModel(VECTOR_MODEL_NAME);
 		}
 
 		@Override
 		public void cleanup() throws InterruptedException, ExecutionException {
-			vectorClient.dumpVector(VECTOR_MODEL_NAME, 
-					Constants.Base.getWorkerRepository() + "/model/" + conf.getAlgorithmName());
 		}
 
 		@Override
@@ -79,6 +76,19 @@ public class TestingJob {
 			}
 			cc+=1;
 		}
+
+		@Override
+		protected void modelStart() throws InterruptedException, ExecutionException {
+			vectorClient.createVector(VECTOR_MODEL_NAME, 
+					conf.getDataStatistic().getIntValue(DataStatistic.MAX_FEATURE_ID), 0f);
+			System.out.println("created ");
+		}
+
+		@Override
+		protected void modelClose() throws InterruptedException, ExecutionException {
+			vectorClient.dumpVector(VECTOR_MODEL_NAME, 
+					Constants.Base.getWorkerRepository() + "/model/" + conf.getAlgorithmName());			
+		}
 		
 	}
 	
@@ -87,11 +97,16 @@ public class TestingJob {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
+		List<String> workers = ImmutableList.of(NetworkUtils.ipv4Host() + ":12030", NetworkUtils.ipv4Host() + ":12031");
+		List<String> models = ImmutableList.of(NetworkUtils.ipv4Host() + ":12130", NetworkUtils.ipv4Host() + ":12131");
+		String thisWorkerName = workers.get(0);
+		AlgoDeployConf thisDeployConf = new AlgoDeployConf(true, true, true, true);
+		
 		GlobalConfig globalConfig = GlobalConfig.build("sleep", JSONUtil.basicAlgoConf(4),
 				"covtype", FileUtil.loadProperties("data/covtype/covtype.sta"),
-				ImmutableList.of(NetworkUtils.ipv4Host() + ":12030"), ImmutableList.of(NetworkUtils.ipv4Host() + ":12130"), 
-				NetworkUtils.ipv4Host() + ":12030", new AlgoDeployConf(true, true, true, true));
-		SleepJob sj = new SleepJob(globalConfig);
+				workers, models, 
+				thisWorkerName, thisDeployConf);
+		TestingJob.SleepJob sj = new TestingJob.SleepJob(globalConfig);
 		sj.run();
 	}
 

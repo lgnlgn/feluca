@@ -89,16 +89,16 @@ public abstract class LoopingBase{
 		AlgoDeployConf deployConf = conf.getDeployConf();
 		//data server and client can be separated from a worker-node.
 		//
-		if (deployConf.isDataServer()){
+		if (deployConf.isModelServer()){
 			vectorServer = new VectorServer(conf);
 		}
 		if (deployConf.isStartingGun()){
 			startingGun = new StartingGun(conf.getAlgorithmName(), conf.getModelServers().size(), conf.getWorkers().size());
 		}
-		if (deployConf.isDataClient()){
+		if (deployConf.isModelClient()){
 			vectorClient = new VectorClient(conf);
 		}
-		isDataManager = deployConf.isDataManager();
+		isDataManager = deployConf.isModelManager();
 		loopMonitor = new LoopMonitor(conf.getAlgorithmName(), conf.getWorkerName());
 	}
 
@@ -112,11 +112,17 @@ public abstract class LoopingBase{
 
 	protected void cleanup() throws Exception{}
 
+	protected abstract void modelStart() throws Exception;
+	
+	protected abstract void modelClose() throws Exception;
+	
 	public final void run() throws Exception{
+		
 		if (vectorServer!= null){
 			vectorServer.start();
 		}
 		if (vectorClient != null){
+			startup();
 			vectorClient.open();
 			if (startingGun!= null){//only one will be started
 				startingGun.start();//start watch
@@ -125,7 +131,7 @@ public abstract class LoopingBase{
 					public void run() {
 						try {
 							ZKClient.get().setData(Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() , new byte[]{});
-							startup();
+							modelStart();
 						} catch (Exception e) {
 							throw new FelucaException("createVectorDB error ",e);
 						}
@@ -150,7 +156,7 @@ public abstract class LoopingBase{
 					startingGun.submitAndWait(new Runnable() {
 						public void run() {
 							try {
-								cleanup();
+								modelClose();
 							} catch (Exception e) {
 								throw new FelucaException("dumpVectorDB error ",e);
 							}
@@ -159,7 +165,7 @@ public abstract class LoopingBase{
 					startingGun.setFinish(); //tell all workers to finish job
 				}
 			}
-			
+			cleanup();
 		}
 		loopMonitor.waitForSignalEquals("finish", 10000); //wait for finish signal
 		closeAll();

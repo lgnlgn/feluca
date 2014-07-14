@@ -5,36 +5,50 @@ import org.shanbo.feluca.common.FelucaException;
 import com.alibaba.fastjson.JSONObject;
 
 public class AlgoDeployConf {
-	private final boolean dataServer;
+	private final boolean modelServer;
 	private final boolean startingGun;
-	private final boolean dataClient;
-	private final boolean dataManager;
+	private final boolean modelClient;
+	private final boolean modelManager;
 	
-	public AlgoDeployConf(boolean isServer, boolean isStartingGun, boolean isClient, boolean isDataManager){
-		this.dataServer = isServer;
+	public AlgoDeployConf(boolean isModelServer, boolean isStartingGun, boolean isModelClient, boolean isModelManager){
+		this.modelServer = isModelServer;
 		this.startingGun = isStartingGun;
-		this.dataClient = isClient;
-		this.dataManager = isDataManager;
-		if (dataClient == false && startingGun == true ){
+		this.modelClient = isModelClient;
+		this.modelManager = isModelManager;
+		if (modelClient == false && startingGun == true ){
 			throw new FelucaException("startingGun must be with dataClient");
 		}
-		if (dataClient == false && dataManager == true){
+		if (modelClient == false && modelManager == true){
 			throw new FelucaException("dataManager must be with dataClient");
 		}
 	}
 
-	public boolean isDataServer() {
-		return dataServer;
+
+	
+
+	public boolean isModelServer() {
+		return modelServer;
 	}
+
+
+
 	public boolean isStartingGun() {
 		return startingGun;
 	}
-	public boolean isDataClient() {
-		return dataClient;
+
+
+
+	public boolean isModelClient() {
+		return modelClient;
 	}
-	public boolean isDataManager() {
-		return dataManager;
+
+
+
+	public boolean isModelManager() {
+		return modelManager;
 	}
+
+
 
 	public String toString(){
 		return JSONObject.toJSONString(this);
@@ -47,10 +61,10 @@ public class AlgoDeployConf {
 
 	public static AlgoDeployConf parse(JSONObject conf){
 		return new AlgoDeployConf(
-				conf.getBooleanValue("dataServer"), 
+				conf.getBooleanValue("modelServer"), 
 				conf.getBooleanValue("startingGun"), 
-				conf.getBooleanValue("dataClient"), 
-				conf.getBooleanValue("dataManager"));
+				conf.getBooleanValue("modelClient"), 
+				conf.getBooleanValue("modelManager"));
 	}
 	
 	
