@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.shanbo.feluca.util.Config;
 
@@ -81,4 +82,26 @@ public class ConcurrentExecutor {
 		return f;
 	}
 	
+	/**
+	 * When TimeoutException occurs we will cancel interruption of the runnable ;
+	 * You should break the loop it when you want to do a watching; EXAMPLE: 
+	 * <p>  while(true){
+	 * <p>     try{ ..Thread.sleep(10).. } <b>catch(InterruptedException e){...break...}</b>
+	 * <p> }
+	 * @param task
+	 * @param timeoutMills
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 * @throws InterruptedException
+	 */
+	public static void submitAndWait(Runnable task, long timeoutMills) throws  ExecutionException, TimeoutException, InterruptedException{
+		Future<?> submit = submit(task);
+		try{
+			submit.get(timeoutMills, TimeUnit.MILLISECONDS);
+		}catch (TimeoutException e) {
+			submit.cancel(true);
+			throw new TimeoutException();
+		}
+	}
+
 }

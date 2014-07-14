@@ -85,21 +85,15 @@ public class VectorClient {
 		}
 	}
 	
+	/**
+	 * tell model servers, in parallel way, to create arrays;
+	 * @param vectorName
+	 * @param globalVectorSize
+	 * @param defaultValue
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	public synchronized void createVector(final String vectorName, int globalVectorSize, final float defaultValue) throws InterruptedException, ExecutionException{
-//		this.globalVectorSizeMap.put(vectorName, globalVectorSize);
-//		if (!tmpConvertedFidsMap.containsKey(vectorName)){
-//			TIntArrayList[] tmpConvertedFidsList = new TIntArrayList[clients.length];
-//			tmpConvertedFidsMap.put(vectorName, tmpConvertedFidsList);
-//			TFloatArrayList[] tmpToUpdateValuesList = new TFloatArrayList[clients.length];
-//			tmpToUpdateValuesMap.put(vectorName, tmpToUpdateValuesList);
-//			for(int i = 0 ; i < tmpConvertedFidsList.length; i++){
-//				tmpConvertedFidsList[i] = new TIntArrayList(1000);
-//				tmpToUpdateValuesList[i]= new TFloatArrayList(1000);
-//			}
-//			currentVectorsMap.put(vectorName, new PartialVectorModel());
-//		}
-		
-		
 		final int perVectorSize = globalVectorSize / clients.length + 2;
 		ArrayList<Callable<Void>> createCallables = new ArrayList<Callable<Void>>(clients.length);
 		for(int shardId = 0; shardId < clients.length; shardId++){
@@ -111,7 +105,6 @@ public class VectorClient {
 				     return null ;
 				}
 			});
-
 		}
 		ConcurrentExecutor.execute(createCallables);
 	}
@@ -119,7 +112,6 @@ public class VectorClient {
 	public synchronized  void dumpVector(final String vectorName, final String path) throws InterruptedException, ExecutionException{
 		ArrayList<Callable<Void>> createCallables = new ArrayList<Callable<Void>>(clients.length);
 		for(int shardId = 0; shardId < clients.length; shardId++){
-
 			final int toShardId = shardId;
 			createCallables.add(new Callable<Void>() {
 				public Void call() throws Exception {
@@ -127,7 +119,6 @@ public class VectorClient {
 				     return null ;
 				}
 			});
-
 		}
 		ConcurrentExecutor.execute(createCallables);
 	}

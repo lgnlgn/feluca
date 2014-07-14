@@ -58,7 +58,7 @@ public class TestingJob {
 				TIntHashSet idSet = new TIntHashSet();
 				for(long offset : segment){ 
 					Vector v = dataReader.getVectorByOffset(offset);
-					distinct(idSet, v);
+					distinctIds(idSet, v);
 				}
 				int[] currentFIds = idSet.toArray();
 				vectorClient.fetchVector(VECTOR_MODEL_NAME, currentFIds);

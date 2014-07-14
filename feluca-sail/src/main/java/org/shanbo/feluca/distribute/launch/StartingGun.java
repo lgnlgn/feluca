@@ -2,8 +2,6 @@ package org.shanbo.feluca.distribute.launch;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.zookeeper.KeeperException;
@@ -45,6 +43,11 @@ public class StartingGun {
 	private void createZKPath() throws KeeperException, InterruptedException{
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_LOOP_PATH); 
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_WAITING_PATH);
+		//DO NOT delete '/worker' node! It will cause a bug that this ZKclient will not be able to create children  
+		List<String> waitingList = ZKClient.get().getChildren(path + Constants.Algorithm.ZK_WAITING_PATH);
+		for(String workerNode : waitingList){
+			ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_WAITING_PATH + "/" + workerNode);
+		}
 	}
 	
 	private void startWatch() {
@@ -88,16 +91,17 @@ public class StartingGun {
 		System.out.println("startingGun of [" + path + "] closed"  );
 	}
 	
-	public void submitAndWait(Runnable runnable) throws InterruptedException, ExecutionException, TimeoutException{
-		submitAndWait(runnable, 5000);
-	}
 	
 	public void waitForModelServersStarted() throws InterruptedException, ExecutionException, TimeoutException{
-		submitAndWait(new Runnable() {
+		ConcurrentExecutor.submitAndWait(new Runnable() {
 			public void run() {
-				try {
+				try{
 					while(ZKClient.get().getChildren(path +  Constants.Algorithm.ZK_MODELSERVER_PATH).size()< totalModelServers){
-						Thread.sleep(10);
+						try{
+							Thread.sleep(10);
+						}catch (InterruptedException e) {
+							break;
+						}
 					}
 				} catch (InterruptedException e) {
 					throw new FelucaException("waitForModelServerStarted  InterruptedException ",e );
@@ -108,12 +112,7 @@ public class StartingGun {
 		}, 10000);
 
 	}
-	
-	
-	public void submitAndWait(Runnable runnable, long timeOutMills) throws InterruptedException, ExecutionException, TimeoutException{
-		Future<?> submit = ConcurrentExecutor.submit(runnable);
-		submit.get(timeOutMills, TimeUnit.MILLISECONDS);
-	}
+
 	
 	public void setFinish() throws KeeperException, InterruptedException{
 		ZKClient.get().setData(path, "finish".getBytes());
