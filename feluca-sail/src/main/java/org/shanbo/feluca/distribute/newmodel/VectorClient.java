@@ -59,6 +59,8 @@ public class VectorClient {
 		clients = new Client[globalConfig.getModelServers().size()];
 		vectorDBs = new VectorDB[globalConfig.getModelServers().size()];
 		dataServerAddresses =  globalConfig.getModelServers();
+		
+		partitioner = new FidPartitioner.HashPartitioner(dataServerAddresses.size());
 	}
 
 	public void open() throws NumberFormatException, UnknownHostException{
@@ -105,7 +107,7 @@ public class VectorClient {
 			final int toShardId = shardId;
 			createCallables.add(new Callable<Void>() {
 				public Void call() throws Exception {
-				     vectorDBs[toShardId].dumpToDisk(vectorName, path, clients.length, toShardId);
+				     vectorDBs[toShardId].dumpToDisk(vectorName, (path + "." + toShardId), clients.length, toShardId);
 				     return null ;
 				}
 			});
@@ -158,11 +160,11 @@ public class VectorClient {
 		for(int shardId = 0 ; shardId < tmpConvertedFidsList.length; shardId++){
 			TIntArrayList tmpConvertedFids = tmpConvertedFidsList[shardId];
 			float[] mGetThisShard = mGetValues.get(shardId);
-			for(int fi = 0 ; fi < tmpConvertedFids.size(); shardId++){
+			for(int fi = 0 ; fi < tmpConvertedFids.size(); fi++){
 				int convertedFid = tmpConvertedFids.getQuick(fi);
 				int originalFid = partitioner.indexToFeatureId(convertedFid, shardId);
 				float value = mGetThisShard[fi];
-				currentVector.set(originalFid, value);
+				currentVector.setForMerge(originalFid, value);
 			}
 		}
 	}
@@ -171,8 +173,10 @@ public class VectorClient {
 	 * be careful. call it after {@link #fetchVector(String, int[])}
 	 * @param vectorName
 	 * @param fids
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	public synchronized void updateCurrentVector(final String vectorName, final  int[] fids){
+	public synchronized void updateCurrentVector(final String vectorName, final  int[] fids) throws InterruptedException, ExecutionException{
 		TFloatArrayList[] tmpToUpdateValuesList = tmpToUpdateValuesMap.get(vectorName);
 		TIntArrayList[] tmpConvertedFidsList = tmpConvertedFidsMap.get(vectorName);
 		PartialVectorModel model = currentVectorsMap.get(vectorName);
@@ -191,6 +195,7 @@ public class VectorClient {
 			});
 
 		}
+		ConcurrentExecutor.execute(mUpdateCallables);
 	}
 	
 	

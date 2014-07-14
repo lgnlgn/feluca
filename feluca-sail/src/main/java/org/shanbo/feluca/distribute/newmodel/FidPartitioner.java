@@ -41,7 +41,7 @@ public interface FidPartitioner{
 		
 		public int decideShard(int fid) {
 			if (maxShards == 1){
-				return fid;
+				return 0;
 			}else if (maxShards == 2){
 				return fid & 0x1;
 			}else if (maxShards == 4){

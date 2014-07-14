@@ -7,8 +7,8 @@ public class PartialVectorModel {
 	
 	final static int MAX_TMP_VECTOR_SIZE = 100000;
 	
-	TIntFloatHashMap map;
-	TIntFloatHashMap toUpdate;
+	TIntFloatHashMap map; //new
+	TIntFloatHashMap toUpdate; //old
 	
 	public PartialVectorModel(){
 		this.map = new TIntFloatHashMap();
@@ -33,6 +33,12 @@ public class PartialVectorModel {
 	public void set(int fid, float value){
 		map.put(fid, value);
 	}
+	
+	public void setForMerge(int fid, float value){
+		map.put(fid, value);
+		toUpdate.put(fid, value);
+	}
+	
 	
 	void splitValuesByFIds(int[] fids , FidPartitioner partitioner, TFloatArrayList[] splitTo){
 		for(int fi = 0 ; fi < fids.length; fi++){

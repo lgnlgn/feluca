@@ -14,6 +14,7 @@ import org.shanbo.feluca.distribute.newmodel.PartialVectorModel;
 import org.shanbo.feluca.util.AlgoDeployConf;
 import org.shanbo.feluca.util.FileUtil;
 import org.shanbo.feluca.util.JSONUtil;
+import org.shanbo.feluca.util.NetworkUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -40,7 +41,7 @@ public class TestingJob {
 		@Override
 		public void cleanup() throws InterruptedException, ExecutionException {
 			vectorClient.dumpVector(VECTOR_MODEL_NAME, 
-					Constants.Base.getWorkerRepository() + "/model/" + conf.getString(GlobalConfig.MODEL_PREFIX));
+					Constants.Base.getWorkerRepository() + "/model/" + conf.getAlgorithmName());
 		}
 
 		@Override
@@ -73,11 +74,10 @@ public class TestingJob {
 			}
 			System.out.println();
 			try {
-				Thread.sleep(r.nextInt(2000) + 1000);
+				Thread.sleep(r.nextInt(1000) + 1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+			cc+=1;
 		}
 		
 	}
@@ -89,8 +89,8 @@ public class TestingJob {
 	public static void main(String[] args) throws Exception {
 		GlobalConfig globalConfig = GlobalConfig.build("sleep", JSONUtil.basicAlgoConf(4),
 				"covtype", FileUtil.loadProperties("data/covtype/covtype.sta"),
-				ImmutableList.of("192.168.1.100:12030"), ImmutableList.of("192.168.1.100:12130"), 
-				"192.168.1.100:12030", new AlgoDeployConf(true, true, true, true));
+				ImmutableList.of(NetworkUtils.ipv4Host() + ":12030"), ImmutableList.of(NetworkUtils.ipv4Host() + ":12130"), 
+				NetworkUtils.ipv4Host() + ":12030", new AlgoDeployConf(true, true, true, true));
 		SleepJob sj = new SleepJob(globalConfig);
 		sj.run();
 	}

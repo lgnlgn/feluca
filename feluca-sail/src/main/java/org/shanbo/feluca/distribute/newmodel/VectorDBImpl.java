@@ -28,11 +28,13 @@ public class VectorDBImpl implements VectorDB{
 	}
 
 	public synchronized void createVector(String collName, int vectorSize, float defaultValue,boolean overwrite) {
+		System.out.println("createVector : [" + collName + "]  " + vectorSize + "  " + defaultValue);
 		if (overwrite || !collection.containsKey(collName)){
 			float[] values = new float[vectorSize];
 			Arrays.fill(values, defaultValue);
 			collection.put(collName, values);
 			defaultValues.put(collName, defaultValue);
+			fidMaxMap.put(collName, 0);
 		}
 	}
 

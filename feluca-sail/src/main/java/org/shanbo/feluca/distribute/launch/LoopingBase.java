@@ -85,7 +85,7 @@ public abstract class LoopingBase{
 	 */
 	private void init(GlobalConfig conf) throws Exception{
 		this.conf = conf;
-		loops = conf.getAlgorithmConf().getInteger("loops");
+		loops = conf.getAlgorithmConf().getInteger(Constants.Algorithm.LOOPS);
 		AlgoDeployConf deployConf = conf.getDeployConf();
 		//data server and client can be separated from a worker-node.
 		//
@@ -134,7 +134,7 @@ public abstract class LoopingBase{
 			loopMonitor.watchLoopSignal();
 			loopMonitor.confirmLoopFinish();
 			
-			for(int i = 0 ; i < loops && earlyStop()== false;i++){
+			for(int i = 0 ; i < loops && earlyStop() == false;i++){
 				System.out.println("loop--:----" + i);
 				loopMonitor.waitForLoopStart();
 				openDataInput();

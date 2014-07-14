@@ -25,5 +25,5 @@ public interface VectorDB {
 	 */
 	public void multiUpdate(String collName, int[] ids, float[] deltaValues);
 	
-	public void dumpToDisk(String collName, String path);
+	public void dumpToDisk(String collName, String path, int maxShard, int shardId);
 }
