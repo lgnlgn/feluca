@@ -52,7 +52,7 @@ public class DataBalanceJob extends SubJobAllocator{
 
 			List<List<Integer>> allocationList = Utils.hashAllocate(totalBlocks, workers.size());
 			for(int i = 0 ; i < allocationList.size(); i++ ){// all workers
-				JSONObject conf = getTaskTicket("filepull"); //distribute sleep -> local sleep
+				JSONObject conf = getTaskTicket("file"); //distribute sleep -> local sleep
 				conf.put(FelucaSubJob.DISTRIBUTE_ADDRESS_KEY, workers.get(i)); //more
 				JSONArray pullFiles = new JSONArray();
 				for(int id : allocationList.get(i)){ //each block

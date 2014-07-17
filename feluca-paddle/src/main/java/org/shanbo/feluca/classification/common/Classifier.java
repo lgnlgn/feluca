@@ -5,6 +5,7 @@ import java.util.Properties;
 import org.shanbo.feluca.data.DataEntry;
 import org.shanbo.feluca.data.DataReader;
 import org.shanbo.feluca.data.Vector;
+import org.shanbo.feluca.data.convert.DataStatistic;
 
 
 
@@ -31,7 +32,7 @@ public interface Classifier {
 	
 	public void saveModel(String filePath) throws Exception;
 	
-	public void loadModel(String modelPath) throws Exception;
+	public void loadModel(String modelPath, Properties statistic) throws Exception;
 	
 	public void crossValidation(int fold, Evaluator... evaluators) throws Exception;
 }

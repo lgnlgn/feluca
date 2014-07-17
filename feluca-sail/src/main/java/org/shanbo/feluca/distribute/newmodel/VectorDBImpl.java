@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 
 public class VectorDBImpl implements VectorDB{
 
-	Logger log = LoggerFactory.getLogger(VectorDBImpl.class);
+	static Logger log = LoggerFactory.getLogger(VectorDBImpl.class);
+	
 	HashMap<String, float[]> collection ;
 	HashMap<String, Float> defaultValues;
 	Map<String, Integer> fidMaxMap;

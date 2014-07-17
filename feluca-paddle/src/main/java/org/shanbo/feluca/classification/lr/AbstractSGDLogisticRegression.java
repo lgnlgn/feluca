@@ -186,28 +186,22 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 
 	public void saveModel(String filePath) throws Exception {		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
-		bw.write(Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.MAX_FEATURE_ID) + "\n");
-		bw.write(Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.LABEL_INFO) + "\n");
+//		bw.write(Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.MAX_FEATURE_ID) + "\n");
+//		bw.write(Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.LABEL_INFO) + "\n");
 		for(int i = 0 ; i < this.featureWeights.length; i++){
-			if (this.featureWeights[i] == initWeight)
-				bw.write("0\n" );
-			else
-				bw.write(String.format("%.6f\n", this.featureWeights[i]));
+			if (this.featureWeights[i] != initWeight)
+				bw.write(String.format("%d\t%.6f\n", i, this.featureWeights[i]));			
 		}
 		bw.close();
 	}
 
-	public void loadModel(String modelPath) throws Exception {
-		BufferedReader br = new BufferedReader(new FileReader(modelPath));
-
-		String line = br.readLine();
-		this.featureWeights = new double[Integer.parseInt(line) + 1];
-		line = br.readLine();
-		this._loadDataInfo(line);
-		int i = 0 ;
-		for(line = br.readLine(); line != null; line = br.readLine()){
-			this.featureWeights[i] = Double.parseDouble(line);
-			i += 1 ;
+	public void loadModel(String modelPath, Properties statistic) throws Exception {
+		BufferedReader br = new BufferedReader(new FileReader(modelPath));	
+		this.featureWeights = new double[Integer.parseInt(statistic.getProperty(DataStatistic.MAX_FEATURE_ID)) + 1];
+		this._loadDataInfo(statistic.getProperty(DataStatistic.LABEL_INFO));
+		for(String line = br.readLine(); line != null; line = br.readLine()){
+			String[] fidWeight = line.split("\t");
+			this.featureWeights[Integer.parseInt(fidWeight[0])] = Double.parseDouble(fidWeight[1]);
 		}
 		br.close();
 	}

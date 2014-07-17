@@ -172,6 +172,7 @@ public abstract class LoopingBase{
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		finally	{
 			closeAll();
 		}
