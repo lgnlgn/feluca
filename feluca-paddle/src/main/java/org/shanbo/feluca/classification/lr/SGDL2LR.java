@@ -42,8 +42,8 @@ public class SGDL2LR extends AbstractSGDLogisticRegression{
 		double multi = (biasWeightRound * minSamples + maxSamples)/(minSamples + maxSamples + 0.0);
 		
 		for(int l = 0 ; l < Math.min(10, loops) 
-						|| l < loops && (Math.abs(1- avge/ lastAVGE) > convergence 
-						|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.1); l++){
+						|| (l < loops && (Math.abs(1- avge/ lastAVGE) > convergence )
+						|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01); l++){
 			lastAVGE = avge;
 			lastCorrects = corrects;
 			dataEntry.reOpen(); //start reading data
@@ -69,7 +69,7 @@ public class SGDL2LR extends AbstractSGDLogisticRegression{
 							}
 						}
 						error = gradientDescend(sample);
-						if (Math.abs(error) < 0.5)//accuracy
+						if (Math.abs(error) < 0.45)//accuracy
 							if ( sample.getIntHeader() == this.biasLabel)
 								corrects += this.biasWeightRound;
 							else
@@ -141,9 +141,9 @@ public class SGDL2LR extends AbstractSGDLogisticRegression{
 			System.out.println("guessing alpha:" + alpha);
 		}
 		if (this.lambda == null){
-			lambda = 0.2 / rate;
+			lambda = 0.02 / rate;
 //			minLambda = lambda  / Math.pow(1 + rate, 1.8);
-			minLambda = 0.01;
+			minLambda = 0.001;
 			System.out.println("guessing lambda:" + lambda);
 		}
 	}

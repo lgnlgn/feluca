@@ -8,14 +8,14 @@ import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VectorServer extends Server{
-	static Logger log = LoggerFactory.getLogger(VectorServer.class);
+public class ModelServer extends Server{
+	static Logger log = LoggerFactory.getLogger(ModelServer.class);
 	EventLoop loop;
 	org.msgpack.rpc.Server server;
 	GlobalConfig conf;
 	int port = 0;
 	
-	public VectorServer(GlobalConfig conf){
+	public ModelServer(GlobalConfig conf){
 		this.conf = conf;
 		port = Integer.parseInt(conf.getWorkerName().split(":")[1]) 
 				+ Constants.Algorithm.ALGO_DATA_SERVER_PORTAWAY;
@@ -25,7 +25,7 @@ public class VectorServer extends Server{
 	
 	@Override
 	public String serverName() {
-		return "vectorServer";
+		return "modelServer";
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class VectorServer extends Server{
 		ClusterUtil.getWorkerList();
 		loop = EventLoop.defaultEventLoop();
 		server = new org.msgpack.rpc.Server(loop);
-		server.serve(new VectorDBImpl());
+		server.serve(new MatrixModelImpl());
 		server.listen("0.0.0.0", defaultPort());
 		System.out.println("modelServer[" + conf.getWorkerName()+ "] started");
 	}

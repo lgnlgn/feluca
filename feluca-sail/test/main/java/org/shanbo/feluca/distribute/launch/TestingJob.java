@@ -19,9 +19,7 @@ import org.shanbo.feluca.util.NetworkUtils;
 import com.google.common.collect.ImmutableList;
 
 public class TestingJob {
-	
-	
-	
+
 	public static class SleepJob extends LoopingBase{
 		Random r = new Random();
 		
@@ -34,7 +32,6 @@ public class TestingJob {
 
 		@Override
 		public void startup() throws InterruptedException, ExecutionException {
-			vectorClient.createPartialModel(VECTOR_MODEL_NAME);
 		}
 
 		@Override
@@ -51,7 +48,7 @@ public class TestingJob {
 		}
 
 		@Override
-		protected void compute() throws InterruptedException, ExecutionException {
+		protected void computeBlock() throws InterruptedException, ExecutionException {
 			long[] offsetArray = dataReader.getOffsetArray(); 
 			List<long[]> splitted = CollectionUtil.splitLongs(offsetArray, 1000, false);
 			for(long[] segment : splitted){
@@ -61,12 +58,12 @@ public class TestingJob {
 					distinctIds(idSet, v);
 				}
 				int[] currentFIds = idSet.toArray();
-				vectorClient.fetchVector(VECTOR_MODEL_NAME, currentFIds);
-				PartialVectorModel partialVector = vectorClient.getVector(VECTOR_MODEL_NAME);
+				modelClient.vectorRetrieve(VECTOR_MODEL_NAME, currentFIds);
+				PartialVectorModel partialVector = modelClient.getVector(VECTOR_MODEL_NAME);
 				for(int fid : currentFIds){
 					partialVector.set(fid, partialVector.get(fid)-1); //minus 1 per segment
 				}
-				vectorClient.updateCurrentVector(VECTOR_MODEL_NAME, currentFIds);
+				modelClient.vectorUpdate(VECTOR_MODEL_NAME, currentFIds);
 				System.out.print("!");
 			}
 			System.out.println();
@@ -79,14 +76,14 @@ public class TestingJob {
 
 		@Override
 		protected void modelStart() throws InterruptedException, ExecutionException {
-			vectorClient.createVector(VECTOR_MODEL_NAME, 
+			modelClient.createVector(VECTOR_MODEL_NAME, 
 					conf.getDataStatistic().getIntValue(DataStatistic.MAX_FEATURE_ID), 0f);
-			System.out.println("created ");
+			System.out.println(" model  created ");
 		}
 
 		@Override
 		protected void modelClose() throws InterruptedException, ExecutionException {
-			vectorClient.dumpVector(VECTOR_MODEL_NAME, 
+			modelClient.dumpVector(VECTOR_MODEL_NAME, 
 					Constants.Base.getWorkerRepository() + "/model/" + conf.getAlgorithmName());			
 		}
 		

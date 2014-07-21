@@ -8,10 +8,10 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data.DataReader;
 import org.shanbo.feluca.data.Vector;
-import org.shanbo.feluca.distribute.newmodel.VectorClient;
-import org.shanbo.feluca.distribute.newmodel.VectorServer;
+import org.shanbo.feluca.distribute.newmodel.ModelClient;
+import org.shanbo.feluca.distribute.newmodel.ModelServer;
+
 import org.shanbo.feluca.util.AlgoDeployConf;
-import org.shanbo.feluca.util.ZKClient;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,15 +37,16 @@ public abstract class LoopingBase{
 
 	protected GlobalConfig conf;
 	protected int loops;
-
+	protected int looping;
+	
 	//data & computation
 	LoopMonitor loopMonitor; //with all worker, no matter model or data
 	protected DataReader dataReader; //auto close;
-	protected VectorClient vectorClient;
+	protected ModelClient modelClient;
 	boolean isModelManager;
 
 	//server & startingGun(with one of the server)
-	private VectorServer vectorServer;
+	private ModelServer vectorServer;
 	StartingGun startingGun; //one and only one with a job
 
 	public static void distinctIds(TIntHashSet idSet, Vector v){
@@ -71,13 +72,13 @@ public abstract class LoopingBase{
 		//data server and client can be separated from a worker-node.
 		//
 		if (deployConf.isModelServer()){
-			vectorServer = new VectorServer(conf);
+			vectorServer = new ModelServer(conf);
 		}
 		if (deployConf.isStartingGun()){
 			startingGun = new StartingGun(conf.getAlgorithmName(), conf.getModelServers().size(), conf.getWorkers().size());
 		}
 		if (deployConf.isModelClient()){
-			vectorClient = new VectorClient(conf);
+			modelClient = new ModelClient(conf);
 		}
 		isModelManager = deployConf.isModelManager();
 		loopMonitor = new LoopMonitor(conf.getAlgorithmName(), conf.getWorkerName());
@@ -118,9 +119,9 @@ public abstract class LoopingBase{
 			if (vectorServer!= null){
 				vectorServer.start();
 			}
-			if (vectorClient != null){
+			if (modelClient != null){
+				modelClient.open();
 				startup();
-				vectorClient.open();
 				if (startingGun!= null){//only one will be started
 					startingGun.waitForModelServersStarted(); //wait for model servers started
 					System.out.println("StartingGun saw ModelServersStarted");
@@ -141,15 +142,12 @@ public abstract class LoopingBase{
 				loopMonitor.start(); //wait until start signal & start loop watching 
 				System.out.println("loopMonitor.started");
 				loopMonitor.confirmLoopFinish(); //tell startingGun I'm ok
-				for(int i = 0 ; i < loops && earlyStop() == false;i++){
-					System.out.print("loop--:----(" + i);
+				for(looping = 0 ; looping < loops && earlyStop() == false;looping++){
+					System.out.print("loop--:----(" + looping);
 					loopMonitor.waitForLoopStart();   //wait for other workers; according to startingGun's action 
 					System.out.println(")");
 					openDataInput();
-					while(dataReader.hasNext()){
-						compute();
-						dataReader.releaseHolding();
-					}
+					computeLoop();
 					loopMonitor.confirmLoopFinish();
 				}
 				if (isModelManager){ //the only one
@@ -186,8 +184,8 @@ public abstract class LoopingBase{
 	 */
 	private void closeAll() throws InterruptedException, KeeperException{
 		loopMonitor.close();
-		if (vectorClient != null){
-			vectorClient.close();
+		if (modelClient != null){
+			modelClient.close();
 
 		}
 		if (vectorServer!= null){
@@ -204,6 +202,27 @@ public abstract class LoopingBase{
 	 */
 	protected boolean earlyStop(){return false;}
 
+	
+	
+	/**
+	 * <p>do computation while needs controlling iteration of data 
+	 * <p> if you override this method ; remember add <b>dataReader.releaseHolding();</b> at the end of <b>while(dataReader.hasNext())</b> loop
+	 * @throws Exception
+	 */
+	protected void computeLoop()throws Exception{
+		computeLoopBegin();
+		while(dataReader.hasNext()){
+			computeBlock();
+			dataReader.releaseHolding();
+		}
+		computeLoopEnd();
+	}
+	
+	protected void computeLoopBegin() throws Exception{;}
+	protected void computeLoopEnd() throws Exception{;}
+		
+	
+	
 	/**
 	 * A batch of vectors are loaded into memory,
 	 * <p><b> !Remember! Vector is just a ref of byte[], DO NOT store each one by yourself; </b></p>
@@ -216,5 +235,5 @@ public abstract class LoopingBase{
 	 *  <p>	        Vector v = dataReader.getVectorByOffset(offsetArray[o]);
 	 *  <p>}
 	 */
-	protected abstract void compute() throws Exception;
+	protected abstract void computeBlock() throws Exception;
 }
