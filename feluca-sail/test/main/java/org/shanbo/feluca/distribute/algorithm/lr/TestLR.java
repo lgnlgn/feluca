@@ -21,13 +21,13 @@ public class TestLR {
 		
 		String dataName = "real-sim";
 		
-		GlobalConfig globalConfig = GlobalConfig.build("l2lr", DefaultAlgoConf.basicAlgoConf(10),
+		GlobalConfig globalConfig = GlobalConfig.build("l1lr", DefaultAlgoConf.basicLRconf(20, 0.3, 0.1),
 				dataName, FileUtil.loadProperties("data/"+dataName+"/"+dataName+".sta"),
 				workers, models, 
 				thisWorkerName, thisDeployConf);
 		
-		SGDL2LR lr = new SGDL2LR(globalConfig);
+		SGDL1LR lr = new SGDL1LR(globalConfig);
 		lr.run();
-
+		System.exit(0);
 	}
 }
