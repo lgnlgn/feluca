@@ -8,14 +8,15 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>feluca-sail</artifactId>
-		<repositories>
+	
+	<repositories>
 		<repository>
 			<id>msgpack.org</id>
 			<name>MessagePack Repository for Maven</name>
 			<url>http://msgpack.org/maven2/</url>
 		</repository>
 	</repositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.shanbo</groupId>
