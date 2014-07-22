@@ -10,7 +10,7 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.data.util.CollectionUtil;
-import org.shanbo.feluca.distribute.newmodel.PartialVectorModel;
+import org.shanbo.feluca.distribute.model.PartialVectorModel;
 import org.shanbo.feluca.sail.AlgoDeployConf;
 import org.shanbo.feluca.sail.DefaultAlgoConf;
 import org.shanbo.feluca.util.FileUtil;

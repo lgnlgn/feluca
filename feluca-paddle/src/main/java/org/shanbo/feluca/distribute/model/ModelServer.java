@@ -1,4 +1,4 @@
-package org.shanbo.feluca.distribute.newmodel;
+package org.shanbo.feluca.distribute.model;
 
 import org.msgpack.rpc.loop.EventLoop;
 import org.shanbo.feluca.common.ClusterUtil;

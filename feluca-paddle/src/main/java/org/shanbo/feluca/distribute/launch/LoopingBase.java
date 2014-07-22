@@ -8,8 +8,8 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data.DataReader;
 import org.shanbo.feluca.data.Vector;
-import org.shanbo.feluca.distribute.newmodel.ModelClient;
-import org.shanbo.feluca.distribute.newmodel.ModelServer;
+import org.shanbo.feluca.distribute.model.ModelClient;
+import org.shanbo.feluca.distribute.model.ModelServer;
 
 import org.shanbo.feluca.sail.AlgoDeployConf;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;

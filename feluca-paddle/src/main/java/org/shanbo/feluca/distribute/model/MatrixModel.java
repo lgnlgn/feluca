@@ -1,4 +1,4 @@
-package org.shanbo.feluca.distribute.newmodel;
+package org.shanbo.feluca.distribute.model;
 
 public interface MatrixModel{
 	public int vectorCreate(String vectorName, int vectorSize, float defaultValue, boolean overwrite);

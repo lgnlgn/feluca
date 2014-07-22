@@ -1,4 +1,4 @@
-package org.shanbo.feluca.distribute.newmodel;
+package org.shanbo.feluca.distribute.model;
 
 import java.util.List;
 import gnu.trove.list.array.TFloatArrayList;

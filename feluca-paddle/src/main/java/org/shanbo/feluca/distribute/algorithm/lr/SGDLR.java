@@ -11,7 +11,7 @@ import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.data.util.CollectionUtil;
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.distribute.launch.LoopingBase;
-import org.shanbo.feluca.distribute.newmodel.PartialVectorModel;
+import org.shanbo.feluca.distribute.model.PartialVectorModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
