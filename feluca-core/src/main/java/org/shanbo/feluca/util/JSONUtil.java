@@ -82,9 +82,4 @@ public class JSONUtil {
 		return json;
 	}
 	
-	public static JSONObject basicAlgoConf(int loops){
-		JSONObject json = new JSONObject();
-		json.put("loops", loops);
-		return json;
-	}
 }

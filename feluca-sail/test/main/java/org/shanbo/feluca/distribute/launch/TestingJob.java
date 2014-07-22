@@ -11,7 +11,8 @@ import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.convert.DataStatistic;
 import org.shanbo.feluca.data.util.CollectionUtil;
 import org.shanbo.feluca.distribute.newmodel.PartialVectorModel;
-import org.shanbo.feluca.util.AlgoDeployConf;
+import org.shanbo.feluca.sail.AlgoDeployConf;
+import org.shanbo.feluca.sail.DefaultAlgoConf;
 import org.shanbo.feluca.util.FileUtil;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.NetworkUtils;
@@ -99,7 +100,7 @@ public class TestingJob {
 		String thisWorkerName = workers.get(0);
 		AlgoDeployConf thisDeployConf = new AlgoDeployConf(true, true, true, true);
 		
-		GlobalConfig globalConfig = GlobalConfig.build("sleep", JSONUtil.basicAlgoConf(4),
+		GlobalConfig globalConfig = GlobalConfig.build("sleep", DefaultAlgoConf.basicAlgoConf(4),
 				"covtype", FileUtil.loadProperties("data/covtype/covtype.sta"),
 				workers, models, 
 				thisWorkerName, thisDeployConf);

@@ -1,7 +1,9 @@
 package org.shanbo.feluca.distribute.launch;
 
 import java.util.List;
-import org.shanbo.feluca.util.AlgoDeployConf;
+
+import org.shanbo.feluca.sail.AlgoDeployConf;
+import org.shanbo.feluca.sail.DefaultAlgoConf;
 import org.shanbo.feluca.util.FileUtil;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.NetworkUtils;
@@ -21,7 +23,7 @@ public class TestingJob2 {
 		String thisWorkerName = workers.get(1);
 		AlgoDeployConf thisDeployConf = new AlgoDeployConf(true, false, true, false);
 		
-		GlobalConfig globalConfig = GlobalConfig.build("sleep", JSONUtil.basicAlgoConf(4),
+		GlobalConfig globalConfig = GlobalConfig.build("sleep", DefaultAlgoConf.basicAlgoConf(4),
 				"covtype", FileUtil.loadProperties("data/covtype/covtype.sta"),
 				workers, models, 
 				thisWorkerName, thisDeployConf);

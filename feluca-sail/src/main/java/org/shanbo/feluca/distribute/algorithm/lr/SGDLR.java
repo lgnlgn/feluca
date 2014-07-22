@@ -23,7 +23,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author lgn
  *
  */
-public class SGDLR  extends LoopingBase{
+public abstract class SGDLR  extends LoopingBase{
 	
 	final static int LABELRANGEBASE = 32768;
 	public final static double DEFAULT_STOP = 0.001;
@@ -57,7 +57,7 @@ public class SGDLR  extends LoopingBase{
 
 	double lastCorrects = -1;
 	double avge = 999999999;
-	double lastAVGE ;
+	double lastAVGE = avge;
 	double error = 0;
 	double sume = 0.0, 	corrects = 0;
 	int cc = 0;
@@ -105,6 +105,7 @@ public class SGDLR  extends LoopingBase{
 		this.biasWeightRound = Math.round(ratio);
 		
 		this.setProperties(conf.getAlgorithmConf());
+
 	}
 	
 	protected void estimateParameter() throws NullPointerException{
@@ -138,7 +139,9 @@ public class SGDLR  extends LoopingBase{
 		if (algoConf.containsKey("convergence")){
 			convergence = algoConf.getDouble("convergence");
 		}
-		
+		if (this.convergence == null){
+			convergence = DEFAULT_STOP;
+		}
 		for(Entry<String, Object> entry : algoConf.entrySet()){
 			String  key= entry.getKey();
 			if (key.startsWith("-w")){
@@ -150,7 +153,7 @@ public class SGDLR  extends LoopingBase{
 	
 	@Override
 	protected void modelStart() throws Exception {
-		modelClient.createVector(VECTOR_MODEL_NAME, conf.getDataStatistic().getIntValue(DataStatistic.MAX_VECTOR_ID), 0f );
+		modelClient.createVector(VECTOR_MODEL_NAME, conf.getDataStatistic().getIntValue(DataStatistic.MAX_FEATURE_ID), 0f );
 	}
 
 	@Override
@@ -174,48 +177,7 @@ public class SGDLR  extends LoopingBase{
 
 	
 	
-	@Override
-	protected void computeBlock() throws Exception {
-		long[] offsetArray = dataReader.getOffsetArray(); 
-		List<long[]> splitted = CollectionUtil.splitLongs(offsetArray, 1000, false);
-		//continue split 1000 per block
-		for(long[] segment : splitted){
-			TIntHashSet idSet = new TIntHashSet();
-			// distinct fids
-			for(long offset : segment){ 
-				Vector v = dataReader.getVectorByOffset(offset);
-				distinctIds(idSet, v);
-			}
-			int[] currentFIds = idSet.toArray();
-			//fetch to local
-			vectorModel = modelClient.vectorRetrieve(VECTOR_MODEL_NAME, currentFIds);
-			
-			//compute each vector
-			for(long offset : segment){ 
-				Vector v = dataReader.getVectorByOffset(offset);
-				if (vcount % fold == remain){ // no train
-					;
-				}else{ //train
-					if ( v.getIntHeader() == this.biasLabel){ //bias; sequentially compute #(bias - 1) times
-						for(int bw = 1 ; bw < this.biasWeightRound; bw++){ //bias
-							this.gradientDescend(v);
-						}
-					}
-					error = gradientDescend(v);
-					if (Math.abs(error) < 0.45)//accuracy
-						if ( v.getIntHeader() == this.biasLabel)
-							corrects += this.biasWeightRound;
-						else
-							corrects += 1; 
-					cc += 1;
-					sume += Math.abs(error);
-				}
-				vcount += 1; 
-			}
-			modelClient.vectorUpdate(VECTOR_MODEL_NAME, currentFIds);
-			System.out.print("!");
-		}
-	}
+
 
 	protected void computeLoopEnd() {
 		avge = sume / cc;
@@ -234,38 +196,22 @@ public class SGDLR  extends LoopingBase{
 					lambda = minLambda;
 			}
 		}
-		System.out.println(String.format("#%d loop%d\ttime:%d(ms)\tacc: %.3f(approx)\tavg_error:%.6f", cc, looping, (tStart - tEnd), acc , avge));
+		System.out.println(String.format("#%d loop%d\ttime:%d(ms)\tacc: %.3f(approx)\tavg_error:%.6f", cc, looping, (tEnd - tStart), acc , avge));
 
 	}
 	
-	private double gradientDescend(Vector v){
-		int label = v.getIntHeader();
-		double weightSum = 0;
 
-		for(int i = 0 ; i < v.getSize(); i++){
-			weightSum += vectorModel.get(v.getFId(i)) * v.getWeight(i);
-		}
-		double tmp = Math.pow(Math.E, -weightSum); //e^-sigma(x)
-		double error = dataInfo[LABELRANGEBASE + label][0] - (1/ (1+tmp)); 
-		double partialDerivation =  tmp  / (tmp * tmp + 2 * tmp + 1) ;
-
-		for(int i = 0 ; i < v.getSize(); i++){
-			// w <- w + alpha * (error * partial_derivation - lambda * w)
-			float lastWeight = vectorModel.get(v.getFId(i));
-			vectorModel.set(v.getFId(i), 
-					(float)(lastWeight + alpha * (error * v.getWeight(i) * partialDerivation - lambda * lastWeight)));
-
-		}
-		return error;
-	}
 	
 	@Override
 	public boolean earlyStop() {
-		if (  (Math.abs(1- avge/ lastAVGE) > convergence )
-				|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01){
-			return true;
-		}else{
+		double errorRatio = 1- avge/ lastAVGE;
+		double accRatio = 1- corrects/ lastCorrects;
+		System.out.print(String.format("errorRatio:[%.4f] accRatio:[%.4f]  ", errorRatio, accRatio));
+		if (  (Math.abs(errorRatio) > convergence )	|| Math.abs(accRatio) > convergence * 0.01){
+			
 			return false;
+		}else{
+			return true;
 		}
 	}
 

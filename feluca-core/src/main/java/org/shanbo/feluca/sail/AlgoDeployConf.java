@@ -1,4 +1,4 @@
-package org.shanbo.feluca.util;
+package org.shanbo.feluca.sail;
 
 import org.shanbo.feluca.common.FelucaException;
 
