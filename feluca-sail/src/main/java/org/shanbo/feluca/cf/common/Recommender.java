@@ -30,7 +30,7 @@ public interface Recommender {
 	 * @return
 	 * @throws Exception
 	 */
-	public double[] predict(UserRatings user)  throws Exception;
+	public float[] predict(UserRatings user)  throws Exception;
 	
 	
 	/**
@@ -40,7 +40,7 @@ public interface Recommender {
 	 * @return
 	 * @throws Exception
 	 */
-	public double[] predict(UserRatings user, int[] itemIds) throws Exception;
+	public float[] predict(UserRatings user, int[] itemIds) throws Exception;
 	
 	
 	/**
@@ -50,7 +50,7 @@ public interface Recommender {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<Integer, double[]> predict(List<UserRatings> users) throws Exception;
+//	public Map<Integer, float[]> predict(List<UserRatings> users) throws Exception;
 	
 	public void saveModel(String filePath) throws Exception;
 	

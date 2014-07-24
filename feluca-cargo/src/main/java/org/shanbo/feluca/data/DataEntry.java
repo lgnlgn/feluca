@@ -67,7 +67,9 @@ public class DataEntry {
 	
 	
 	public Properties getDataStatistic(){
-		return new Properties(statistic);
+		Properties p = new Properties();
+		p.putAll(statistic);
+		return p;
 	}
 
 	/**

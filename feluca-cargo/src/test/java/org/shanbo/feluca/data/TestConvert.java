@@ -6,8 +6,10 @@ import org.shanbo.feluca.data.convert.DataConverter;
 
 public class TestConvert {
 	public static void main(String[] args) throws IOException {
-		DataConverter dc = new DataConverter("e:/data/real-sim");
+		String movielens = "E:/data/ml-10M100K/movielens.txt.test";
+		DataConverter dc = new DataConverter(movielens);
 //		dc.convertFID2FID("data/mush");
-		dc.convertLW2LW("data/real-sim");
+//		dc.convertLW2LW("data/real-sim");
+		dc.convertTuple2VID("data/movielens_test", Tuple.AlignColumn.FIRST);
 	}
 }

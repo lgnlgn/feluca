@@ -1,5 +1,6 @@
 package org.shanbo.feluca.data.convert;
 
+import java.io.StringReader;
 import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Properties;
@@ -39,7 +40,7 @@ public abstract class DataStatistic {
 	
 	public final void stat(Vector vector){
 		if (counter != null){
-			counter.doStat(vector);
+			counter.stat(vector);
 		}
 		doStat(vector);
 		this.statVectorType = vector.getVectorType();
@@ -52,19 +53,30 @@ public abstract class DataStatistic {
 		clear();
 	}
 
+	public static Properties parseStr(String prop){
+		try{
+			Properties p = new Properties();
+			p.load(new StringReader(prop));
+			return p;
+		}catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+	}
 	
 	public String toString(){
 		Properties p = new Properties();
 		if (counter != null){
-			p.putAll( counter.getStatResult());
+			p.putAll( parseStr(counter.toString()));
 		}
 		p.putAll(getStatResult());
 		p.put("vectorType", statVectorType);
+		
+		//we don't use properties's toString() or store()
 		StringBuilder builder = new StringBuilder();
 		for(Entry<Object, Object> entry : p.entrySet()){
 			builder.append(entry.getKey() + "=" + entry.getValue() + "\n");
 		}
-		
 		return builder.toString();
 	}
 
@@ -142,13 +154,12 @@ public abstract class DataStatistic {
 		}
 	}
 	
-	public static class LableWeightStatistic extends DataStatistic{
+	public static class LabelStatistic extends DataStatistic{
 
-		double weightSum ;
 		HashMap<Integer, int[]> labelInfoBag = new HashMap<Integer, int[]>();
 		int i = 0;
 		
-		public LableWeightStatistic(DataStatistic counter) {
+		public LabelStatistic(DataStatistic counter) {
 			super(counter);
 			
 		}
@@ -160,14 +171,10 @@ public abstract class DataStatistic {
 			}else{
 				labelInfo[1] += 1;
 			}
-			for(int i = 0 ; i < vector.getSize(); i++){
-				weightSum += vector.getWeight(i);
-			}
 		}
 		@Override
 		protected Properties getStatResult() {
 			Properties p = new Properties();
-			p.put(SUM_WEIGHTS, this.weightSum);
 			p.put(CLASSES, this.labelInfoBag.size());
 			StringBuilder sb = new StringBuilder();
 			for(Entry<Integer, int[]> entry : labelInfoBag.entrySet()){
@@ -179,6 +186,60 @@ public abstract class DataStatistic {
 		@Override
 		protected void clear() {
 			labelInfoBag.clear();
+		}
+	}
+	
+	public static class VIDStatistic extends DataStatistic{
+		int maxVId = Integer.MIN_VALUE;
+		public VIDStatistic(DataStatistic counter) {
+			super(counter);
+			clear();
+		}
+
+		@Override
+		protected void doStat(Vector vector) {
+			maxVId = maxVId > vector.getIntHeader() ? maxVId : vector.getIntHeader();
+			
+		}
+
+		@Override
+		protected Properties getStatResult() {
+			Properties p = new Properties();
+			p.put(MAX_VECTOR_ID, this.maxVId);
+			return p;
+		}
+
+		@Override
+		protected void clear() {
+			maxVId = Integer.MIN_VALUE;
+		}
+	}
+	
+	
+	
+	public static class WeightStatistic extends DataStatistic{
+
+		double weightSum ;
+		int i = 0;
+		
+		public WeightStatistic(DataStatistic counter) {
+			super(counter);
+			
+		}
+		@Override
+		protected void doStat(org.shanbo.feluca.data.Vector vector) {
+			for(int i = 0 ; i < vector.getSize(); i++){
+				weightSum += vector.getWeight(i);
+			}
+		}
+		@Override
+		protected Properties getStatResult() {
+			Properties p = new Properties();
+			p.put(SUM_WEIGHTS, this.weightSum);
+			return p;
+		}
+		@Override
+		protected void clear() {
 			weightSum = 0.0;
 		}
 	}

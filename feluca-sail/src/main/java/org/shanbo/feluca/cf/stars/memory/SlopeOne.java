@@ -6,9 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 
@@ -132,11 +129,11 @@ public class SlopeOne implements Recommender{
 	}
 
 
-	public double[] predict(UserRatings user) throws Exception {
+	public float[] predict(UserRatings user) throws Exception {
 		if (user == null){
 			return null;
 		}else{
-			double[] predicts = new double[this.maxiid + 1];
+			float[] predicts = new float[this.maxiid + 1];
 			int[] coRatingsArray = new int[this.maxiid + 1];
 			//for each rated item
 			for(RatingInfo ri = user.getNormalNextRating(); ri != null; ri = user.getNormalNextRating()){
@@ -163,11 +160,11 @@ public class SlopeOne implements Recommender{
 
 
 
-	public double[] predict(UserRatings user, int[] itemIds) throws Exception {
+	public float[] predict(UserRatings user, int[] itemIds) throws Exception {
 		if (user == null){
 			return null;
 		}else{
-			double[] predicts = new double[itemIds.length];
+			float[] predicts = new float[itemIds.length];
 			int[] coRatingsArray = new int[itemIds.length];
 			
 			for(RatingInfo ri = user.getNormalNextRating(); ri != null; ri = user.getNormalNextRating()){
@@ -189,14 +186,14 @@ public class SlopeOne implements Recommender{
 	}
 
 
-	public Map<Integer, double[]> predict(List<UserRatings> users)
-			throws Exception {
-		Map<Integer, double[]> result = new HashMap<Integer, double[]>();
-		for(UserRatings user : users){
-			double[] predicts = this.predict(user);
-			result.put(user.getUid(), predicts);
-		}
-		return result;
-	}
+//	public Map<Integer, double[]> predict(List<UserRatings> users)
+//			throws Exception {
+//		Map<Integer, double[]> result = new HashMap<Integer, double[]>();
+//		for(UserRatings user : users){
+//			double[] predicts = this.predict(user);
+//			result.put(user.getUid(), predicts);
+//		}
+//		return result;
+//	}
 
 }

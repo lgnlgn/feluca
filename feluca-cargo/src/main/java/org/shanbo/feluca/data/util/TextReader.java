@@ -1,6 +1,7 @@
 package org.shanbo.feluca.data.util;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import org.shanbo.feluca.data.Tuple;
 import org.shanbo.feluca.data.Tuple.AlignColumn;
 import org.shanbo.feluca.data.Tuple.TupleType;
 
-public class TextReader {
+public class TextReader implements Closeable{
 	BufferedReader reader;
 	boolean isTupleLine;
 	NumericTokenizer lineParser;

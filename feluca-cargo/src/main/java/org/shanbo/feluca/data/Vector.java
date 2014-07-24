@@ -281,7 +281,11 @@ public abstract class Vector {
 				int i = 0;
 				for(Entry<String, String> kv : split.entrySet()){
 					ids[i] = Integer.parseInt(kv.getKey());
-					weights[i] = Float.parseFloat(kv.getValue());
+					if (kv.getValue().isEmpty()){
+						weights[i] = 1f;
+					}else{
+						weights[i] = Float.parseFloat(kv.getValue());
+					}
 					i+=1;
 				}
 				idSize = i;
@@ -382,7 +386,11 @@ public abstract class Vector {
 				int i = 0;
 				for(Entry<String, String> kv : split.entrySet()){
 					ids[i] = Integer.parseInt(kv.getKey());
-					weights[i] = Float.parseFloat(kv.getValue());
+					if (kv.getValue().isEmpty()){
+						weights[i] = 1f;
+					}else{
+						weights[i] = Float.parseFloat(kv.getValue());
+					}
 					i+=1;
 				}
 				idSize = i;

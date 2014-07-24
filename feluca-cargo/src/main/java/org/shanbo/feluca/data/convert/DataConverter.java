@@ -13,10 +13,15 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+import org.shanbo.feluca.data.Tuple.AlignColumn;
+import org.shanbo.feluca.data.Tuple.TupleType;
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.Vector.VectorType;
 import org.shanbo.feluca.data.convert.DataStatistic.BasicStatistic;
-import org.shanbo.feluca.data.convert.DataStatistic.LableWeightStatistic;
+import org.shanbo.feluca.data.convert.DataStatistic.LabelStatistic;
+import org.shanbo.feluca.data.convert.DataStatistic.WeightStatistic;
+import org.shanbo.feluca.data.convert.DataStatistic.VIDStatistic;
+import org.shanbo.feluca.data.util.TextReader;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Closeables;
@@ -34,6 +39,7 @@ public class DataConverter {
 	BufferedWriter blockStatWriter;
 	BufferedWriter globalStatWriter;
 	BufferedReader rawDataReader;
+	TextReader textReader;
 	
 	public DataConverter(String inFile) throws IOException{
 		File input = new File(inFile);
@@ -52,6 +58,7 @@ public class DataConverter {
 			throw new FileNotFoundException("path : " + inFile + " not found");
 		}
 		buffer = ByteBuffer.wrap(new byte[32 * 1024 * 1024]);
+		
 	}
 	
 	private void generalConverting(String outDir, VectorType inputType, VectorType outpuType, DataStatistic blockStat, DataStatistic globalStat) throws FileNotFoundException, IOException{
@@ -75,7 +82,7 @@ public class DataConverter {
 		blockStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_1.sta"));
 		dataOutput = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_1.dat" ));
 		int count = 0;
-		for(String line = rawDataReader.readLine(); line != null ; line = rawDataReader.readLine()){
+		for(String line = textReader.readLine(); line != null ; line = textReader.readLine()){
 			boolean parseOk = vector.parseLine(line);
 			if (parseOk == false){
 				continue;
@@ -128,13 +135,36 @@ public class DataConverter {
 	 * @throws IOException
 	 */
 	public void convertFID2FID(String outDir) throws IOException{
+		textReader = new TextReader(rawDataReader);
 		generalConverting(outDir, VectorType.FIDONLY, VectorType.FIDONLY, 
 				new BasicStatistic(),new BasicStatistic());
 	}
 
+	/**
+	 * ordinary classification format
+	 * @param outDir
+	 * @throws IOException
+	 */
 	public void convertLW2LW(String outDir) throws IOException{
+		textReader = new TextReader(rawDataReader);
 		generalConverting(outDir, VectorType.LABEL_FID_WEIGHT, VectorType.LABEL_FID_WEIGHT, 
-				new LableWeightStatistic(new BasicStatistic()),  new LableWeightStatistic(new BasicStatistic()));
+				new LabelStatistic(new BasicStatistic()),  new LabelStatistic(new BasicStatistic()));
 	}
 		
+	/**
+	 * movielens/netflix format
+	 * <p>You should make sure the order of tuples; otherwise, it will generate a new vector
+	 * @param outDir
+	 * @param alignColumn
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
+	public void convertTuple2VID(String outDir,AlignColumn alignColumn) throws FileNotFoundException, IOException{
+		textReader = new TextReader(rawDataReader, TupleType.WEIGHT_TYPE, alignColumn);
+		generalConverting(outDir, VectorType.VID_FID_WEIGHT, VectorType.VID_FID_WEIGHT, 
+				new VIDStatistic(new WeightStatistic(new BasicStatistic())), 
+				new VIDStatistic(new WeightStatistic(new BasicStatistic())));
+
+	}
+	
 }
