@@ -53,12 +53,18 @@ public class DataEntry {
 	 * @throws IOException
 	 */
 	public void reOpen() throws IOException{
+		
 		if (inRam == false){
-			reader = DataReader.createDataReader(inRam, dataDir);
+			reader = DataReader.createDataReader(false, dataDir);
 			offsetArray = new long[]{};
 			offsetArrayIdx = Integer.MAX_VALUE;
 		}else{
-			
+			if (reader == null){
+				currentPosition = 0;
+				offsetArray = new long[]{};
+				offsetArrayIdx = Integer.MAX_VALUE;
+				reader = DataReader.createDataReader(true, dataDir);
+			}
 		}
 	}
 
@@ -106,8 +112,10 @@ public class DataEntry {
 		
 		public RADataEntry(String dataDir) throws IOException {
 			super(dataDir, true);
+			super.reOpen();
 			forwardIndex = new int[Integer.parseInt(statistic.getProperty(DataStatistic.MAX_VECTOR_ID)) + 1][];
 			buildforwardIndex();
+			super.close();
 		}
 
 		public void reOpen() throws IOException{
@@ -126,6 +134,7 @@ public class DataEntry {
 
 					forwardIndex[v.getIntHeader()] = new int[]{ram.getBlockIter(), start, end};
 				}
+				ram.releaseHolding();
 			}
 		}
 		

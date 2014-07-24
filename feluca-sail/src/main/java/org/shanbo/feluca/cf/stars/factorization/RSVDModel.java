@@ -104,7 +104,7 @@ public class RSVDModel extends SVDModel{
 		dataEntry.close();
 	}
 	
-	public double predict(int userId, int itemId) {
+	public float predict(int userId, int itemId) {
 		return this.avgrating + userbias[userId] + itembias[itemId] + 
 				Utilities.innerProduct(userspace[userId] , itemspace[itemId]);
 	}

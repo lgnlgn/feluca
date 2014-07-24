@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.shanbo.feluca.cf.common.Evaluation;
 import org.shanbo.feluca.cf.common.Recommender;
+import org.shanbo.feluca.cf.stars.factorization.RSVDModel;
 import org.shanbo.feluca.cf.stars.factorization.SVDModel;
 import org.shanbo.feluca.data.DataEntry;
 
@@ -22,7 +23,9 @@ public class TestSVD {
 		
 		DataEntry traind = new DataEntry(train, false);
 		
-		Recommender model = new SVDModel();
+//		Recommender model = new SVDModel();
+		Recommender model = new RSVDModel();
+		
 		Properties p = new Properties();
 		p.setProperty("alpha", "0.006");
 		p.setProperty("lambda", "0.015");

@@ -123,7 +123,7 @@ public class SVDModel implements Recommender{
 		return null;
 	}
 
-	private float predict(int userId, int itemId) throws Exception {
+	protected float predict(int userId, int itemId) throws Exception {
 		return Utilities.innerProduct(userspace[userId] , itemspace[itemId]);
 	}
 

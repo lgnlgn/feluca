@@ -165,7 +165,7 @@ public abstract class DataReader implements Closeable {
 
 		@Override
 		public boolean hasNext() {
-			if ((blockIter+1) < dats.size()){
+			if ((blockIter+1) <= dats.size()){
 				return true;
 			}
 			return false;

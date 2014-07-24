@@ -8,22 +8,22 @@ import org.shanbo.feluca.paddle.common.Utilities;
 public class Evaluation {
 	/**
 	 * testing RMSE using batch prediction 
-	 * @param data
+	 * @param test
 	 * @param recommender
 	 * @return
 	 * @throws Exception
 	 */
-	public static double runRMSE(DataEntry data, Recommender recommender) throws Exception{
+	public static double runRMSE(DataEntry test, Recommender recommender) throws Exception{
 		double error = 0;
 		UserRatings ur = new UserRatings();
-		int dbsize = Utilities.getIntFromProperties(data.getDataStatistic(), DataStatistic.TOTAL_FEATURES);
+		int dbsize = Utilities.getIntFromProperties(test.getDataStatistic(), DataStatistic.TOTAL_FEATURES);
 		System.out.println(dbsize);
 		int cc = 0;
-		data.reOpen();
-		while(data.getDataReader().hasNext()){
-			long[] offsetArray = data.getDataReader().getOffsetArray();
+		test.reOpen();
+		while(test.getDataReader().hasNext()){
+			long[] offsetArray = test.getDataReader().getOffsetArray();
 			for(int o = 0 ; o < offsetArray.length; o++){
-				Vector v = data.getDataReader().getVectorByOffset(offsetArray[o]);
+				Vector v = test.getDataReader().getVectorByOffset(offsetArray[o]);
 				ur.setVector(v);
 				
 				int[] itemIds = new int[ur.getItemNum()];
@@ -46,7 +46,7 @@ public class Evaluation {
 					System.out.print(".");
 				}
 			}
-			data.getDataReader().releaseHolding();
+			test.getDataReader().releaseHolding();
 		}
 
 		return Math.sqrt(error / dbsize);
