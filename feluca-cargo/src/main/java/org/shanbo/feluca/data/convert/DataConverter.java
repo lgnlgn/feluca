@@ -12,15 +12,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.shanbo.feluca.data.Tuple.AlignColumn;
 import org.shanbo.feluca.data.Tuple.TupleType;
 import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.Vector.VectorType;
 import org.shanbo.feluca.data.convert.DataStatistic.BasicStatistic;
-import org.shanbo.feluca.data.convert.DataStatistic.LabelStatistic;
-import org.shanbo.feluca.data.convert.DataStatistic.WeightStatistic;
-import org.shanbo.feluca.data.convert.DataStatistic.VIDStatistic;
 import org.shanbo.feluca.data.util.TextReader;
 
 import com.google.common.io.CharSource;
@@ -30,6 +28,8 @@ import com.google.common.io.Files;
 public class DataConverter {
 	
 	final static int CACHES_PER_BLOCK =2;
+	
+	private static BufferedWriter TEST_OUT = null;
 	
 	ByteBuffer buffer;
 	
@@ -82,23 +82,28 @@ public class DataConverter {
 		blockStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + "_1.sta"));
 		dataOutput = new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + "_1.dat" ));
 		int count = 0;
+
 		for(String line = textReader.readLine(); line != null ; line = textReader.readLine()){
 			boolean parseOk = vector.parseLine(line);
 			if (parseOk == false){
 				continue;
 			}
+			if (TEST_OUT != null){
+				TEST_OUT.write(vector.toString() + "\n");
+			}
 			globalStat.stat(vector);
 			count ++;
-			boolean success = vector.appendToByteBuffer(buffer);
-			if (success == false){
+			int success = vector.appendToByteBuffer(buffer);
+			if (success < 0){
+				System.out.println("meets the end at:" + buffer.position());
 				for(;  buffer.position() < buffer.capacity(); ){
-					buffer.putInt(0);//fill 0s
+					buffer.putInt(0);//fill 0s to end
 				}
 				dataOutput.write(buffer.array());
 				buffer.clear();
+				Arrays.fill(buffer.array(), (byte)0);
 				partOfBlock += 1;
 				if (partOfBlock >= CACHES_PER_BLOCK){
-					System.out.println(count);
 					blockStatWriter.write(blockStat.toString()); //finish stat of this block
 					blockStat.clearStat();
 					Closeables.close(dataOutput, true); //close old and open a new
@@ -109,16 +114,13 @@ public class DataConverter {
 					partOfBlock = 0;
 				}
 				//refill to either 'new block' or '2nd part' 
-				vector.appendToByteBuffer(buffer);
-				blockStat.stat(vector);
-			}else{
-				blockStat.stat(vector);
+				vector.appendToByteBuffer(buffer);		
 			}
-			
+			blockStat.stat(vector);
 		}
-		System.out.println(count);
+		System.out.println(" total lines : " + count);
 		//end of 
-		dataOutput.write(buffer.array(), 0, buffer.position());
+		dataOutput.write(buffer.array(), 0, buffer.position()); 
 		blockStatWriter.write(blockStat.toString());
 		globalStatWriter.write(globalStat.toString() + "totalBlocks=" + blockId + "\n");
 		
@@ -126,6 +128,7 @@ public class DataConverter {
 		Closeables.close(rawDataReader, true);
 		Closeables.close(blockStatWriter, true);
 		Closeables.close(globalStatWriter, true);
+		Closeables.close(TEST_OUT, true);
 	}
 	
 	
@@ -148,7 +151,7 @@ public class DataConverter {
 	public void convertLW2LW(String outDir) throws IOException{
 		textReader = new TextReader(rawDataReader);
 		generalConverting(outDir, VectorType.LABEL_FID_WEIGHT, VectorType.LABEL_FID_WEIGHT, 
-				new LabelStatistic(new BasicStatistic()),  new LabelStatistic(new BasicStatistic()));
+				DataStatistic.createLWstat(),  DataStatistic.createLWstat());
 	}
 		
 	/**
@@ -162,8 +165,7 @@ public class DataConverter {
 	public void convertTuple2VID(String outDir,AlignColumn alignColumn) throws FileNotFoundException, IOException{
 		textReader = new TextReader(rawDataReader, TupleType.WEIGHT_TYPE, alignColumn);
 		generalConverting(outDir, VectorType.VID_FID_WEIGHT, VectorType.VID_FID_WEIGHT, 
-				new VIDStatistic(new WeightStatistic(new BasicStatistic())), 
-				new VIDStatistic(new WeightStatistic(new BasicStatistic())));
+				DataStatistic.createVWstat(), 	DataStatistic.createVWstat());
 
 	}
 	

@@ -41,7 +41,7 @@ public abstract class Vector {
 	 * @param buffer
 	 * @return
 	 */
-	public abstract boolean appendToByteBuffer(ByteBuffer buffer);
+	public abstract int appendToByteBuffer(ByteBuffer buffer);
 
 	/**
 	 * should be synchronized. raw text to object
@@ -154,16 +154,16 @@ public abstract class Vector {
 		}
 
 		@Override
-		public boolean appendToByteBuffer(ByteBuffer buffer) {
+		public int appendToByteBuffer(ByteBuffer buffer) {
 			int capacityNeeds = (idSize * 4) + 4;
 			if (buffer.capacity() - buffer.arrayOffset() > capacityNeeds){
 				buffer.putInt(idSize  * 4);
 				for(int i = 0 ; i < idSize; i++){
 					buffer.putInt(ids[i]);
 				}
-				return true;
+				return capacityNeeds;
 			}else{
-				return false;
+				return -1;
 			}
 		}
 
@@ -211,7 +211,7 @@ public abstract class Vector {
 		}
 
 		@Override
-		public boolean appendToByteBuffer(ByteBuffer buffer) {
+		public int appendToByteBuffer(ByteBuffer buffer) {
 			int capacityNeeds = 4 + 4 + (idSize  << 3) ; //(veclenght) + (label) + (kv pairs) each kv-pair occupy 8 bytes
 			if (buffer.capacity() - buffer.position() > capacityNeeds){
 				buffer.putInt(capacityNeeds - 4);
@@ -220,9 +220,9 @@ public abstract class Vector {
 					buffer.putInt(ids[i]);
 					buffer.putFloat(weights[i]);
 				}
-				return true;
+				return capacityNeeds;
 			}else{
-				return false;
+				return -1;
 			}
 		}
 
@@ -316,7 +316,7 @@ public abstract class Vector {
 		}
 
 		@Override
-		public boolean appendToByteBuffer(ByteBuffer buffer) {
+		public int appendToByteBuffer(ByteBuffer buffer) {
 			int capacityNeeds = 4 + 4 + (idSize  << 3) ; //(veclenght) + (label) + (kv pairs) each kv-pair occupy 8 bytes
 			if (buffer.capacity() - buffer.position() > capacityNeeds){
 				buffer.putInt(capacityNeeds - 4);
@@ -325,9 +325,9 @@ public abstract class Vector {
 					buffer.putInt(ids[i]);
 					buffer.putFloat(weights[i]);
 				}
-				return true;
+				return capacityNeeds;
 			}else{
-				return false;
+				return -1;
 			}
 		}
 

@@ -26,9 +26,9 @@ public class TestSVD {
 		Properties p = new Properties();
 		p.setProperty("alpha", "0.006");
 		p.setProperty("lambda", "0.015");
-		p.setProperty("loops", "20");
+		p.setProperty("loops", "10");
 		p.setProperty("factor", "50");
-		p.setProperty("convergence", "0.95");
+		p.setProperty("convergence", "0.90");
 		p.setProperty("-i", "true");
 		model.setProperties(p);
 		model.loadData(traind);

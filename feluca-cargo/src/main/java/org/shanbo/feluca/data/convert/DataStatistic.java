@@ -17,7 +17,6 @@ public abstract class DataStatistic {
 	public final static String TOTAL_FEATURES = "totalFeatures";
 	public final static String MAX_VECTORSIZE = "maxVectorSize";
 
-	
 	//with weight
 	public final static String SUM_WEIGHTS = "sumWeights";
 	public final static String LABEL_INFO = "labelInfo";
@@ -48,7 +47,7 @@ public abstract class DataStatistic {
 	
 	public final void clearStat(){
 		if (counter != null){
-			counter.clear();
+			counter.clearStat();
 		}
 		clear();
 	}
@@ -62,6 +61,15 @@ public abstract class DataStatistic {
 			throw new RuntimeException(e);
 		}
 		
+	}
+	
+	
+	public static DataStatistic createVWstat(){
+		return new VIDStatistic(new WeightStatistic(new BasicStatistic()));
+	}
+	
+	public static DataStatistic createLWstat(){
+		return new LabelStatistic(new WeightStatistic(new BasicStatistic()));
 	}
 	
 	public String toString(){
@@ -116,6 +124,7 @@ public abstract class DataStatistic {
 			numVectors = 0;
 			totalFeatures = 0;
 			maxFeatureId = 0;
+			maxVectorSize = 1;
 		}
 
 	}

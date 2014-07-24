@@ -1,5 +1,7 @@
 package org.shanbo.feluca.data;
 
+import gnu.trove.list.array.TLongArrayList;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,9 +33,9 @@ import com.google.common.io.Closeables;
  */
 public abstract class DataReader implements Closeable {
 	byte[] inMemData; //a global data set of just a cache reference 
+	int bufferSize;
 
-	long[] vectorOffsets; //automatically enlarge
-	int offsetSize;
+	TLongArrayList vectorOffsets;
 	Vector vector;
 	String dirName;
 
@@ -41,7 +43,7 @@ public abstract class DataReader implements Closeable {
 	public abstract Vector getVectorByOffset(long offset);
 
 	public long[] getOffsetArray(){
-		return Arrays.copyOf(vectorOffsets, offsetSize);
+		return vectorOffsets.toArray();
 	}
 
 	/**
@@ -60,25 +62,25 @@ public abstract class DataReader implements Closeable {
 	
 	private DataReader(String dataName) {
 		this.dirName = dataName;
-		this.vectorOffsets = new long[32 * 1024];
+//		this.vectorOffsets = new long[32 * 1024];
+		this.vectorOffsets = new TLongArrayList(1024);
 	}
 
-	protected void readOffsetsFromCache(){
+	protected void readOffsetsFromCache(byte[] inMemData, TLongArrayList vectorOffsets, int bufferLength){
 		int currentStart = 0;
-		int i = 0;
-		for(int length = BytesUtil.getInt(inMemData, currentStart); length != 0; ){
-			long offset = ((long)(currentStart + 4) << 32) | ((long)(currentStart + 4 + length));
-			vectorOffsets[i++] = offset;
-			if (i >= vectorOffsets.length){
-				long[] tmp = new long[vectorOffsets.length + 64 * 1024];
-				System.arraycopy(vectorOffsets, 0, tmp, 0, vectorOffsets.length);
-				vectorOffsets = tmp;
+		for(int length = BytesUtil.getInt(inMemData, currentStart); length > 0; ){
+			if (length < 0){
+				break;
 			}
+			long offset = ((long)(currentStart + 4) << 32) | ((long)(currentStart + 4 + length));
+			vectorOffsets.add(offset);
 			//for next loop
 			currentStart += (length + 4);
+			if (currentStart >= bufferLength){
+				break;
+			}
 			length = BytesUtil.getInt(inMemData, currentStart);
 		}
-		offsetSize = i;
 	}
 
 
@@ -115,8 +117,8 @@ public abstract class DataReader implements Closeable {
 			dats = new ArrayList<byte[]>(blockStatuses.size() * 2);
 			offsets = new ArrayList<long[]>(blockStatuses.size() * 2);
 			while(super.hasNext()){
-				dats.add(Arrays.copyOfRange(inMemData, 0, inMemData.length));
-				offsets.add(Arrays.copyOfRange(vectorOffsets, 0, vectorOffsets.length));
+				dats.add(Arrays.copyOfRange(inMemData, 0, bufferSize));
+				offsets.add(vectorOffsets.toArray());
 				super.releaseHolding();
 			}
 			
@@ -221,11 +223,13 @@ public abstract class DataReader implements Closeable {
 		@Override
 		public boolean hasNext() {
 			inMemData = fileBuffer.getByteArrayRef();
-
+			
 			if (inMemData == null)
 				return false;
 			else{
-				this.readOffsetsFromCache();
+				vectorOffsets.resetQuick();
+				bufferSize = fileBuffer.getCurrentBytesLength();
+				this.readOffsetsFromCache(inMemData, vectorOffsets, bufferSize);
 				return true;
 			}
 		}

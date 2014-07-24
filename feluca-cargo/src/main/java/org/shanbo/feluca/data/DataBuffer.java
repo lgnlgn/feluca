@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.shanbo.feluca.data.util.BytesUtil;
+
 import com.google.common.io.PatternFilenameFilter;
 
 /**
@@ -98,8 +100,6 @@ public class DataBuffer implements Runnable, Closeable{
 				//wait until
 				if (finished ){
 					return null;
-				}else{
-					;
 				}
 			}
 		}
@@ -191,18 +191,46 @@ public class DataBuffer implements Runnable, Closeable{
 		}
 //		System.out.println("thread finished!");
 	}
+	
+	public static  int readOffsetsFromCache(byte[] inMemData, long[] vectorOffsets){
+		int currentStart = 0;
+		int i = 0;
+		for(int length = BytesUtil.getInt(inMemData, currentStart); length > 0; ){
+			if (length < 0){
+				break;
+			}
+			if (i == 5000){
+				System.out.println("");
+			}
+			long offset = ((long)(currentStart + 4) << 32) | ((long)(currentStart + 4 + length));
+			vectorOffsets[i++] = offset;
+			//for next loop
+			currentStart += (length + 4);
+			length = BytesUtil.getInt(inMemData, currentStart);
+		}
+		return i;
+	}
+	
 
 	public static void main(String[] args) throws IOException {
-		DataBuffer db = new DataBuffer("data/covtype");
+		DataBuffer db = new DataBuffer("data/movielens_train");
 		System.out.println();
 		long t1 = System.nanoTime();
 		db.start();
 		//		System.out.println(db.getDataLength() + "\n");
-
+		int i = 0;
 		for(byte[] ref = db.getByteArrayRef(); ref != null;ref = db.getByteArrayRef() ){
 			int currentBytesLength = db.getCurrentBytesLength();
 			System.out.println(currentBytesLength);
+			i += 1;
+			if (i == 3){
+				System.out.println("->");
+				System.out.println(readOffsetsFromCache(ref, new long[32*1024]));
+			}
+			
+			
 			db.releaseByteArrayRef();
+			
 		}
 		
 		long t2 = System.nanoTime();

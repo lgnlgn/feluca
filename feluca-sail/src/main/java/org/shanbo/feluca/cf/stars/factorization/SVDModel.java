@@ -103,7 +103,7 @@ public class SVDModel implements Recommender{
 			}
 			long timeSpent = System.currentTimeMillis() - timeStart;
 			learningSpeed *= this.convergence;
-			System.out.println(String.format("loop:%d\ttime(ms):%d\tavgerror:%.6f\tnext alpha:%.5f", loop, timeSpent, (totalError/n),learningSpeed));
+			System.out.println(String.format("loop:%d\t%d\ttime(ms):%d\tavgerror:%.6f\tnext alpha:%.5f", loop, n , timeSpent, (totalError/n),learningSpeed));
 //			System.out.println("loop " + loop + " finished~  Time spent: " + (timeSpent / 1000.0) + "  next alpha :" + learningSpeed);
 		}
 		dataEntry.close();
