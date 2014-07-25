@@ -90,7 +90,7 @@ public class RSVDModel extends SVDModel{
 						userspace[ri.userId][f] = userspace[ri.userId][f] + learningSpeed * (eui * itemspace[ri.itemId][f] - this.lambda * userspace[ri.userId][f]);
 						itemspace[ri.itemId][f] = itemspace[ri.itemId][f] + learningSpeed * (eui * userspace[ri.userId][f] - this.lambda * itemspace[ri.itemId][f]);
 					}
-					totalError += eui;
+					totalError += Math.abs(eui);
 					n+=1;
 				}
 			}
@@ -104,7 +104,7 @@ public class RSVDModel extends SVDModel{
 		dataEntry.close();
 	}
 	
-	public float predict(int userId, int itemId) {
+	protected float predict(int userId, int itemId) {
 		return this.avgrating + userbias[userId] + itembias[itemId] + 
 				Utilities.innerProduct(userspace[userId] , itemspace[itemId]);
 	}

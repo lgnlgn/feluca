@@ -24,8 +24,8 @@ public class DataEntry {
 	protected String dataDir ;
 	protected boolean inRam;
 
-	private long[] offsetArray ;
-	private int offsetArrayIdx = Integer.MAX_VALUE;
+	protected long[] offsetArray ;
+	protected int offsetArrayIdx = Integer.MAX_VALUE;
 
 	protected Properties statistic ;
 
@@ -120,6 +120,9 @@ public class DataEntry {
 
 		public void reOpen() throws IOException{
 			((RAMDataReader) reader).reOpen();
+			currentPosition = 0;
+			offsetArray = new long[]{};
+			offsetArrayIdx = Integer.MAX_VALUE;
 		}
 
 		private void buildforwardIndex(){

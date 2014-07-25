@@ -97,7 +97,7 @@ public class SVDModel implements Recommender{
 						userspace[ri.userId][f] = userspace[ri.userId][f] + learningSpeed * (eui * itemspace[ri.itemId][f] - this.lambda * userspace[ri.userId][f]);
 						itemspace[ri.itemId][f] = itemspace[ri.itemId][f] + learningSpeed * (eui * userspace[ri.userId][f] - this.lambda * itemspace[ri.itemId][f]);
 					}
-					totalError += eui;
+					totalError += Math.abs(eui);
 					n += 1;
 				}
 			}
@@ -128,11 +128,11 @@ public class SVDModel implements Recommender{
 	}
 
 	public float[] predict(UserRatings user) throws Exception {
-		float[] result = new float[itemspace.length];
-		for(int i = 0 ; i < itemspace.length; i++){
-			result[i] = predict(user.getUid(), i);
+		int[] itemIds = new int[this.maxiid + 1]; 
+		for(int i = 0 ; i < itemIds.length; i++){
+			itemIds[i] = i;
 		}
-		return result;
+		return predict(user, itemIds);
 	}
 	
 	public void loadModel(String modelPath) throws IOException, ClassNotFoundException {
