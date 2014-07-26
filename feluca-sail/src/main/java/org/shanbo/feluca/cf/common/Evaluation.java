@@ -52,6 +52,8 @@ public class Evaluation {
 			}
 			test.getDataReader().releaseHolding();
 		}
+		test.close();
+		train.close();
 		return Math.sqrt(error / dbsize);
 	}
 	
@@ -97,6 +99,7 @@ public class Evaluation {
 			}
 			test.getDataReader().releaseHolding();
 		}
+		test.close();
 		return Math.sqrt(error / dbsize);
 	}
 	

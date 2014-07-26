@@ -12,14 +12,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class JSONUtil {
-	public static String getJson(JSONObject json, String key, String defaultValue){
+	public static String getConf(JSONObject json, String key, String defaultValue){
 		String string = json.getString(key);
 		if (string == null){
 			return defaultValue;
 		}return string;
 	}
 	
-	public static int getJson(JSONObject json, String key, int defaultValue){
+	public static int getConf(JSONObject json, String key, int defaultValue){
 		Integer i = json.getInteger(key);
 		if (i == null){
 			return defaultValue;
@@ -27,13 +27,22 @@ public class JSONUtil {
 		return i;
 	}
 
-	public static double getJson(JSONObject json, String key, double defaultValue){
+	public static double getConf(JSONObject json, String key, double defaultValue){
 		Double i = json.getDouble(key);
 		if (i == null){
 			return defaultValue;
 		}
 		return i;
 	}
+	
+	public static float getConf(JSONObject json, String key, float defaultValue){
+		Float i = json.getFloat(key);
+		if (i == null){
+			return defaultValue;
+		}
+		return i;
+	}
+	
 	
 	public static JSONArray fromStrings(Object... array){
 		JSONArray ja = new JSONArray();

@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.shanbo.feluca.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +68,7 @@ public class MatrixModelImpl implements MatrixModel{
 		return 0;
 	}
 
-	public int vectorDump(String vectorName, String path, int maxShards,
-			int shardId) {
+	public int vectorDump(String vectorName, String path, int maxShards, int shardId) {
 		File out = new File(path + ".vector." + vectorName + "." + shardId);
 		out.getParentFile().mkdirs();
 		HashPartitioner partitioner = new HashPartitioner(maxShards);
@@ -140,8 +140,9 @@ public class MatrixModelImpl implements MatrixModel{
 
 	public int matrixDump(String matrixName, String path, int maxShards,
 			int shardId) {
-		File out = new File(path + ".vector." + matrixName + "." + shardId);
-		out.getParentFile().mkdirs();
+		File out = new File(path + ".matrix." + matrixName + "." + shardId);
+		if (out.getParentFile() != null) 
+			out.getParentFile().mkdirs();
 		HashPartitioner partitioner = new HashPartitioner(maxShards);
 		try{
 			float[][] values = matrixes.get(matrixName);
@@ -150,6 +151,7 @@ public class MatrixModelImpl implements MatrixModel{
 				oos.write(partitioner.indexToFeatureId(i, shardId));
 				oos.writeObject(values[i]);
 			}
+			debug(values, partitioner, shardId);
 			oos.flush();
 			oos.close();
 			return 1;
@@ -159,4 +161,44 @@ public class MatrixModelImpl implements MatrixModel{
 		}
 	}
 
+	private void debug(float[][] values, HashPartitioner partitioner, int shardId){
+		for(int i = 0 ; i < values.length; i++){
+			StringBuilder builder = new StringBuilder();
+			builder.append(partitioner.indexToFeatureId(i, shardId) + "\t[");
+			for(int j = 0 ; j< values[i].length; j++){
+				builder.append(values[i][j] + " ,");
+			}
+ 			builder.append("]");
+ 			System.out.println(builder.toString());
+		}
+	}
+
+	public int vectorCreate(String vectorName, int vectorSize, float baseValue,
+			float vibration, boolean overwrite) {
+		int code = vectorCreate(vectorName, vectorSize, baseValue, overwrite);
+		if (code == 0){
+			return code;
+		}
+		float[] values = vectors.get(vectorName);
+		for(int i = 0 ; i < values.length; i++){
+			values[i] += (float)(vibration * Utils.randomDouble());
+		}
+		return 1;
+	}
+
+	public int matrixCreate(String matrixName, int rowSize, int columnSize,
+			float baseValue, float vibration, boolean overwrite) {
+		int code = matrixCreate(matrixName, rowSize, columnSize, baseValue, overwrite);
+		if (code == 0){
+			return code;
+		}
+		float[][] values = matrixes.get(matrixName);
+		for(float[] column : values){
+			for(int j = 0 ; j < column.length; j++){
+				column[j] += (float)(vibration * Utils.randomDouble());
+			}
+		}
+		return 1;
+	}
+	
 }

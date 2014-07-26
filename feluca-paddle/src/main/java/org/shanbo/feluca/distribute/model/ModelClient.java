@@ -82,6 +82,22 @@ public class ModelClient {
 		}
 		ConcurrentExecutor.execute(createCallables);
 	}
+	public void createVector(final String vectorName, int globalVectorSize, final float baseValue, final float vibration) throws InterruptedException, ExecutionException{
+		currentVectorsMap.put(vectorName, new PartialVectorModel(partitioner));
+		final int perVectorSize = globalVectorSize / clients.length + 2;
+		ArrayList<Callable<Void>> createCallables = new ArrayList<Callable<Void>>(clients.length);
+		for(int shardId = 0; shardId < clients.length; shardId++){
+			final int toShardId = shardId;
+			createCallables.add(new Callable<Void>() {
+				public Void call() throws Exception {
+				     matrixModels[toShardId].vectorCreate(vectorName, perVectorSize, baseValue, vibration, true);
+				     return null ;
+				}
+			});
+		}
+		ConcurrentExecutor.execute(createCallables);
+	}
+	
 	
 
 	public PartialVectorModel vectorRetrieve(final String vectorName, int[] fids) throws InterruptedException, ExecutionException{
@@ -164,6 +180,21 @@ public class ModelClient {
 			createCallables.add(new Callable<Void>() {
 				public Void call() throws Exception {
 				     matrixModels[toShardId].matrixCreate(matrixName, perRowSize, columnSize, defaultValue, true);
+				     return null ;
+				}
+			});
+		}
+		ConcurrentExecutor.execute(createCallables);
+	}
+	public void createMatrix(final String matrixName, int globalRowSize, final int columnSize, final float baseValue, final float vibration) throws InterruptedException, ExecutionException{
+		currentMatrixesMap.put(matrixName, new PartialMatrixModel(partitioner));
+		final int perRowSize = globalRowSize / clients.length + 2;
+		ArrayList<Callable<Void>> createCallables = new ArrayList<Callable<Void>>(clients.length);
+		for(int shardId = 0; shardId < clients.length; shardId++){
+			final int toShardId = shardId;
+			createCallables.add(new Callable<Void>() {
+				public Void call() throws Exception {
+				     matrixModels[toShardId].matrixCreate(matrixName, perRowSize, columnSize, baseValue, vibration, true);
 				     return null ;
 				}
 			});

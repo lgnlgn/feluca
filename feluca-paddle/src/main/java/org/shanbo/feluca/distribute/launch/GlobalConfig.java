@@ -98,19 +98,19 @@ public class GlobalConfig {
 	}
 	
 	/**
-	 * do not modify it
+	 * Becareful: values are String type, you have to parse by yourself;
 	 * @return
 	 */
 	public JSONObject getDataStatistic(){
-		return conf.getJSONObject(DATA_STATUS);
+		return JSONObject.parseObject(conf.getJSONObject(DATA_STATUS).toJSONString());
 	}
 	
 	/**
-	 * do not modify it
+	 * 
 	 * @return
 	 */
 	public JSONObject getAlgorithmConf(){
-		return conf.getJSONObject(ALGO_CONF);
+		return JSONObject.parseObject(conf.getJSONObject(ALGO_CONF).toJSONString());
 	}
 	
 	

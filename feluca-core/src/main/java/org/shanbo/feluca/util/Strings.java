@@ -319,33 +319,6 @@ public class Strings {
 	}
 	
 	
-	public static String kvNetworkMsgFormat(Object... keyValues){
-		JSONObject bag = keyValuesToJson(keyValues);
-		bag.put(CIPHER_SIGNAL, CipherUtil.generatePassword(Constants.Network.leaderToWorkerText));
-		return bag.toJSONString();
-	}
-	
-	/**
-	 *  make sure it's a json
-	 * @param original
-	 * @return a new json format object 
-	 */
-	public static String addNetworkCipherText(Object original){
-		JSONObject json;
-		json = JSONObject.parseObject(original.toString());
-		json.put(CIPHER_SIGNAL, CipherUtil.generatePassword(Constants.Network.leaderToWorkerText));
-		return json.toJSONString();
-	}
-	
-	
-	public static boolean isNetworkMsg(String message){
-		JSONObject json = JSONObject.parseObject(message);
-		String cipherText = json.getString(CIPHER_SIGNAL);
-		if (StringUtils.isEmpty(cipherText)){
-			return false;
-		}
-		return CipherUtil.validatePassword(cipherText, Constants.Network.leaderToWorkerText);
-	}
 	
 	/**
 	 * make sure the content is a string.

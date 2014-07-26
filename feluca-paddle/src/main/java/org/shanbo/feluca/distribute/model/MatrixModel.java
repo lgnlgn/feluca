@@ -3,6 +3,8 @@ package org.shanbo.feluca.distribute.model;
 public interface MatrixModel{
 	public int vectorCreate(String vectorName, int vectorSize, float defaultValue, boolean overwrite);
 	
+	public int vectorCreate(String vectorName, int vectorSize, float baseValue, float vibration, boolean overwrite);
+	
 	public float[] vectorRetrieve(String vectorName, int[] indexIds);
 	
 	public int vectorUpdate(String vectorName, int[] indexIds, float[] values);
@@ -12,6 +14,8 @@ public interface MatrixModel{
 	public int vectorDump(String vectorName, String path, int maxShard, int shardId);
 	
 	public int matrixCreate(String matrixName, int rowSize, int columnSize, float defaultValue, boolean overwrite);
+	
+	public int matrixCreate(String matrixName, int rowSize, int columnSize, float baseValue, float vibration, boolean overwrite);
 
 	public float[][] matrixRetrieve(String matrixName, int[] indexIds);
 	
