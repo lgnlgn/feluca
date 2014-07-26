@@ -58,9 +58,9 @@ public class SVDModel extends LoopingBase{
 		float vibration = (float)(Math.sqrt(avgrating / this.parameters.getIntValue("factors")));
 		
 		modelClient.createMatrix(USER_MATRIX, dataStatistic.getIntValue(DataStatistic.MAX_VECTOR_ID) + 1,
-				this.parameters.getIntValue("factors"), 0, vibration);
+				this.factor, 0, vibration);
 		modelClient.createMatrix(ITEM_MATRIX, dataStatistic.getIntValue(DataStatistic.MAX_FEATURE_ID) + 1, 
-				this.parameters.getIntValue("factors"), 0, vibration);
+				this.factor, 0, vibration);
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class SVDModel extends LoopingBase{
 					n += 1;
 				}
 			}
-			modelClient.matrixUpdate(ITEM_MATRIX, userIds);
+			modelClient.matrixUpdate(ITEM_MATRIX, itemIds);
 			modelClient.matrixUpdate(USER_MATRIX, userIds);
 			System.out.print("!");
 		}

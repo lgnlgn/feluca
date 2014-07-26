@@ -116,7 +116,7 @@ public class MatrixModelImpl implements MatrixModel{
 		}
 	}
 
-	public int matrixUpdate(String matrixName, int[] indexIds,float[][] values) {
+	public int matrixUpdate(String matrixName, int[] indexIds, float[][] values) {
 		float[][] matrix = matrixes.get(matrixName);
 		if (matrix != null){
 			for(int i = 0; i < indexIds.length; i ++){
