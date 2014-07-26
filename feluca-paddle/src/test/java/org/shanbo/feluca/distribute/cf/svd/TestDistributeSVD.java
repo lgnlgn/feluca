@@ -4,14 +4,15 @@ import java.util.List;
 
 import org.shanbo.feluca.distribute.cf.stars.factorization.SVDModel;
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
-import org.shanbo.feluca.sail.AlgoDeployConf;
-import org.shanbo.feluca.sail.DefaultAlgoConf;
+import org.shanbo.feluca.paddle.AlgoDeployConf;
+import org.shanbo.feluca.paddle.DataUtils;
+import org.shanbo.feluca.paddle.DefaultAlgoConf;
 import org.shanbo.feluca.util.FileUtil;
 import org.shanbo.feluca.util.NetworkUtils;
 
 import com.google.common.collect.ImmutableList;
 
-public class TestSVD {
+public class TestDistributeSVD {
 
 	/**
 	 * @param args
@@ -25,7 +26,7 @@ public class TestSVD {
 		String dataName = "movielens_train";
 		
 		GlobalConfig globalConfig = GlobalConfig.build("cfsvd", DefaultAlgoConf.basicLRconf(10, 0.004, 0.01),
-				dataName, FileUtil.loadProperties("data/"+dataName+"/"+dataName+".sta"),
+				dataName, DataUtils.loadForWorker(dataName),
 				workers, models, 
 				thisWorkerName, thisDeployConf);
 		

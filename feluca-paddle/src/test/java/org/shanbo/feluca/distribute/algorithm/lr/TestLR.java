@@ -3,10 +3,9 @@ package org.shanbo.feluca.distribute.algorithm.lr;
 import java.util.List;
 
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
-import org.shanbo.feluca.sail.AlgoDeployConf;
-import org.shanbo.feluca.sail.DefaultAlgoConf;
-import org.shanbo.feluca.util.FileUtil;
-import org.shanbo.feluca.util.JSONUtil;
+import org.shanbo.feluca.paddle.AlgoDeployConf;
+import org.shanbo.feluca.paddle.DataUtils;
+import org.shanbo.feluca.paddle.DefaultAlgoConf;
 import org.shanbo.feluca.util.NetworkUtils;
 
 import com.google.common.collect.ImmutableList;
@@ -22,7 +21,7 @@ public class TestLR {
 		String dataName = "real-sim";
 		
 		GlobalConfig globalConfig = GlobalConfig.build("l1lr", DefaultAlgoConf.basicLRconf(20, 0.3, 0.1),
-				dataName, FileUtil.loadProperties("data/"+dataName+"/"+dataName+".sta"),
+				dataName, DataUtils.loadForWorker(dataName),
 				workers, models, 
 				thisWorkerName, thisDeployConf);
 		

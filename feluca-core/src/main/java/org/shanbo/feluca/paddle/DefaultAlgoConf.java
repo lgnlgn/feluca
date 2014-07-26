@@ -1,4 +1,4 @@
-package org.shanbo.feluca.sail;
+package org.shanbo.feluca.paddle;
 
 import org.shanbo.feluca.common.Constants;
 

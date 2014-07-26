@@ -11,7 +11,7 @@ import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.distribute.model.ModelClient;
 import org.shanbo.feluca.distribute.model.ModelServer;
 
-import org.shanbo.feluca.sail.AlgoDeployConf;
+import org.shanbo.feluca.paddle.AlgoDeployConf;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

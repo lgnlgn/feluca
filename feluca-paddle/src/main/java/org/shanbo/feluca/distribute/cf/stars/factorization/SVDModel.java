@@ -96,8 +96,8 @@ public class SVDModel extends LoopingBase{
 			}
 			int[] itemIds = fidSet.toArray();
 			int[] userIds = vidSet.toArray();
-			modelClient.matrixRetrieve(ITEM_MATRIX, itemIds);
-			modelClient.matrixRetrieve(USER_MATRIX, userIds);
+			itemSpace = modelClient.matrixRetrieve(ITEM_MATRIX, itemIds);
+			userSpace = modelClient.matrixRetrieve(USER_MATRIX, userIds);
 			//gradient
 			for(long offset : segment){ 
 				Vector v = dataReader.getVectorByOffset(offset);

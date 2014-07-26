@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
-import org.shanbo.feluca.sail.AlgoDeployConf;
-import org.shanbo.feluca.sail.DefaultAlgoConf;
+import org.shanbo.feluca.paddle.AlgoDeployConf;
+import org.shanbo.feluca.paddle.DefaultAlgoConf;
 import org.shanbo.feluca.util.FileUtil;
 import org.shanbo.feluca.util.NetworkUtils;
 

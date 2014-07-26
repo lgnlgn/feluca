@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
-import org.shanbo.feluca.sail.AlgoDeployConf;
+import org.shanbo.feluca.paddle.AlgoDeployConf;
 import org.shanbo.feluca.util.JSONUtil;
 
 import com.alibaba.fastjson.JSONObject;

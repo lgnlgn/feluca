@@ -2,8 +2,8 @@ package org.shanbo.feluca.distribute.launch;
 
 import java.util.List;
 
-import org.shanbo.feluca.sail.AlgoDeployConf;
-import org.shanbo.feluca.sail.DefaultAlgoConf;
+import org.shanbo.feluca.paddle.AlgoDeployConf;
+import org.shanbo.feluca.paddle.DefaultAlgoConf;
 import org.shanbo.feluca.util.FileUtil;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.NetworkUtils;
