@@ -38,7 +38,7 @@ public abstract class DataReader implements Closeable {
 	TLongArrayList vectorOffsets;
 	Vector vector;
 	String dirName;
-
+	VectorType vt;
 
 	public abstract Vector getVectorByOffset(long offset);
 
@@ -208,7 +208,8 @@ public abstract class DataReader implements Closeable {
 			super(dataName);
 			fileBuffer = new DataBuffer(dirName);
 			String vectorType = fileBuffer.getCurrentBlockStatus().getValue("vectorType", "FID_WEIGHT");
-			vector = Vector.build(VectorType.valueOf(vectorType));
+			vt = VectorType.valueOf(vectorType);
+			vector = Vector.build(vt);
 			fileBuffer.start();
 		}
 
@@ -216,7 +217,8 @@ public abstract class DataReader implements Closeable {
 		public Vector getVectorByOffset(long offset) {
 			int start = (int)(((offset & 0xffffffff00000000l) >> 32) & 0xffffffff);
 			int end = (int)(offset & 0xffffffffl);
-			vector.set(inMemData, start, end);
+			Vector v = Vector.build(vt);
+			v.set(inMemData, start, end);
 			return vector;
 		}
 

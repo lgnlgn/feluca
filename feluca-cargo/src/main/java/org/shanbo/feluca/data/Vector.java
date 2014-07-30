@@ -1,15 +1,13 @@
 package org.shanbo.feluca.data;
 
+import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.list.array.TIntArrayList;
+
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
+import org.msgpack.annotation.Message;
 import org.shanbo.feluca.data.util.BytesUtil;
-
-import com.google.common.base.Splitter;
+import org.shanbo.feluca.data.util.NumericTokenizer;
 
 /**
  * general vector format. Vector needs only initialize once
@@ -24,18 +22,16 @@ public abstract class Vector {
 		VID_FID_WEIGHT,
 	}
 
-	public final static int LENGTH_PER_EXPANTION = 128 * 1024;
-
-	int[] ids ;
+	TIntArrayList ids;
 	int idSize;
 	VectorType inputType;
 	VectorType outputType; //
 
 	
 	private Vector(){
-		ids = new int[64 * 1024];
 	}
 
+	
 	/**
 	 * object serialize to bytes
 	 * @param buffer
@@ -64,7 +60,6 @@ public abstract class Vector {
 	/**
 	 * you have to manually expand capacity of the arrays.  
 	 */
-	abstract void checkAndExpand();
 
 	/**
 	 * control the output(serialize) format 
@@ -96,10 +91,7 @@ public abstract class Vector {
 
 	
 	public int getFId(int idx){
-		if (idx < 0 || idx >= idSize){
-			throw new IndexOutOfBoundsException("vector index out of bound");
-		}
-		return ids[idx];
+		return ids.getQuick(idx);
 	}
 
 
@@ -146,10 +138,14 @@ public abstract class Vector {
 		@Override
 		public void set(byte[] cache, int start, int end) {
 			idSize = (end- start)/4;
+			if (ids == null){
+				ids = new TIntArrayList(idSize);
+			}else{
+				ids.resetQuick();
+			}
 			for(int i = 0 ; i < idSize; ++i){
 				int id = BytesUtil.getInt(cache, start + (i << 2));
-				ids[i] = id;
-				checkAndExpand();
+				ids.add(id);
 			}
 		}
 
@@ -159,7 +155,7 @@ public abstract class Vector {
 			if (buffer.capacity() - buffer.arrayOffset() > capacityNeeds){
 				buffer.putInt(idSize  * 4);
 				for(int i = 0 ; i < idSize; i++){
-					buffer.putInt(ids[i]);
+					buffer.putInt(ids.getQuick(i));
 				}
 				return capacityNeeds;
 			}else{
@@ -168,30 +164,24 @@ public abstract class Vector {
 		}
 
 		public String toString(){
-			List<Integer> fids = new ArrayList<Integer>(idSize);
-			for(int i = 0 ; i < idSize; i++){
-				fids.add(ids[i]);
-			}
-			return StringUtils.join(fids, " ");
+			return ids.toString();
 		}
 
 		@Override
 		public synchronized boolean parseLine(String line) {
 			String[] iids = line.split("\\s+");
 			idSize = iids.length;
+			if (ids == null){
+				ids = new TIntArrayList(idSize);
+			}else{
+				ids.resetQuick();
+			}
 			for(int i =0; i < idSize; i++){
-				ids[i] = Integer.parseInt(iids[i]); 
+				ids.add(Integer.parseInt(iids[i]));
 			}
 			return true;
 		}
 
-		final void checkAndExpand(){
-			if (idSize >= ids.length){
-				int[] tmp = new int[idSize + LENGTH_PER_EXPANTION];
-				System.arraycopy(ids, 0, tmp, 0, idSize);
-				ids = tmp;
-			}
-		}
 	}
 
 	/**
@@ -199,13 +189,15 @@ public abstract class Vector {
 	 * @author lgn
 	 *
 	 */
+	@Message
 	public static class LWVector extends Vector{
 		int label;
-		float[] weights;
+		TFloatArrayList weights;
 
 		private LWVector(){
 			super();
-			weights = new float[ids.length];
+			weights = new TFloatArrayList();
+//			weights = new float[ids.length];
 			this.inputType = VectorType.LABEL_FID_WEIGHT;
 			this.outputType = VectorType.LABEL_FID_WEIGHT;
 		}
@@ -217,8 +209,8 @@ public abstract class Vector {
 				buffer.putInt(capacityNeeds - 4);
 				buffer.putInt(label);
 				for(int i = 0 ; i < idSize; i++){
-					buffer.putInt(ids[i]);
-					buffer.putFloat(weights[i]);
+					buffer.putInt(ids.getQuick(i));
+					buffer.putFloat(weights.getQuick(i));
 				}
 				return capacityNeeds;
 			}else{
@@ -228,7 +220,7 @@ public abstract class Vector {
 
 		@Override
 		public float getWeight(int idx){
-			return weights[idx];
+			return weights.getQuick(idx);
 		}
 
 		/**
@@ -243,55 +235,50 @@ public abstract class Vector {
 			label = BytesUtil.getInt(cache, start);
 			idSize  = (end - start - 4)/8; // include the 4-bytes header 
 			int fStart = start + 4; // label
+			if (ids == null){
+				ids = new TIntArrayList(idSize);
+				weights = new TFloatArrayList(idSize);
+			}else{
+				ids.resetQuick();
+				weights.resetQuick();
+			}
 			for(int i = 0 ; i < idSize; i++){
 				int id = BytesUtil.getInt(cache, fStart + ( i << 3 ));
 				float weight = BytesUtil.getFloat(cache, fStart + 4 + (i <<3 ));
-				ids[i] = id;
-				weights[i] = weight;
-				checkAndExpand();
+				ids.add(id);
+				weights.add(weight);
 			}
 		}
 
-		final void checkAndExpand(){
-			if (idSize >= ids.length){
-				int[] tmp = new int[idSize + LENGTH_PER_EXPANTION];
-				System.arraycopy(ids, 0, tmp, 0, idSize);
-				ids = tmp;
-				float[] tmp2 = new float[idSize + LENGTH_PER_EXPANTION];
-				System.arraycopy(weights, 0, tmp2, 0, idSize);
-				weights = tmp2;
-			}
-		}
 
 		public String toString(){
-			List<String> tmp = new ArrayList<String>(idSize);
+			StringBuilder sb = new StringBuilder(label + "");
 			for(int i = 0 ; i < idSize; i++){
-				tmp.add(String.format("%d:%.4f", ids[i], weights[i] ));
+				sb.append(String.format(" %d:%.4f", ids.getQuick(i), weights.getQuick(i) ));
 			}
-			return label + " " + StringUtils.join(tmp, " ");
+			return sb.toString();
 		}
 
 		@Override
 		public boolean parseLine(String line) {
-			String[] labelIds = line.split("\\s+", 2);
-			this.label = Integer.parseInt(labelIds[0].startsWith("+")?labelIds[0].substring(1):labelIds[0]);
-			try{
-				Map<String, String> split = Splitter.onPattern("\\s+").withKeyValueSeparator(":").split(labelIds[1].trim());
-
-				int i = 0;
-				for(Entry<String, String> kv : split.entrySet()){
-					ids[i] = Integer.parseInt(kv.getKey());
-					if (kv.getValue().isEmpty()){
-						weights[i] = 1f;
-					}else{
-						weights[i] = Float.parseFloat(kv.getValue());
-					}
-					i+=1;
-				}
-				idSize = i;
-			}catch (Exception e) {
-				System.err.println(labelIds[1]);
-				return false;
+			if (ids == null){ //don't know 
+				ids = new TIntArrayList(1024);
+				weights = new TFloatArrayList(1024);
+			}else{
+				ids.resetQuick();
+				weights.resetQuick();
+			}
+			idSize = 0;
+			NumericTokenizer nt = new NumericTokenizer();
+			nt.load(line);
+			this.label = (Integer)(nt.nextNumber());
+			while(nt.hasNext()){
+				long kv = nt.nextKeyValuePair();
+				int fid = NumericTokenizer.extractFeatureId(kv);
+				float weight = NumericTokenizer.extractWeight(kv);
+				ids.add(fid);
+				weights.add(weight);
+				idSize += 1;
 			}
 			return true;
 		}
@@ -304,103 +291,7 @@ public abstract class Vector {
 	 * @author lgn
 	 *
 	 */
-	public static class VFWVector extends Vector{
-		int label;
-		float[] weights;
-
-		private VFWVector(){
-			super();
-			weights = new float[ids.length];
-			this.inputType = VectorType.LABEL_FID_WEIGHT;
-			this.outputType = VectorType.LABEL_FID_WEIGHT;
-		}
-
-		@Override
-		public int appendToByteBuffer(ByteBuffer buffer) {
-			int capacityNeeds = 4 + 4 + (idSize  << 3) ; //(veclenght) + (label) + (kv pairs) each kv-pair occupy 8 bytes
-			if (buffer.capacity() - buffer.position() > capacityNeeds){
-				buffer.putInt(capacityNeeds - 4);
-				buffer.putInt(label);
-				for(int i = 0 ; i < idSize; i++){
-					buffer.putInt(ids[i]);
-					buffer.putFloat(weights[i]);
-				}
-				return capacityNeeds;
-			}else{
-				return -1;
-			}
-		}
-
-		@Override
-		public float getWeight(int idx){
-			return weights[idx];
-		}
-
-		/**
-		 * represent classifier label
-		 */
-		public int getIntHeader(){
-			return label;
-		}
-
-		@Override
-		public void set(byte[] cache, int start, int end) {
-			label = BytesUtil.getInt(cache, start);
-			idSize  = (end - start - 4)/8; // include the 4-bytes header 
-			int fStart = start + 4; // label
-			for(int i = 0 ; i < idSize; i++){
-				int id = BytesUtil.getInt(cache, fStart + ( i << 3 ));
-				float weight = BytesUtil.getFloat(cache, fStart + 4 + (i <<3 ));
-				ids[i] = id;
-				weights[i] = weight;
-				checkAndExpand();
-			}
-		}
-
-		final void checkAndExpand(){
-			if (idSize >= ids.length){
-				int[] tmp = new int[idSize + LENGTH_PER_EXPANTION];
-				System.arraycopy(ids, 0, tmp, 0, idSize);
-				ids = tmp;
-				float[] tmp2 = new float[idSize + LENGTH_PER_EXPANTION];
-				System.arraycopy(weights, 0, tmp2, 0, idSize);
-				weights = tmp2;
-			}
-		}
-
-		public String toString(){
-			List<String> tmp = new ArrayList<String>(idSize);
-			for(int i = 0 ; i < idSize; i++){
-				tmp.add(String.format("%d:%.4f", ids[i], weights[i] ));
-			}
-			return label + " " + StringUtils.join(tmp, " ");
-		}
-
-		@Override
-		public boolean parseLine(String line) {
-			String[] labelIds = line.split("\\s+", 2);
-			this.label = Integer.parseInt(labelIds[0]);
-			try{
-				Map<String, String> split = Splitter.onPattern("\\s+").withKeyValueSeparator(":").split(labelIds[1].trim());
-
-				int i = 0;
-				for(Entry<String, String> kv : split.entrySet()){
-					ids[i] = Integer.parseInt(kv.getKey());
-					if (kv.getValue().isEmpty()){
-						weights[i] = 1f;
-					}else{
-						weights[i] = Float.parseFloat(kv.getValue());
-					}
-					i+=1;
-				}
-				idSize = i;
-			}catch (Exception e) {
-				System.err.println(labelIds[1]);
-				return false;
-			}
-			return true;
-		}
-
+	public static class VFWVector extends LWVector{
 	}
 	
 	
@@ -409,6 +300,7 @@ public abstract class Vector {
 	 * @param type
 	 * @return
 	 */
+	
 	public static Vector build(VectorType type){
 		if (type == VectorType.FIDONLY){
 			return new FIDVector();

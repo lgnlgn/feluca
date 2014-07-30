@@ -23,10 +23,10 @@ public class TestVector {
 	}
 	
 	public static void testParseLine(){
-		String line = "1 1: 2: 3:";
-		Vector v = Vector.build(VectorType.VID_FID_WEIGHT);
+		String line = "-1 ";
+		Vector v = Vector.build(VectorType.LABEL_FID_WEIGHT);
 		boolean parseLine = v.parseLine(line);
-		System.out.println(parseLine);
+		System.out.println(v);
 	}
 	
 	/**
