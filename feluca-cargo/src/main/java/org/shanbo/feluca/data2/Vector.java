@@ -4,7 +4,10 @@ import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.lang3.text.StrBuilder;
 import org.msgpack.packer.Packer;
 import org.msgpack.unpacker.Unpacker;
 import org.shanbo.feluca.data.util.NumericTokenizer;
@@ -27,7 +30,13 @@ public abstract class Vector {
 	
 	public abstract boolean parseLine(String line);
 	
+	protected abstract boolean readObject(Object... values);
+	
 	public abstract String toString();
+	
+	public abstract List<Vector> divideByFeature(HashPartitioner partitioner);
+	
+	public abstract int getSpaceCost();
 	
 	public VectorType getOutVectorType(){
 		return this.outputType;
@@ -58,6 +67,7 @@ public abstract class Vector {
 	}
 
 
+	
 	public float getWeight(int idx){
 		return 0;
 	}
@@ -97,6 +107,12 @@ public abstract class Vector {
 	public static Vector create(VectorType vt, Unpacker unpacker) throws IOException{
 		Vector v = create(vt);
 		v.unpack(unpacker);
+		return v;
+	}
+	
+	public static Vector create(VectorType vt, Object... values) throws IOException{
+		Vector v = create(vt);
+		v.readObject(values);
 		return v;
 	}
 	
@@ -169,6 +185,37 @@ public abstract class Vector {
 				sb.append(String.format(" %d:%.4f", fids.getQuick(i), weights.getQuick(i) ));
 			}
 			return sb.toString();
+		}
+
+		@Override
+		public int getSpaceCost() {
+			return 4 + (fids.size() << 3 ) ; //label + id[] * 4 + weight[] * 4 
+		}
+
+		@Override
+		protected boolean readObject(Object... values) {
+			label = (Integer)values[0];
+			fids = (TIntArrayList)values[1];
+			weights = (TFloatArrayList)values[2];
+			return true;
+		}
+
+		@Override
+		public List<Vector> divideByFeature(HashPartitioner partitioner) {
+			List<Vector> vectors = new ArrayList<Vector>(partitioner.getMaxShards());
+			List<StrBuilder> lines = new ArrayList<StrBuilder>(partitioner.getMaxShards());
+			for(int i = 0 ; i < partitioner.getMaxShards(); i++){
+				vectors.add(create(getOutVectorType()));
+				lines.add(new StrBuilder().append(getIntHeader()));
+			}
+			for(int i = 0 ; i < getSize(); i++){
+				int shardId = partitioner.decideShard(getFId(i));
+				lines.get(shardId).append(String.format(" %d:%.4f", fids.getQuick(i), weights.getQuick(i) ));
+			}
+			for(int i = 0; i < vectors.size(); i++){
+				vectors.get(i).parseLine(lines.get(i).toString());
+			}
+			return vectors;
 		}
 	}
 	

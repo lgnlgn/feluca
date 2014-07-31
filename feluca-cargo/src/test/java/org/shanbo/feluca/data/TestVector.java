@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.shanbo.feluca.data.Vector;
 import org.shanbo.feluca.data.Vector.VectorType;
 
 public class TestVector {

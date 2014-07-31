@@ -1,4 +1,4 @@
-package org.shanbo.feluca.data2.serde;
+package org.shanbo.feluca.data2.convert;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -17,6 +17,8 @@ import org.msgpack.packer.Packer;
 import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.data2.Vector.VectorType;
 import org.shanbo.feluca.data2.DataStatistic;
+import org.shanbo.feluca.data.Tuple.AlignColumn;
+import org.shanbo.feluca.data.Tuple.TupleType;
 import org.shanbo.feluca.data.util.TextReader;
 
 import com.google.common.io.CharSource;
@@ -24,10 +26,8 @@ import com.google.common.io.Closeables;
 import com.google.common.io.Files;
 
 public class VectorSerializer {
+	final static int DATA_SIZE_PER_BLOCK = 64 * 1024 * 1024; //6
 
-	
-	BufferedOutputStream dataOutput;
-	BufferedWriter blockStatWriter;
 	BufferedWriter globalStatWriter;
 	BufferedReader rawDataReader;
 	TextReader textReader;
@@ -52,6 +52,8 @@ public class VectorSerializer {
 	
 	
 	private void generalConverting(String outDir, VectorType inputType, VectorType outputType, DataStatistic globalStat) throws FileNotFoundException, IOException{
+		
+		
 		File dir = new File(outDir);
 		if (dir.isFile()){
 			dir.delete();
@@ -60,10 +62,12 @@ public class VectorSerializer {
 			dir.mkdir();
 		}
 		String dataName = dir.getName();
+		String blockPathTemplate = dir.getAbsolutePath() + "/" + dataName + ".%d.dat";
+		int blockId = 1;
+		int blockSize = 0;
 		globalStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + ".sta"));
-		dataOutput= new BufferedOutputStream(new FileOutputStream(dir.getAbsolutePath() + "/" + dataName + ".dat"));
 		MessagePack mPack = new MessagePack();
-		Packer packer = mPack.createPacker(dataOutput);
+		Packer packer = mPack.createPacker( new BufferedOutputStream(new FileOutputStream(String.format(blockPathTemplate, blockId))));
 		int count = 0;
 		Vector vector = Vector.create(inputType);
 		vector.setOutputType(outputType);
@@ -80,24 +84,34 @@ public class VectorSerializer {
 			count ++;
 			if (count % 10000 == 0){
 				System.out.println("!");
-				
+			}
+			blockSize += vector.getSpaceCost() ;
+			if (blockSize > DATA_SIZE_PER_BLOCK){
+				packer.write(false).close();
+				blockId += 1;
+				blockSize = 0;
+				packer = mPack.createPacker( new BufferedOutputStream(new FileOutputStream(String.format(blockPathTemplate, blockId))));
 			}
 		}
-		packer.write(false); //end
+		packer.write(false).close();
 		globalStatWriter.write(globalStat.toString());
 		
-		Closeables.close(dataOutput, true);
 		Closeables.close(textReader, true);
-		Closeables.close(blockStatWriter, true);
 		Closeables.close(globalStatWriter, true);
 		
 	}
 
 	
-	public void convertLW2LW(String outFile) throws FileNotFoundException, IOException{
+	public void convertLW2LW(String outFile) throws  IOException{
 		textReader = new TextReader(rawDataReader);
 		generalConverting(outFile, VectorType.LABEL_FID_WEIGHT, VectorType.LABEL_FID_WEIGHT, DataStatistic.createLWstat());
 	}
+	
+	public void convertTuple2VID(String outFile) throws IOException{
+		textReader = new TextReader(rawDataReader, TupleType.ONLY_TWO_COLUMNS, AlignColumn.FIRST);
+		generalConverting(outFile, VectorType.VID_FID_WEIGHT, VectorType.VID_FID_WEIGHT, DataStatistic.createVWstat());
+	}
+	
 	
 	/**
 	 * @param args

@@ -1,49 +1,47 @@
-package org.shanbo.feluca.data2.serde;
+package org.shanbo.feluca.data2;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Properties;
 
 import org.msgpack.MessagePack;
 import org.msgpack.unpacker.Unpacker;
 import org.shanbo.feluca.data.BlockStatus;
-import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.data2.Vector.VectorType;
 
-import com.google.common.io.ByteSource;
 import com.google.common.io.Closeables;
-import com.google.common.io.Files;
 import com.google.common.io.PatternFilenameFilter;
 
 public class VectorReader implements Closeable{
 
-	InputStream in;
+//	ArrayList<InputStream> inputStreams;
+	File[] listFiles;
 	boolean hasNext = true;
 	MessagePack msgpack ;
 	Unpacker unpacker;
 	
 	Properties stat;
 	VectorType vt;
-	
+	int blockIt = 0;
 	public VectorReader(String dirName) throws IOException{
 		File dir = new File(dirName);
-//		File[] listFiles = dir.listFiles(new PatternFilenameFilter(dir.getName() + "_\\d+\\.dat"));
-//		ArrayList<ByteSource> inList = new ArrayList<ByteSource>();
-//		for(File f: listFiles){
-//			inList.add(Files.asByteSource(f));
-//		}
-//		ByteSource concat = ByteSource.concat(inList.iterator());
-//		in = concat.openBufferedStream();
-		in = new BufferedInputStream(new FileInputStream(dirName + "/" + dir.getName() + ".dat"));
+		listFiles = dir.listFiles(new PatternFilenameFilter(dir.getName() + "\\.\\d+\\.dat"));
+
 		msgpack = new MessagePack();
-		unpacker = msgpack.createUnpacker(in);
+		unpacker = msgpack.createUnpacker(new BufferedInputStream(new FileInputStream(listFiles[blockIt])));
 		stat = BlockStatus.loadStatistic(dirName + "/" + dir.getName()  + ".sta"); 
 		vt = VectorType.valueOf(stat.getProperty("vectorType"));
+	}
+	
+	public VectorType getVectorType(){
+		return vt;
+	}
+	
+	public Properties getDataStatistic(){
+		return stat;
 	}
 	
 	
@@ -53,10 +51,16 @@ public class VectorReader implements Closeable{
 			if (read == true){
 				return Vector.create(vt, unpacker);
 			}else{
-				hasNext = false;
 				Closeables.close(unpacker, true);
-				Closeables.close(in, true);
-				return null;
+				blockIt ++;
+				if (blockIt >= listFiles.length){
+					hasNext = false;
+					return null;
+				}else{
+					System.out.println("!");
+					unpacker = msgpack.createUnpacker(new BufferedInputStream(new FileInputStream(listFiles[blockIt])));
+					return getNextVector();
+				}
 			}
 		}else{
 			return null;
@@ -66,7 +70,6 @@ public class VectorReader implements Closeable{
 	public void close(){
 		try {
 			Closeables.close(unpacker, true);
-			Closeables.close(in, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

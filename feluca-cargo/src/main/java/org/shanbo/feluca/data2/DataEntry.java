@@ -3,7 +3,6 @@ package org.shanbo.feluca.data2;
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.shanbo.feluca.data2.serde.VectorReader;
 
 public class DataEntry implements Closeable{
 	
