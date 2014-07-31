@@ -1,4 +1,4 @@
-package org.shanbo.feluca.data.util;
+package org.shanbo.feluca.data2.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;

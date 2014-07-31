@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.msgpack.packer.Packer;
 import org.msgpack.unpacker.Unpacker;
-import org.shanbo.feluca.data.util.NumericTokenizer;
+import org.shanbo.feluca.data2.util.NumericTokenizer;
 
 public abstract class Vector {
 	

@@ -1,8 +1,8 @@
-package org.shanbo.feluca.data;
+package org.shanbo.feluca.data2;
 
 import java.util.List;
 
-import org.shanbo.feluca.data.util.NumericTokenizer;
+import org.shanbo.feluca.data2.util.NumericTokenizer;
 
 public class Tuple {
 	

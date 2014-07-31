@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import org.msgpack.MessagePack;
 import org.msgpack.unpacker.Unpacker;
-import org.shanbo.feluca.data.BlockStatus;
 import org.shanbo.feluca.data2.Vector.VectorType;
 
 import com.google.common.io.Closeables;
@@ -17,7 +16,6 @@ import com.google.common.io.PatternFilenameFilter;
 
 public class VectorReader implements Closeable{
 
-//	ArrayList<InputStream> inputStreams;
 	File[] listFiles;
 	boolean hasNext = true;
 	MessagePack msgpack ;
@@ -27,12 +25,19 @@ public class VectorReader implements Closeable{
 	VectorType vt;
 	int blockIt = 0;
 	public VectorReader(String dirName) throws IOException{
+		this(dirName, "\\.\\d+\\.dat"); // all ordinary
+	}
+	
+	public VectorReader(String dirName, String filterPattern) throws IOException{
 		File dir = new File(dirName);
-		listFiles = dir.listFiles(new PatternFilenameFilter(dir.getName() + "\\.\\d+\\.dat"));
+		listFiles = dir.listFiles(new PatternFilenameFilter(dir.getName() + filterPattern));
 
 		msgpack = new MessagePack();
 		unpacker = msgpack.createUnpacker(new BufferedInputStream(new FileInputStream(listFiles[blockIt])));
-		stat = BlockStatus.loadStatistic(dirName + "/" + dir.getName()  + ".sta"); 
+		stat = new Properties();
+		FileInputStream fis = new FileInputStream(dirName + "/" + dir.getName()  + ".sta"); 
+		stat.load(fis);
+		fis.close();
 		vt = VectorType.valueOf(stat.getProperty("vectorType"));
 	}
 	
@@ -76,19 +81,5 @@ public class VectorReader implements Closeable{
 		
 	}
 	
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	public static void main(String[] args) throws IOException {
-		VectorReader vr = new VectorReader("data/rrr");
-		int count = 0;
-		for(Vector v = vr.getNextVector(); v!= null; v = vr.getNextVector()){
-			if (count < 10)
-				System.out.println(v);
-			count ++;
-		}
-		System.out.println(count);
-	}
-
+	
 }

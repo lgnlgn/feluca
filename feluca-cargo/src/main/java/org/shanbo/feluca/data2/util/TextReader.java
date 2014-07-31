@@ -1,4 +1,5 @@
-package org.shanbo.feluca.data.util;
+package org.shanbo.feluca.data2.util;
+
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -6,9 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.shanbo.feluca.data.Tuple;
-import org.shanbo.feluca.data.Tuple.AlignColumn;
-import org.shanbo.feluca.data.Tuple.TupleType;
+import org.shanbo.feluca.data2.Tuple;
+import org.shanbo.feluca.data2.Tuple.AlignColumn;
+import org.shanbo.feluca.data2.Tuple.TupleType;
 
 public class TextReader implements Closeable{
 	BufferedReader reader;

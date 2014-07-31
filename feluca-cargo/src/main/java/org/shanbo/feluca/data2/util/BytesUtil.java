@@ -1,4 +1,4 @@
-package org.shanbo.feluca.data.util;
+package org.shanbo.feluca.data2.util;
 
 public class BytesUtil {
 	public static int getInt(byte[] array, int pos){

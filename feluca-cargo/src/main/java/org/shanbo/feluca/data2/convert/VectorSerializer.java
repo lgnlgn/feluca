@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 import org.shanbo.feluca.data2.Vector;
+import org.shanbo.feluca.data2.Tuple.AlignColumn;
+import org.shanbo.feluca.data2.Tuple.TupleType;
 import org.shanbo.feluca.data2.Vector.VectorType;
 import org.shanbo.feluca.data2.DataStatistic;
-import org.shanbo.feluca.data.Tuple.AlignColumn;
-import org.shanbo.feluca.data.Tuple.TupleType;
-import org.shanbo.feluca.data.util.TextReader;
+import org.shanbo.feluca.data2.util.TextReader;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Closeables;
