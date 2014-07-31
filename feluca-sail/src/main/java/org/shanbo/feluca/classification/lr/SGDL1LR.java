@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 
-import org.shanbo.feluca.data.Vector;
-import org.shanbo.feluca.data.convert.DataStatistic;
+import org.shanbo.feluca.data2.Vector;
+import org.shanbo.feluca.data2.DataStatistic;
 import org.shanbo.feluca.paddle.common.Utilities;
 
 
@@ -77,10 +77,7 @@ public final class SGDL1LR extends AbstractSGDLogisticRegression{
 			corrects = 0;
 			int cc = 0;
 
-			while(dataEntry.getDataReader().hasNext()){
-				long[] offsetArray = dataEntry.getDataReader().getOffsetArray();
-				for(int o = 0 ; o < offsetArray.length;o++){
-					Vector sample = dataEntry.getDataReader().getVectorByOffset(offsetArray[o]);
+			for(Vector sample = dataEntry.getNextVector(); sample != null ; sample = dataEntry.getNextVector()){
 					if (c % fold == remain){ // no train
 						;
 					}else{
@@ -100,9 +97,6 @@ public final class SGDL1LR extends AbstractSGDLogisticRegression{
 						sume += Math.abs(error);
 					}
 					c += 1;
-				}
-				
-				dataEntry.getDataReader().releaseHolding();
 			}
 			
 			

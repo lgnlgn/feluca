@@ -7,8 +7,8 @@ import org.shanbo.feluca.cf.common.Evaluation;
 import org.shanbo.feluca.cf.common.Recommender;
 import org.shanbo.feluca.cf.stars.factorization.RSVDModel;
 import org.shanbo.feluca.cf.stars.factorization.SVDModel;
-import org.shanbo.feluca.data.DataEntry;
-import org.shanbo.feluca.data.DataEntry.RADataEntry;
+import org.shanbo.feluca.data2.DataEntry;
+import org.shanbo.feluca.data2.DataEntry.RADataEntry;
 
 public class TestSVD {
 
@@ -38,7 +38,7 @@ public class TestSVD {
 		model.train();
 		
 		
-		DataEntry testd = new DataEntry(test, false);
+		DataEntry testd = DataEntry.createDataEntry(test, false);
 		
 		
 		

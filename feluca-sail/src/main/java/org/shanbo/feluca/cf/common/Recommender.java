@@ -1,11 +1,9 @@
 package org.shanbo.feluca.cf.common;
 
 
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-import org.shanbo.feluca.data.DataEntry;
+import org.shanbo.feluca.data2.DataEntry;
 
 /**
  * a recommender do not maintain the user history 

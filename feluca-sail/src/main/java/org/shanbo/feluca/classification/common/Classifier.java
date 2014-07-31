@@ -2,10 +2,8 @@ package org.shanbo.feluca.classification.common;
 
 import java.util.Properties;
 
-import org.shanbo.feluca.data.DataEntry;
-import org.shanbo.feluca.data.DataReader;
-import org.shanbo.feluca.data.Vector;
-import org.shanbo.feluca.data.convert.DataStatistic;
+import org.shanbo.feluca.data2.DataEntry;
+import org.shanbo.feluca.data2.Vector;
 
 
 
@@ -20,7 +18,7 @@ public interface Classifier {
 	
 	public Properties getProperties();
 	
-	public void predict(DataReader data, String resultPath, Evaluator... evaluators) throws Exception;
+	public void predict(DataEntry test, String resultPath, Evaluator... evaluators) throws Exception;
 	
 	/**
 	 * predict probabilities of different classes

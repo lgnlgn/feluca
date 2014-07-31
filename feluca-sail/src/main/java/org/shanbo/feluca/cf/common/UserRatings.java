@@ -1,7 +1,7 @@
 package org.shanbo.feluca.cf.common;
 
-import org.shanbo.feluca.data.Vector;
-import org.shanbo.feluca.data.Vector.VectorType;
+import org.shanbo.feluca.data2.Vector;
+import org.shanbo.feluca.data2.Vector.VectorType;
 
 
 
@@ -35,8 +35,8 @@ public class UserRatings{
 	}
 	
 	public void setVector(Vector v){
-		if (v.getVectorType() !=  ALLOW_VECTOR_TYPE){
-			throw new IllegalArgumentException("vector type not allow : only " + ALLOW_VECTOR_TYPE + "  but found:" + v.getVectorType());
+		if (v.getOutVectorType() !=  ALLOW_VECTOR_TYPE){
+			throw new IllegalArgumentException("vector type not allow : only " + ALLOW_VECTOR_TYPE + "  but found:" + v.getOutVectorType());
 		}
 		vector = v;
 		current.userId = vector.getIntHeader();

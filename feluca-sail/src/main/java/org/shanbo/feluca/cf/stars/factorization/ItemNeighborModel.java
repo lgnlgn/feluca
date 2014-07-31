@@ -11,7 +11,7 @@ import java.util.Properties;
 
 import org.shanbo.feluca.cf.common.RatingInfo;
 import org.shanbo.feluca.cf.common.UserRatings;
-import org.shanbo.feluca.data.Vector;
+import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.paddle.common.Utilities;
 
 

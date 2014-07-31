@@ -8,8 +8,8 @@ import java.util.Random;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
-import org.shanbo.feluca.data.Vector;
-import org.shanbo.feluca.data.convert.DataStatistic;
+import org.shanbo.feluca.data2.Vector;
+import org.shanbo.feluca.data2.DataStatistic;
 import org.shanbo.feluca.paddle.common.Utilities;
 import org.shanbo.feluca.paddle.common.collection.IntArray;
 
