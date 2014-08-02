@@ -108,20 +108,14 @@ public class VectorSerializer {
 		generalConverting(outFile, VectorType.LABEL_FID_WEIGHT, VectorType.LABEL_FID_WEIGHT, DataStatistic.createLWstat());
 	}
 	
+	public void convertVW2VW(String outFile) throws  IOException{
+		textReader = new TextReader(rawDataReader);
+		generalConverting(outFile, VectorType.LABEL_FID_WEIGHT, VectorType.LABEL_FID_WEIGHT, DataStatistic.createVWstat());
+	}
+	
 	public void convertTuple2VID(String outFile) throws IOException{
 		textReader = new TextReader(rawDataReader, TupleType.WEIGHT_TYPE, AlignColumn.FIRST);
 		generalConverting(outFile, VectorType.VID_FID_WEIGHT, VectorType.VID_FID_WEIGHT, DataStatistic.createVWstat());
-	}
-	
-	
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	public static void main(String[] args) throws IOException {
-		VectorSerializer vs = new VectorSerializer("E:/data/real-sim");
-		vs.convertLW2LW("data/rrr");
-
 	}
 
 }

@@ -9,7 +9,8 @@ import org.shanbo.feluca.cf.stars.factorization.ItemNeighborModel;
 import org.shanbo.feluca.cf.stars.factorization.RSVDModel;
 import org.shanbo.feluca.cf.stars.factorization.SVDModel;
 import org.shanbo.feluca.data2.DataEntry;
-import org.shanbo.feluca.data2.DataEntry.RADataEntry;
+import org.shanbo.feluca.data2.RandomAccessData;
+import org.shanbo.feluca.data2.DataEntry.RAMDataEntry;
 
 public class TestItemNeighborSVD {
 
@@ -22,7 +23,7 @@ public class TestItemNeighborSVD {
 		String train = "data/movielens_train";
 		String test = "data/movielens_test";
 		
-		RADataEntry traind = new RADataEntry(train);
+		RAMDataEntry traind = new RAMDataEntry(train);
 		
 		Recommender model = new ItemNeighborModel();
 		
@@ -42,7 +43,7 @@ public class TestItemNeighborSVD {
 		
 		
 		
-		double result = Evaluation.runRMSE(traind, testd, model);
+		double result = Evaluation.runRMSE(new RandomAccessData(traind), testd, model);
 		
 		System.out.println("\n----\nRMSE:\t" + result);
 		

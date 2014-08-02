@@ -8,7 +8,8 @@ import org.shanbo.feluca.cf.common.Recommender;
 import org.shanbo.feluca.cf.stars.factorization.RSVDModel;
 import org.shanbo.feluca.cf.stars.factorization.SVDModel;
 import org.shanbo.feluca.data2.DataEntry;
-import org.shanbo.feluca.data2.DataEntry.RADataEntry;
+import org.shanbo.feluca.data2.DataEntry.RAMDataEntry;
+import org.shanbo.feluca.data2.RandomAccessData;
 
 public class TestSVD {
 
@@ -18,10 +19,10 @@ public class TestSVD {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		String train = "data/movielens_train";
-		String test = "data/movielens_test";
+		String train = "data/mltrain";
+		String test = "data/mltest";
 		
-		RADataEntry traind = new RADataEntry(train);
+		RAMDataEntry traind = new RAMDataEntry(train);
 		
 //		Recommender model = new SVDModel();
 		Recommender model = new RSVDModel();
@@ -42,7 +43,7 @@ public class TestSVD {
 		
 		
 		
-		double result = Evaluation.runRMSE(traind, testd, model);
+		double result = Evaluation.runRMSE( testd, model);
 		
 		System.out.println("\n----\nRMSE:\t" + result);
 		

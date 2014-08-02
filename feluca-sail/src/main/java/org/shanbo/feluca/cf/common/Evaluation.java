@@ -1,7 +1,7 @@
 package org.shanbo.feluca.cf.common;
 
 import org.shanbo.feluca.data2.DataEntry;
-import org.shanbo.feluca.data2.DataEntry.RADataEntry;
+import org.shanbo.feluca.data2.RandomAccessData;
 import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.data2.DataStatistic;
 import org.shanbo.feluca.paddle.common.Utilities;
@@ -15,14 +15,13 @@ public class Evaluation {
 	 * @return
 	 * @throws Exception
 	 */
-	public static double runRMSE(RADataEntry train, DataEntry test, Recommender model) throws Exception{
+	public static double runRMSE(RandomAccessData train, DataEntry test, Recommender model) throws Exception{
 		double error = 0;
 
 		int dbsize = Utilities.getIntFromProperties(test.getDataStatistic(), DataStatistic.TOTAL_FEATURES);
 		System.out.println(dbsize);
 		int cc = 0;
 		test.reOpen();
-		train.reOpen();
 		for(Vector v = test.getNextVector(); v != null ; v = test.getNextVector()){
 			UserRatings ur = new UserRatings(v);
 

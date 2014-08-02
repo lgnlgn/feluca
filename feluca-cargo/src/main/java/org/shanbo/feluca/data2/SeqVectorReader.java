@@ -37,7 +37,9 @@ public class SeqVectorReader implements VectorReader{
 	public SeqVectorReader(String dirName, String filterPattern) throws IOException{
 		dir = new File(dirName);
 		listFiles = dir.listFiles(new PatternFilenameFilter(dir.getName() + filterPattern));
-
+		if (listFiles == null || listFiles.length == 0){
+			throw new RuntimeException("blocks not found!");
+		}
 		msgpack = new MessagePack();
 		unpacker = msgpack.createUnpacker(new BufferedInputStream(new FileInputStream(listFiles[blockIt]),1024 * 1024 * 2));
 		stat = new Properties();

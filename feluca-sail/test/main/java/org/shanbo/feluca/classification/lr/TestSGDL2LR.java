@@ -8,13 +8,13 @@ import org.shanbo.feluca.data2.DataEntry;
 
 public class TestSGDL2LR {
 	public static void main(String[] args) throws  Exception {
-		SGDL2LR lr = new SGDL2LR();
+		SGDL1LR lr = new SGDL1LR();
 		Properties p = new Properties();
-		p.setProperty("alpha", "0.5");
-		p.setProperty("lambda", "0.00001");
+		p.setProperty("alpha", "0.3");
+		p.setProperty("lambda", "0.1");
 		p.setProperty("loops", "30");
 		lr.setProperties(p);
-		lr.loadData(DataEntry.createDataEntry("data/real-sim", false));
+		lr.loadData(DataEntry.createDataEntry("data/real-sim", true));
 		
 //		lr.crossValidation(5, new Evaluator.BinaryAccuracy());
 		System.out.println(lr.toString());

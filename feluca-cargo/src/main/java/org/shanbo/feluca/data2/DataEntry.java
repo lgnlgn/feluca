@@ -12,13 +12,14 @@ public class DataEntry implements Closeable{
 	SeqVectorReader reader;
 	String dataName;
 	String pattern ;
-	public DataEntry(String dataName){
+	public DataEntry(String dataName) throws IOException{
 		this(dataName, "\\.\\d+\\.dat");
 	}
 	
-	public DataEntry(String dataName, String pattern){
+	public DataEntry(String dataName, String pattern) throws IOException{
 		this.dataName = dataName;
 		this.pattern = pattern;
+		reader = new SeqVectorReader(dataName, pattern);
 	}
 	
 	public void reOpen() throws IOException{
@@ -43,55 +44,52 @@ public class DataEntry implements Closeable{
 			reader.close();
 	}
 	
-	public static DataEntry createDataEntry(String dataName, boolean inRam){
+	public static DataEntry createDataEntry(String dataName, boolean inRam) throws IOException{
 		if (inRam){
-			return new RADataEntry(dataName);
+			return new RAMDataEntry(dataName);
 		}else {
 			return new DataEntry(dataName);
 		}
 	}
 	
-	public static DataEntry createDataEntry(String dataName, String pattern, boolean inRam){
+	public static DataEntry createDataEntry(String dataName, String pattern, boolean inRam) throws IOException{
 		if (inRam){
-			return new RADataEntry(dataName, pattern);
+			return new RAMDataEntry(dataName, pattern);
 		}else {
 			return new DataEntry(dataName, pattern );
 		}
 	}
 	
 	
-	public static class RADataEntry extends DataEntry{
+	public static class RAMDataEntry extends DataEntry{
 
 		Vector[] vectors;
 		int idx = 0;
 		
-		public RADataEntry(String dataName){
+		public RAMDataEntry(String dataName) throws IOException{
 			super(dataName);
 		}
 		
-		public RADataEntry(String dataName, String pattern){
+		public RAMDataEntry(String dataName, String pattern) throws IOException{
 			super(dataName, pattern);
 		}
 		
-		public Vector getVectorById(int vectorId){
-			return vectors[vectorId];
+		public Vector getVectorByIndex(int index){
+			return vectors[index];
 		}
 		
 		public Vector getNextVector(){
-			Vector v;
-			for(v = vectors[idx]; v == null ; idx += 1){
-			}
-			return v;
+			return vectors[idx++];
 		}
 		
 		public void reOpen() throws IOException{
 			if (vectors == null){
 				super.reOpen();
 				vectors = new Vector[
-				                     Integer.parseInt(reader.getDataStatistic().getProperty(DataStatistic.MAX_VECTOR_ID)) + 1];
-				
+				                     Integer.parseInt(reader.getDataStatistic().getProperty(DataStatistic.NUM_VECTORS)) + 1];
+				idx = 0;
 				for(Vector v = super.getNextVector(); v!= null; v = super.getNextVector()){
-					vectors[v.getIntHeader()] = v;
+					vectors[idx++] = v;
 				}
 				super.close();
 			}

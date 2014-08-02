@@ -41,9 +41,10 @@ public class SGDL2LR extends AbstractSGDLogisticRegression{
 
 		double multi = (biasWeightRound * minSamples + maxSamples)/(minSamples + maxSamples + 0.0);
 
-		for(int l = 0 ; l < Math.min(10, loops) 
-				|| (l < loops && (Math.abs(1- avge/ lastAVGE) > convergence )
-						|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01); l++){
+		for(int l = 0 ; l < Math.max(10, loops)
+						&& (l < Math.min(10, loops) 
+						|| (l < loops && (Math.abs(1- avge/ lastAVGE) > convergence )
+						|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01)); l++){
 			lastAVGE = avge;
 			lastCorrects = corrects;
 			dataEntry.reOpen(); //start reading data
