@@ -1,4 +1,4 @@
-package org.shanbo.feluca.distribute.model;
+package org.shanbo.feluca.distribute.model.old;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.shanbo.feluca.data2.HashPartitioner;
 import org.shanbo.feluca.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class MatrixModelImpl implements MatrixModel{
 			float[] values = vectors.get(vectorName);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(out));
 			for(int i = 0 ; i < values.length; i++){
-				writer.write(String.format("%d\t%.6f\n", partitioner.indexToFeatureId(i, shardId), values[i]));
+				writer.write(String.format("%d\t%.6f\n", partitioner.indexToId(i, shardId), values[i]));
 			}
 			writer.close();
 			return 1;
@@ -148,7 +149,7 @@ public class MatrixModelImpl implements MatrixModel{
 			float[][] values = matrixes.get(matrixName);
 			ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(out)));
 			for(int i = 0 ; i < values.length; i++){
-				oos.write(partitioner.indexToFeatureId(i, shardId));
+				oos.write(partitioner.indexToId(i, shardId));
 				oos.writeObject(values[i]);
 			}
 			debug(values, partitioner, shardId);
@@ -164,7 +165,7 @@ public class MatrixModelImpl implements MatrixModel{
 	private void debug(float[][] values, HashPartitioner partitioner, int shardId){
 		for(int i = 0 ; i < values.length; i++){
 			StringBuilder builder = new StringBuilder();
-			builder.append(partitioner.indexToFeatureId(i, shardId) + "\t[");
+			builder.append(partitioner.indexToId(i, shardId) + "\t[");
 			for(int j = 0 ; j< values[i].length; j++){
 				builder.append(values[i][j] + " ,");
 			}

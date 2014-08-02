@@ -5,9 +5,9 @@ import java.io.IOException;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.data2.DataEntry;
-import org.shanbo.feluca.distribute.newmodel.FloatReducerImpl;
-import org.shanbo.feluca.distribute.newmodel.ReduceClient;
-import org.shanbo.feluca.distribute.newmodel.ReduceServer;
+import org.shanbo.feluca.distribute.model.vertical.FloatReducerImpl;
+import org.shanbo.feluca.distribute.model.vertical.FloatReducerClient;
+import org.shanbo.feluca.distribute.model.vertical.ReduceServer;
 import org.shanbo.feluca.paddle.AlgoDeployConf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public abstract class LoopingBase2 {
 	int shardId; 
 	protected FloatReducerImpl  reducer; //
 	protected ReduceServer reduceServer;
-	protected ReduceClient reduceClient;
+	protected FloatReducerClient reduceClient;
 	
 	//server & startingGun(with one of the server)
 	StartingGun startingGun; //one and only one with a job
@@ -60,7 +60,7 @@ public abstract class LoopingBase2 {
 		if (deployConf.isStartingGun()){
 			startingGun = new StartingGun(conf.getAlgorithmName(), conf.getModelServers().size(), conf.getWorkers().size());
 		}
-		reduceClient = new ReduceClient(conf);
+		reduceClient = new FloatReducerClient(conf);
 		loopMonitor = new LoopMonitor(conf.getAlgorithmName(), conf.getWorkerName());
 		dataEntry = new DataEntry(Constants.Base.getWorkerRepository() + Constants.Base.DATA_DIR +
 				"/" + conf.getDataName());

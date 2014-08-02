@@ -6,10 +6,10 @@ import java.io.IOException;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
-import org.shanbo.feluca.data.DataReader;
-import org.shanbo.feluca.data.Vector;
-import org.shanbo.feluca.distribute.model.ModelClient;
-import org.shanbo.feluca.distribute.model.ModelServer;
+import org.shanbo.feluca.data2.Vector;
+import org.shanbo.feluca.data2.DataEntry;
+import org.shanbo.feluca.distribute.model.old.ModelClient;
+import org.shanbo.feluca.distribute.model.old.ModelServer;
 
 import org.shanbo.feluca.paddle.AlgoDeployConf;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author lgn
  *
  */
+@Deprecated
 public abstract class LoopingBase{
 
 	Logger log ;
@@ -41,7 +42,7 @@ public abstract class LoopingBase{
 	
 	//data & computation
 	LoopMonitor loopMonitor; //with all worker, no matter model or data
-	protected DataReader dataReader; //auto close;
+	protected DataEntry dataEntry; //auto close;
 	protected ModelClient modelClient;
 	boolean isModelManager;
 
@@ -85,9 +86,9 @@ public abstract class LoopingBase{
 	}
 
 	private void openDataInput() throws IOException{
-		dataReader = DataReader.createDataReader(false, 
+		dataEntry = DataEntry.createDataEntry(
 				Constants.Base.getWorkerRepository()+ Constants.Base.DATA_DIR +
-				"/" + conf.getDataName());
+				"/" + conf.getDataName(), false);
 	}
 
 	/**
@@ -209,14 +210,7 @@ public abstract class LoopingBase{
 	 * <p> if you override this method ; remember add <b>dataReader.releaseHolding();</b> at the end of <b>while(dataReader.hasNext())</b> loop
 	 * @throws Exception
 	 */
-	protected void computeLoop()throws Exception{
-		computeLoopBegin();
-		while(dataReader.hasNext()){
-			computeBlock();
-			dataReader.releaseHolding();
-		}
-		computeLoopEnd();
-	}
+	protected abstract void computeLoop()throws Exception;
 	
 	protected void computeLoopBegin() throws Exception{;}
 	protected void computeLoopEnd() throws Exception{;}

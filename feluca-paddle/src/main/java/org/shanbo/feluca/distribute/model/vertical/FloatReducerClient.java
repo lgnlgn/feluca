@@ -1,4 +1,4 @@
-package org.shanbo.feluca.distribute.newmodel;
+package org.shanbo.feluca.distribute.model.vertical;
 
 
 import gnu.trove.list.array.TFloatArrayList;
@@ -12,11 +12,11 @@ import java.util.concurrent.ExecutionException;
 
 import org.msgpack.rpc.Client;
 import org.msgpack.rpc.loop.EventLoop;
+import org.shanbo.feluca.data2.HashPartitioner;
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
-import org.shanbo.feluca.distribute.model.HashPartitioner;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
-public class ReduceClient implements Closeable{
+public class FloatReducerClient implements Closeable{
 	EventLoop loop;
 	Client[] clients;
 	FloatReducer[] reducers; //to workers back
@@ -26,7 +26,7 @@ public class ReduceClient implements Closeable{
 	List<String> reduceServerAddresses ;
 	ArrayList<TFloatArrayList> container; 
 	
-	public ReduceClient(GlobalConfig conf){
+	public FloatReducerClient(GlobalConfig conf){
 		this.clientId = conf.getWorkers().indexOf(conf.getWorkerName());
 		this.loop = EventLoop.defaultEventLoop();
 		this.reduceServerAddresses = conf.getModelServers();
@@ -74,7 +74,7 @@ public class ReduceClient implements Closeable{
 		float[] reduceBacks = new float[computedValues.length];
 		for(int shardId = 0; shardId < results.size(); shardId++){
 			for(int idx = 0 ; idx < results.get(shardId).length ; idx ++){
-				int fid = partitioner.indexToFeatureId(idx, shardId);
+				int fid = partitioner.indexToId(idx, shardId);
 				reduceBacks[fid] = results.get(shardId)[idx];
 			}
 		}

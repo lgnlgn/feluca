@@ -2,7 +2,6 @@ package org.shanbo.feluca.data2.convert;
 
 
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +10,9 @@ import java.util.List;
 import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 import org.shanbo.feluca.data2.HashPartitioner;
+import org.shanbo.feluca.data2.MultiVectorReader;
 import org.shanbo.feluca.data2.Vector;
+import org.shanbo.feluca.data2.SeqVectorReader;
 import org.shanbo.feluca.data2.VectorReader;
 
 /**
@@ -20,7 +21,7 @@ import org.shanbo.feluca.data2.VectorReader;
  *
  */
 public class VectorPartitioner {
-	
+
 	public boolean isPowerOfTwo(int number){
 		int n = number;
 		while(n > 1){
@@ -32,21 +33,22 @@ public class VectorPartitioner {
 		}
 		return true;
 	}
-	
-	public void doPartition(String dirName, int blocks) throws IOException{
-		assert (isPowerOfTwo(blocks) == true);
-		String dataName = new File(dirName).getName();
-		String blockPathTemplate = new File(dirName).getAbsolutePath() + "/" + dataName + ".v.%d.dat";
 
+
+	public void doPartition(VectorReader reader, int blocks, String suffix) throws IOException{
+		assert (isPowerOfTwo(blocks) == true);
+		
+		String dataName = reader.getDataDir().getName();
 		HashPartitioner partitioner = new HashPartitioner(blocks);
-		VectorReader reader = new VectorReader(dirName);
+		String blockPathTemplate = reader.getDataDir().getAbsolutePath() + "/" + dataName + ".v.%d.dat" + suffix;
+
 		ArrayList<Packer> packers = new ArrayList<Packer>(blocks);
 		MessagePack messagePack = new MessagePack();
 		for(int i = 0 ; i < blocks;i++){ //output
 			packers.add(messagePack.createPacker(
 					new BufferedOutputStream(new FileOutputStream(String.format(blockPathTemplate, i)), 1024 * 1024 * 2)));
 		}
-		
+
 		int count = 0;
 		for(Vector v = reader.getNextVector(); v!= null; v = reader.getNextVector()){
 			List<Vector> divided = v.divideByFeature(partitioner); 
@@ -66,10 +68,21 @@ public class VectorPartitioner {
 			packers.get(i).write(false).close();
 		}
 	}
-	
-	public void divideToDouble(String dataName){
-		
+
+	public void doPartition(String dirName, int blocks) throws IOException{
+		SeqVectorReader vr = new SeqVectorReader(dirName);
+		doPartition(vr, blocks, "");
 	}
-	
-	
+
+	/**
+	 * repartition data ; example : [0,1] -> [0,1,2,3]
+	 * @param dirName
+	 * @throws IOException
+	 */
+	public void divideToDouble(String dirName) throws IOException{
+		MultiVectorReader multiVectorReader = new MultiVectorReader(dirName, null);
+		doPartition(multiVectorReader, multiVectorReader.getBlocks() * 2, ".new");
+	}
+
+
 }

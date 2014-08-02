@@ -1,4 +1,4 @@
-package org.shanbo.feluca.distribute.model;
+package org.shanbo.feluca.distribute.model.old;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import org.msgpack.rpc.Client;
 import org.msgpack.rpc.loop.EventLoop;
 import org.shanbo.feluca.common.FelucaException;
+import org.shanbo.feluca.data2.HashPartitioner;
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 

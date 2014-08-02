@@ -1,6 +1,9 @@
-package org.shanbo.feluca.distribute.model;
+package org.shanbo.feluca.distribute.model.old;
 
 import java.util.List;
+
+import org.shanbo.feluca.data2.HashPartitioner;
+
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntFloatHashMap;
@@ -76,7 +79,7 @@ public class PartialVectorModel {
 			float[] mGetThisShard = valuesList.get(shardId);
 			for(int fi = 0 ; fi < tmpConvertedFids.size(); fi++){
 				int convertedFid = tmpConvertedFids.getQuick(fi);
-				int originalFid = partitioner.indexToFeatureId(convertedFid, shardId);
+				int originalFid = partitioner.indexToId(convertedFid, shardId);
 				float value = mGetThisShard[fi];
 				this.set(originalFid, value);
 			}
@@ -90,7 +93,7 @@ public class PartialVectorModel {
 		}
 		for(int fid : fids){
 			int shardId = partitioner.decideShard(fid);
-			convertedFidsBuffer[shardId].add(partitioner.featureIdToIndex(fid, shardId));
+			convertedFidsBuffer[shardId].add(partitioner.idToIndex(fid, shardId));
 		}
 		return splitFidsQuick();
 	}

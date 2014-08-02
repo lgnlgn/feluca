@@ -36,6 +36,8 @@ public abstract class Vector {
 	
 	public abstract List<Vector> divideByFeature(HashPartitioner partitioner);
 	
+	public abstract void swallow(Vector v);
+	
 	public abstract int getSpaceCost();
 	
 	public VectorType getOutVectorType(){
@@ -206,7 +208,7 @@ public abstract class Vector {
 			List<StrBuilder> lines = new ArrayList<StrBuilder>(partitioner.getMaxShards());
 			for(int i = 0 ; i < partitioner.getMaxShards(); i++){
 				vectors.add(create(getOutVectorType()));
-				lines.add(new StrBuilder().append(getIntHeader()));
+				lines.add(new StrBuilder().append(getIntHeader())); //label 
 			}
 			for(int i = 0 ; i < getSize(); i++){
 				int shardId = partitioner.decideShard(getFId(i));
@@ -216,6 +218,21 @@ public abstract class Vector {
 				vectors.get(i).parseLine(lines.get(i).toString());
 			}
 			return vectors;
+		}
+
+		@Override
+		public void swallow(Vector v) {
+			if (v == null)
+				return;
+			if (fids == null){
+				fids = new TIntArrayList();
+				weights = new TFloatArrayList();
+				label = v.getIntHeader();
+			}
+			for(int i = 0 ; i < v.getSize(); i++){
+				fids.add(v.getFId(i));
+				weights.add(v.getWeight(i));
+			}
 		}
 	}
 	

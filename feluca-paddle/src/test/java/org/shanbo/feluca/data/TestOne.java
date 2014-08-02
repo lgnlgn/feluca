@@ -4,7 +4,7 @@ import gnu.trove.list.array.TLongArrayList;
 
 import java.util.List;
 
-import org.shanbo.feluca.data.util.CollectionUtil;
+import org.shanbo.feluca.data2.util.CollectionUtil;
 
 public class TestOne {
 

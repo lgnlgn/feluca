@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
+import org.shanbo.feluca.distribute.model.vertical.FloatReducerImpl;
+import org.shanbo.feluca.distribute.model.vertical.FloatReducerClient;
+import org.shanbo.feluca.distribute.model.vertical.ReduceServer;
 import org.shanbo.feluca.paddle.AlgoDeployConf;
 import org.shanbo.feluca.paddle.DataUtils;
 import org.shanbo.feluca.paddle.DefaultAlgoConf;
@@ -46,9 +49,9 @@ public class TestReducer {
 		ReduceServer rs = new ReduceServer(new FloatReducerImpl(globalConfig), "l2lr", 12130);
 		rs.start();
 		
-		final ReduceClient client = new ReduceClient(globalConfig);
+		final FloatReducerClient client = new FloatReducerClient(globalConfig);
 		client.open();
-		final ReduceClient client2 = new ReduceClient(globalConfig2);
+		final FloatReducerClient client2 = new FloatReducerClient(globalConfig2);
 		client2.open();
 
 		ConcurrentExecutor.submit(new Runnable() {

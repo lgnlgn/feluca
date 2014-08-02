@@ -27,7 +27,8 @@ import com.google.common.io.Files;
 
 public class VectorSerializer {
 	final static int DATA_SIZE_PER_BLOCK = 64 * 1024 * 1024; //6
-
+	final static int OUTPUT_BUFFER_SIZE = 8 * 1024 * 1024;
+	
 	BufferedWriter globalStatWriter;
 	BufferedReader rawDataReader;
 	TextReader textReader;
@@ -67,7 +68,7 @@ public class VectorSerializer {
 		int blockSize = 0;
 		globalStatWriter = new BufferedWriter(new FileWriter(dir.getAbsolutePath() + "/" + dataName + ".sta"));
 		MessagePack mPack = new MessagePack();
-		Packer packer = mPack.createPacker( new BufferedOutputStream(new FileOutputStream(String.format(blockPathTemplate, blockId))));
+		Packer packer = mPack.createPacker( new BufferedOutputStream(new FileOutputStream(String.format(blockPathTemplate, blockId)),OUTPUT_BUFFER_SIZE ));
 		int count = 0;
 		Vector vector = Vector.create(inputType);
 		vector.setOutputType(outputType);
@@ -90,7 +91,7 @@ public class VectorSerializer {
 				packer.write(false).close();
 				blockId += 1;
 				blockSize = 0;
-				packer = mPack.createPacker( new BufferedOutputStream(new FileOutputStream(String.format(blockPathTemplate, blockId))));
+				packer = mPack.createPacker( new BufferedOutputStream(new FileOutputStream(String.format(blockPathTemplate, blockId)),OUTPUT_BUFFER_SIZE));
 			}
 		}
 		packer.write(false).close();

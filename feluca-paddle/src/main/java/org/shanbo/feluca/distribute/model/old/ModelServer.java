@@ -1,33 +1,31 @@
-package org.shanbo.feluca.distribute.newmodel;
+package org.shanbo.feluca.distribute.model.old;
 
 import org.msgpack.rpc.loop.EventLoop;
 import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.Server;
+import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * use for Reducer & MapReceiver
- * @author lgn
- *
- */
-public class ReduceServer extends Server{
-	static Logger log = LoggerFactory.getLogger(ReduceServer.class);
+public class ModelServer extends Server{
+	static Logger log = LoggerFactory.getLogger(ModelServer.class);
 	EventLoop loop;
 	org.msgpack.rpc.Server server;
+	GlobalConfig conf;
 	int port = 0;
-	FloatReducerImpl reducer;
-	String algoName;
-	public ReduceServer(FloatReducerImpl reducer, String algoName, int port){
-		this.reducer = reducer;
-		this.port = port;
-		this.algoName = algoName;
+	
+	public ModelServer(GlobalConfig conf){
+		this.conf = conf;
+		port = Integer.parseInt(conf.getWorkerName().split(":")[1]) 
+				+ Constants.Algorithm.ALGO_DATA_SERVER_PORTAWAY;
+		
+		
 	}
 	
 	@Override
 	public String serverName() {
-		return "reduceServer";
+		return "modelServer";
 	}
 
 	@Override
@@ -37,8 +35,7 @@ public class ReduceServer extends Server{
 
 	@Override
 	public String zkPathRegisterTo() {
-		return Constants.Algorithm.ZK_ALGO_CHROOT + "/" + algoName + Constants.Algorithm.ZK_MODELSERVER_PATH ;
-
+		return Constants.Algorithm.ZK_ALGO_CHROOT + "/" + conf.getAlgorithmName() + Constants.Algorithm.ZK_MODELSERVER_PATH ;
 	}
 
 	@Override
@@ -46,19 +43,16 @@ public class ReduceServer extends Server{
 		ClusterUtil.getWorkerList();
 		loop = EventLoop.defaultEventLoop();
 		server = new org.msgpack.rpc.Server(loop);
-		server.serve(reducer);
+		server.serve(new MatrixModelImpl());
 		server.listen("0.0.0.0", defaultPort());
-		System.out.println("reduceServer[" + port + "] started");
-
-		
+		System.out.println("modelServer[" + conf.getWorkerName()+ "] started");
 	}
 
 	@Override
 	public void postStop() throws Exception {
 		server.close();
 		loop.shutdown();
-		System.out.println("reduceServer[" + port + "] closed");
-		
+		System.out.println("modelServer[" + conf.getWorkerName()+ "] closed");
 	}
-
+	
 }

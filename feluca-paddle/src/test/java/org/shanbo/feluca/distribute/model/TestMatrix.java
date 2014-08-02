@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
+import org.shanbo.feluca.distribute.model.old.ModelClient;
+import org.shanbo.feluca.distribute.model.old.ModelServer;
+import org.shanbo.feluca.distribute.model.old.PartialMatrixModel;
 import org.shanbo.feluca.paddle.AlgoDeployConf;
 import org.shanbo.feluca.paddle.DefaultAlgoConf;
 import org.shanbo.feluca.util.FileUtil;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
-import org.shanbo.feluca.data.convert.DataStatistic;
+import org.shanbo.feluca.data2.DataStatistic;
 import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.distribute.launch.LoopingBase2;
@@ -190,7 +190,7 @@ public class SGDL2LR extends LoopingBase2{
 			}
 		}
 		if (batchVectors.size() > 0){
-			
+			doCompute(batchVectors);
 		}
 		computeLoopEnd();
 	}

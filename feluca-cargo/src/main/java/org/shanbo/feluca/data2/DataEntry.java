@@ -9,7 +9,7 @@ import org.shanbo.feluca.data2.Vector.VectorType;
 
 public class DataEntry implements Closeable{
 	
-	VectorReader reader;
+	SeqVectorReader reader;
 	String dataName;
 	String pattern ;
 	public DataEntry(String dataName){
@@ -23,7 +23,7 @@ public class DataEntry implements Closeable{
 	
 	public void reOpen() throws IOException{
 		close();
-		reader = new VectorReader(dataName, pattern);
+		reader = new SeqVectorReader(dataName, pattern);
 	}
 	
 	public Vector getNextVector() throws IOException{

@@ -10,7 +10,7 @@ public class TestVectorReader {
 	 */
 	public static void main(String[] args) throws IOException {
 	
-		VectorReader vr = new VectorReader("data/mltrain");
+		SeqVectorReader vr = new SeqVectorReader("data/mltrain");
 		int count = 0;
 		for(Vector v = vr.getNextVector(); v!= null; v = vr.getNextVector()){
 			count ++;
