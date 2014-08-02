@@ -2,6 +2,7 @@ package org.shanbo.feluca.data2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -35,6 +36,8 @@ public class MultiVectorReader implements VectorReader{
 		}else{
 			this.parts = parts;
 		}
+		readers = new ArrayList<SeqVectorReader>(parts.length);
+		currentVectors = new ArrayList<Vector>(parts.length);
 		for(int i = 0 ; i < parts.length; i++){
 			readers.add(new SeqVectorReader(dirName, "\\.v\\." + parts[i] +"\\.dat"));
 		}

@@ -109,7 +109,7 @@ public class VectorSerializer {
 	}
 	
 	public void convertTuple2VID(String outFile) throws IOException{
-		textReader = new TextReader(rawDataReader, TupleType.ONLY_TWO_COLUMNS, AlignColumn.FIRST);
+		textReader = new TextReader(rawDataReader, TupleType.WEIGHT_TYPE, AlignColumn.FIRST);
 		generalConverting(outFile, VectorType.VID_FID_WEIGHT, VectorType.VID_FID_WEIGHT, DataStatistic.createVWstat());
 	}
 	

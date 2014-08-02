@@ -10,9 +10,8 @@ import java.util.List;
 import org.msgpack.MessagePack;
 import org.msgpack.packer.Packer;
 import org.shanbo.feluca.data2.HashPartitioner;
-import org.shanbo.feluca.data2.MultiVectorReader;
-import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.data2.SeqVectorReader;
+import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.data2.VectorReader;
 
 /**
@@ -35,7 +34,7 @@ public class VectorPartitioner {
 	}
 
 
-	public void doPartition(VectorReader reader, int blocks, String suffix) throws IOException{
+	void doPartition(VectorReader reader, int blocks, String suffix) throws IOException{
 		assert (isPowerOfTwo(blocks) == true);
 		
 		String dataName = reader.getDataDir().getName();
@@ -74,15 +73,16 @@ public class VectorPartitioner {
 		doPartition(vr, blocks, "");
 	}
 
-	/**
-	 * repartition data ; example : [0,1] -> [0,1,2,3]
-	 * @param dirName
-	 * @throws IOException
-	 */
-	public void divideToDouble(String dirName) throws IOException{
-		MultiVectorReader multiVectorReader = new MultiVectorReader(dirName, null);
-		doPartition(multiVectorReader, multiVectorReader.getBlocks() * 2, ".new");
-	}
+//	/**
+//	 * repartition data ; example : [0,1] -> [0,1,2,3]
+//	 * @param dirName
+//	 * @throws IOException
+//	 */
+//	public void divideToDouble(String dirName) throws IOException{
+//		MultiVectorReader multiVectorReader = new MultiVectorReader(dirName, null);
+//		doPartition(multiVectorReader, multiVectorReader.getBlocks() * 2, ".new");
+//		for(int i = 0 ; i < )
+//	}
 
 
 }
