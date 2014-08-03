@@ -206,7 +206,7 @@ public class SGDL2LR extends LoopingBase2{
 			weightSums[i] = weightSum;
 		}
 		//--------
-		float[] merged = reduceClient.fetch(weightSums);
+		float[] merged = reduceClient.sum(weightSums);
 		for(int i = 0 ; i < batchVectors.size(); i++){
 			Vector v = batchVectors.get(i);
 			error = gradientDescend(v, ((Float)merged[i]).floatValue());

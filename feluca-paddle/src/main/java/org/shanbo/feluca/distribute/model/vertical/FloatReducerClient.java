@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutionException;
 import org.msgpack.rpc.Client;
 import org.msgpack.rpc.loop.EventLoop;
 import org.shanbo.feluca.data2.HashPartitioner;
-import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 
 public class FloatReducerClient implements Closeable{
@@ -23,16 +22,16 @@ public class FloatReducerClient implements Closeable{
 	final int clientId;
 	HashPartitioner partitioner;
 	
-	List<String> reduceServerAddresses ;
-	ArrayList<TFloatArrayList> container; 
+	List<String> workers ;
+	ArrayList<TFloatArrayList> container; //do parallel computing on more reducer maybe faster
 	
-	public FloatReducerClient(GlobalConfig conf){
-		this.clientId = conf.getWorkers().indexOf(conf.getWorkerName());
+	public FloatReducerClient(List<String> workers, int shardId){
+		this.clientId = shardId;
 		this.loop = EventLoop.defaultEventLoop();
-		this.reduceServerAddresses = conf.getModelServers();
-		clients = new Client[conf.getModelServers().size()];
-		reducers = new FloatReducer[conf.getModelServers().size()];
-		partitioner = new HashPartitioner(conf.getModelServers().size());
+		this.workers = workers;
+		clients = new Client[workers.size()];
+		reducers = new FloatReducer[workers.size()];
+		partitioner = new HashPartitioner(workers.size());
 		container = new ArrayList<TFloatArrayList>(clients.length);
 		for(int i = 0 ; i < clients.length; i++){
 			container.add(new TFloatArrayList());
@@ -41,20 +40,34 @@ public class FloatReducerClient implements Closeable{
 	
 	public void open() throws NumberFormatException, UnknownHostException{
 		for(int i = 0; i < clients.length; i++){
-			String[] hostPort = reduceServerAddresses.get(i).split(":");
-			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]), loop);
+			String[] hostPort = workers.get(i).split(":");
+			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]) + FloatReducer.PORT_AWAY, loop);
 			reducers[i] = clients[i].proxy(FloatReducer.class);
 		}
 	}
+
 	
-	private void clearContainer(){
+	public float[] sum(float[] computedValues) throws InterruptedException, ExecutionException{
+		return reduce("sum", computedValues);
+	}
+	
+	public float[] max(float[] computedValues) throws InterruptedException, ExecutionException{
+		return reduce("max", computedValues);
+	}
+	
+	public float[] min(float[] computedValues) throws InterruptedException, ExecutionException{
+		return reduce("min", computedValues);
+	}
+	
+	public float[] avg(float[] computedValues) throws InterruptedException, ExecutionException{
+		return reduce("avg", computedValues);
+	}
+	
+	
+	private float[] reduce(final String func, float[] computedValues) throws InterruptedException, ExecutionException{
 		for(TFloatArrayList cont : container){
 			cont.resetQuick();
 		}
-	}
-	
-	public float[] fetch(float[] computedValues) throws InterruptedException, ExecutionException{
-		clearContainer();
 		for(int i = 0 ; i < computedValues.length; i++){
 			int reducerIndex = partitioner.decideShard(i);
 			container.get(reducerIndex).add(computedValues[i]);
@@ -65,7 +78,7 @@ public class FloatReducerClient implements Closeable{
 			final float[] values = container.get(shardId).toArray();
 			reduceCalls.add(new Callable<float[]>() {
 				public float[] call() throws Exception {
-				     return reducers[toShardId].reduce(clientId, values);
+				     return reducers[toShardId].reduce(func, clientId, values);
 				     
 				}
 			});

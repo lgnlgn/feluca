@@ -91,4 +91,20 @@ public class JSONUtil {
 		return json;
 	}
 	
+	public static JSONObject reverse(JSONObject table){
+		JSONObject json = new JSONObject();
+		for(String key : table.keySet()){
+			JSONArray array = table.getJSONArray(key);
+			for(Object value : array){
+				JSONArray list = json.getJSONArray(value.toString());
+				if (list == null){
+					list = new JSONArray();
+					json.put(value.toString(), list);
+				}
+				list.add(key);
+			}
+		}
+		return json;
+	}
+	
 }
