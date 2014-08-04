@@ -1,8 +1,8 @@
 package org.shanbo.feluca.distribute.model.horizon;
 
-public interface MModel{
+public interface MModelRPC{
 	
-	public final static int PORT_AWAY = 101;
+	public final static int PORT_AWAY = 5;
 	
 	public float[] vectorRetrieve(String vectorName, int[] fids);
 	

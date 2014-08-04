@@ -9,18 +9,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class SyncModelServer extends Server{
+public class MModelServer extends Server{
 	static Logger log = LoggerFactory.getLogger(ReduceServer.class);
 	EventLoop loop;
 	org.msgpack.rpc.Server server;
 
-	MModelImpl modelImpl;
+	MModelLocal modelImpl;
 	
 	String algoName;
 	int port ;
-	public SyncModelServer(String workerAddress, String algoName, MModelImpl model){
+	public MModelServer(String workerAddress, String algoName, MModelLocal model){
 		this.modelImpl = model;
-		this.port = new Integer(workerAddress.split(":")[1]) + MModel.PORT_AWAY;
+		this.port = new Integer(workerAddress.split(":")[1]) + MModelRPC.PORT_AWAY;
 		this.algoName = algoName;
 	}
 	

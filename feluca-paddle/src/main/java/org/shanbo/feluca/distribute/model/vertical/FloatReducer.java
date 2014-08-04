@@ -7,7 +7,7 @@ package org.shanbo.feluca.distribute.model.vertical;
  */
 public interface FloatReducer {
 	
-	public final static int PORT_AWAY = 100;
+	public final static int PORT_AWAY = 7;
 	
 	public float[] reduce(String name, int clientId, float[] orderValues);
 	

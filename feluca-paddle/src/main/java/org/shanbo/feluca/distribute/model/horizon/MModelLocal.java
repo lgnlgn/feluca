@@ -14,13 +14,13 @@ import org.shanbo.feluca.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MModelImpl implements MModel{
+public class MModelLocal implements MModelRPC{
 
-	static Logger log = LoggerFactory.getLogger(MModelImpl.class);
+	static Logger log = LoggerFactory.getLogger(MModelLocal.class);
 	HashMap<String, float[]> vectors ; //vector size is determine by creator
 	HashMap<String, float[][]> matrixes;
 	
-	public MModelImpl(){
+	public MModelLocal(){
 		vectors = new HashMap<String, float[]>(5);
 		matrixes = new HashMap<String, float[][]>(5);
 	}

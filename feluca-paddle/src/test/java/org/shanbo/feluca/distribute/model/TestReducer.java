@@ -35,9 +35,9 @@ public class TestReducer {
 		
 		//-----------
 		final FloatReducerClient client0 = new FloatReducerClient(workers, 0);
-		client0.open();
+		client0.connect();
 		final FloatReducerClient client1 = new FloatReducerClient(workers, 1);
-		client1.open();
+		client1.connect();
 		
 		//--------
 		System.out.println("-------------------------");

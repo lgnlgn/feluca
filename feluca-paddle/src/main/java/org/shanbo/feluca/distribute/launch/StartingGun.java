@@ -3,6 +3,7 @@ package org.shanbo.feluca.distribute.launch;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
@@ -31,22 +32,23 @@ public class StartingGun {
 	private ChildrenWatcher workerWatcher;
 	
 	private int totalWorkers; 
-	private int totalModelServers;
-	private int waitingWorkers;
+	private int totalReduceServers;
+	private AtomicInteger waitingWorkers;
 	private  String path;
 	private int loop;
 	
-	public StartingGun(String taskName, int totalModelServers, int totalWorkers) {
+	public StartingGun(String taskName, int totalReduceServers, int totalWorkers) {
 		this.path = Constants.Algorithm.ZK_ALGO_CHROOT + "/" + taskName;
 		this.totalWorkers = totalWorkers;
-		this.totalModelServers = totalModelServers;
-
+		this.totalReduceServers = totalReduceServers;
+		waitingWorkers = new AtomicInteger(0);
 	}
 	
 	private void prepare() throws KeeperException, InterruptedException{
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_LOOP_PATH); 
 		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_WAITING_PATH);
-		//DO NOT delete '/worker' and recreate it! It will cause a bug that this ZKclient will not be able to create children  
+		ZKClient.get().createIfNotExist(path + Constants.Algorithm.ZK_REDUCER_PATH);
+		//DO NOT delete '/worker' and recreate it! It will cause a bug that the ZKclient will not be able to create children  
 		// Instead, delete it's children 
 		List<String> waitingList = ZKClient.get().getChildren(path + Constants.Algorithm.ZK_WAITING_PATH);
 		for(String workerNode : waitingList){
@@ -60,9 +62,12 @@ public class StartingGun {
 			public void nodeRemoved(String node) {
 			}
 			public void nodeAdded(String node) {
-				waitingWorkers += 1;
-				if (waitingWorkers  == totalWorkers){
-					setLoopSignal();
+				waitingWorkers.incrementAndGet();
+				if (waitingWorkers.get()  == totalWorkers){
+					synchronized(StartingGun.class){ //Double check lock 
+						if (waitingWorkers.get() == totalWorkers)
+							setLoopSignal();
+					}
 				}
 			}
 		};
@@ -70,7 +75,7 @@ public class StartingGun {
 	}
 	
 	private void setLoopSignal(){
-		waitingWorkers = 0;
+		waitingWorkers.set(0);
 		String workerPath = path + Constants.Algorithm.ZK_WAITING_PATH;
 		try {
 			List<String> waitingList = ZKClient.get().getChildren(workerPath);
@@ -101,7 +106,8 @@ public class StartingGun {
 		ConcurrentExecutor.submitAndWait(new Runnable() {
 			public void run() {
 				try{
-					while(ZKClient.get().getChildren(path +  Constants.Algorithm.ZK_MODELSERVER_PATH).size()< totalModelServers){
+					while(ZKClient.get().getChildren(path +  Constants.Algorithm.ZK_REDUCER_PATH).size()< totalReduceServers
+						&& ZKClient.get().getChildren(path +  Constants.Algorithm.ZK_MODELSERVER_PATH).size() < totalWorkers){
 						try{
 							Thread.sleep(10);
 						}catch (InterruptedException e) {

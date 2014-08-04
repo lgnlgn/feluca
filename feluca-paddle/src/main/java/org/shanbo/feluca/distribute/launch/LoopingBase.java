@@ -8,6 +8,7 @@ import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.FelucaException;
 import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.data2.DataEntry;
+import org.shanbo.feluca.distribute.model.horizon.MModelClient;
 import org.shanbo.feluca.distribute.model.old.ModelClient;
 import org.shanbo.feluca.distribute.model.old.ModelServer;
 
@@ -43,7 +44,7 @@ public abstract class LoopingBase{
 	//data & computation
 	LoopMonitor loopMonitor; //with all worker, no matter model or data
 	protected DataEntry dataEntry; //auto close;
-	protected ModelClient modelClient;
+	protected MModelClient modelClient;
 	boolean isModelManager;
 
 	//server & startingGun(with one of the server)

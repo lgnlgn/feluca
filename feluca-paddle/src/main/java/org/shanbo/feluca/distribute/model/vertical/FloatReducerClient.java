@@ -38,7 +38,7 @@ public class FloatReducerClient implements Closeable{
 		}
 	}
 	
-	public void open() throws NumberFormatException, UnknownHostException{
+	public void connect() throws NumberFormatException, UnknownHostException{
 		for(int i = 0; i < clients.length; i++){
 			String[] hostPort = workers.get(i).split(":");
 			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]) + FloatReducer.PORT_AWAY, loop);

@@ -23,7 +23,7 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
  * @author lgn
  *
  */
-public class ModelClient {
+public class MModelClient {
 
 	public static class VectorBuffer{
 		public float[] weights;
@@ -111,37 +111,37 @@ public class ModelClient {
 	HashMap<String, MatrixBuffer> matrixBuffers;
 	
 	
-	MModelImpl local;
+	MModelLocal local;
 	
 	EventLoop loop;
 	Client[] clients;
-	MModel[] matrixModels;
+	MModelRPC[] matrixModels;
 	List<String> dataServerAddresses;
 	
 	int shardId;
 	HashPartitioner partitioner;
 	
-	public ModelClient(List<String> dataServerAddresses, int shardId, MModelImpl local){
+	public MModelClient(List<String> dataServerAddresses, int shardId, MModelLocal local){
 		
 		this.dataServerAddresses = dataServerAddresses;
 		this.shardId = shardId;
 		this.local = local;
 		loop = EventLoop.defaultEventLoop();
 		clients = new Client[dataServerAddresses.size()];
-		matrixModels = new MModel[dataServerAddresses.size()];
+		matrixModels = new MModelRPC[dataServerAddresses.size()];
 		partitioner = new HashPartitioner(dataServerAddresses.size());
-		this.vectorBuffers = new HashMap<String, ModelClient.VectorBuffer>(3);
-		this.matrixBuffers = new HashMap<String, ModelClient.MatrixBuffer>(3);
+		this.vectorBuffers = new HashMap<String, MModelClient.VectorBuffer>(3);
+		this.matrixBuffers = new HashMap<String, MModelClient.MatrixBuffer>(3);
 	}
 	
 	
 	
 	
-	public void open() throws NumberFormatException, UnknownHostException{
+	public void connect() throws NumberFormatException, UnknownHostException{
 		for(int i = 0; i < clients.length; i++){
 			String[] hostPort = dataServerAddresses.get(i).split(":");
-			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]) + MModel.PORT_AWAY, loop);
-			matrixModels[i] = clients[i].proxy(MModel.class);
+			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]) + MModelRPC.PORT_AWAY, loop);
+			matrixModels[i] = clients[i].proxy(MModelRPC.class);
 		}
 	}
 	public synchronized void close(){
