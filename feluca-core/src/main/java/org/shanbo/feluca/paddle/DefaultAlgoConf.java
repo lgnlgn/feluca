@@ -16,6 +16,13 @@ public class DefaultAlgoConf {
 		return json;
 	}
 	
+	public static JSONObject basicAlgoConfSync(int loops){
+		JSONObject json = new JSONObject();
+		json.put(Constants.Algorithm.LOOPS, loops);
+		json.put(Constants.Algorithm.OPEN_MODEL_SERVER, true);
+		return json;
+	}
+	
 	public static JSONObject basicLRconf(int loops, double alpha, double lambda){
 		JSONObject basic = basicAlgoConf(loops);
 		basic.put("alpha", alpha);

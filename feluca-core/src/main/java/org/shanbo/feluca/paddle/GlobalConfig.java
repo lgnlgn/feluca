@@ -138,4 +138,7 @@ public class GlobalConfig {
 		return conf.toJSONString();
 	}
 	
+	public int getShardId(){
+		return conf.getIntValue(SHARD_ID);
+	}
 }

@@ -51,6 +51,7 @@ public class Constants {
 		public final static String ZK_REDUCER_PATH = "/reducer";
 		public final static String ZK_MODELSERVER_PATH = "/model";
 		
+		public final static String OPEN_MODEL_SERVER = "syncModel";
 		public final static String LOOPS = "loops";
 		public final static String DATANAME = "dataName";
 		

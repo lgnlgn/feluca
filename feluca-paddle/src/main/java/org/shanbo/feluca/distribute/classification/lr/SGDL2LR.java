@@ -1,4 +1,4 @@
-package org.shanbo.feluca.distribute.lr2;
+package org.shanbo.feluca.distribute.classification.lr;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -6,15 +6,16 @@ import java.util.concurrent.ExecutionException;
 
 import org.shanbo.feluca.data2.DataStatistic;
 import org.shanbo.feluca.data2.Vector;
-import org.shanbo.feluca.distribute.launch.GlobalConfig;
-import org.shanbo.feluca.distribute.launch.LoopingBase2;
+import org.shanbo.feluca.distribute.launch.LoopingBase;
+
+import org.shanbo.feluca.paddle.GlobalConfig;
 import org.shanbo.feluca.util.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class SGDL2LR extends LoopingBase2{
+public class SGDL2LR extends LoopingBase{
 	final static int LABELRANGEBASE = 32768;
 	public final static double DEFAULT_STOP = 0.001;
 	public final static int DEFAULT_LOOPS = 30;
@@ -22,7 +23,7 @@ public class SGDL2LR extends LoopingBase2{
 	final static int BATCH_COMPUTE_SIZE = 100;
 	protected int[][] dataInfo = null;
 	
-	float[] featureWeights = null;
+	float[] featureWeights = null; //no need to create in ModelLocal
 	protected Double alpha = null; // learning speed
 	protected Double lambda = null;// regularization
 	protected Double convergence = null;
@@ -206,7 +207,7 @@ public class SGDL2LR extends LoopingBase2{
 			weightSums[i] = weightSum;
 		}
 		//--------
-		float[] merged = reduceClient.sum(weightSums);
+		float[] merged = reducerClient.sum(weightSums);
 		for(int i = 0 ; i < batchVectors.size(); i++){
 			Vector v = batchVectors.get(i);
 			error = gradientDescend(v, ((Float)merged[i]).floatValue());

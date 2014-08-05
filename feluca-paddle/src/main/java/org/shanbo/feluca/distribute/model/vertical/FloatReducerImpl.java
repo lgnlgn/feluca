@@ -5,7 +5,6 @@ import gnu.trove.list.array.TFloatArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
-import org.shanbo.feluca.distribute.launch.GlobalConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -27,6 +27,15 @@ public class JSONUtil {
 		return i;
 	}
 
+	public static boolean getConf(JSONObject json, String key, boolean defaultValue){
+		Boolean i = json.getBoolean(key);
+		if (i == null){
+			return defaultValue;
+		}
+		return i;
+	}
+
+	
 	public static double getConf(JSONObject json, String key, double defaultValue){
 		Double i = json.getDouble(key);
 		if (i == null){
