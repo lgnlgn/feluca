@@ -23,7 +23,7 @@ public class SGDL2LR extends LoopingBase{
 	final static int BATCH_COMPUTE_SIZE = 100;
 	protected int[][] dataInfo = null;
 	
-	float[] featureWeights = null; //no need to create in ModelLocal
+	float[] featureWeights = null; //ref of float[] in ModelLocal
 	protected Double alpha = null; // learning speed
 	protected Double lambda = null;// regularization
 	protected Double convergence = null;
@@ -95,7 +95,7 @@ public class SGDL2LR extends LoopingBase{
 		this.biasWeightRound = Math.round(ratio);
 		
 		this.setProperties(conf.getAlgorithmConf());
-		featureWeights = new float[JSONUtil.getConf(conf.getDataStatistic(), org.shanbo.feluca.data2.DataStatistic.MAX_FEATURE_ID, 1) + 1];
+		
 	}
 	
 	protected void estimateParameter() throws NullPointerException{
@@ -141,7 +141,10 @@ public class SGDL2LR extends LoopingBase{
 		}
 	}
 
-
+	protected void startup() {
+		modelClient.createVector("weights", JSONUtil.getConf(conf.getDataStatistic(), DataStatistic.MAX_FEATURE_ID, 1) + 1, 0, 0);
+		featureWeights = modelClient.getVector("weights");
+	}
 
 	
 	protected void computeLoopBegin(){

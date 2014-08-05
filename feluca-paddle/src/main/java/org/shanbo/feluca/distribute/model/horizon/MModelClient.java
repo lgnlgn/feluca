@@ -126,7 +126,6 @@ public class MModelClient {
 		this.dataServerAddresses = dataServerAddresses;
 		this.shardId = shardId;
 		this.local = local;
-		loop = EventLoop.defaultEventLoop();
 		clients = new Client[dataServerAddresses.size()];
 		matrixModels = new MModelRPC[dataServerAddresses.size()];
 		partitioner = new HashPartitioner(dataServerAddresses.size());
@@ -138,6 +137,7 @@ public class MModelClient {
 	
 	
 	public void connect() throws NumberFormatException, UnknownHostException{
+		loop = EventLoop.defaultEventLoop();
 		for(int i = 0; i < clients.length; i++){
 			String[] hostPort = dataServerAddresses.get(i).split(":");
 			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]) + MModelRPC.PORT_AWAY, loop);
@@ -145,14 +145,16 @@ public class MModelClient {
 		}
 	}
 	public synchronized void close(){
-		for(Client client : clients){
-			client.close();
+		if (loop != null){
+			for(Client client : clients){
+				client.close();
+			}
+			loop.shutdown();
+			System.out.println("modelClients of #" + clients.length + " all closed");
 		}
-		loop.shutdown();
-		System.out.println("modelClients of #" + clients.length + " all closed");
 	}
 	
-	public void createVector(final String vectorName, int globalVectorSize, final float defaultValue, float vibration) throws InterruptedException, ExecutionException{
+	public void createVector(final String vectorName, int globalVectorSize, final float defaultValue, float vibration){
 		local.vectorCreate(vectorName, globalVectorSize, defaultValue, vibration); //create to local
 		vectorBuffers.put(vectorName, new VectorBuffer(512, local.vectors.get(vectorName))); //link to buffer
 	}
@@ -198,7 +200,7 @@ public class MModelClient {
 	
 
 	
-	public void createMatrix( String matrixName, int globalRowSize, int columnSize, float defaultValue, float vibration) throws InterruptedException, ExecutionException{
+	public void createMatrix( String matrixName, int globalRowSize, int columnSize, float defaultValue, float vibration) {
 		local.matrixCreate(matrixName, globalRowSize, columnSize, defaultValue, vibration);
 		matrixBuffers.put(matrixName, new MatrixBuffer(512, local.matrixes.get(matrixName)));
 	}

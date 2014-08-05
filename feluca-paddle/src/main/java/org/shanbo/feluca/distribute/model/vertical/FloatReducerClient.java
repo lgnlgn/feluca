@@ -21,13 +21,12 @@ public class FloatReducerClient implements Closeable{
 	FloatReducer[] reducers; //to workers back
 	final int clientId;
 	HashPartitioner partitioner;
-	
+
 	List<String> reduceServer ;
 	ArrayList<TFloatArrayList> container; //do parallel computing on more reducer maybe faster
-	
+
 	public FloatReducerClient(List<String> reducerServer, int shardId){
 		this.clientId = shardId;
-		this.loop = EventLoop.defaultEventLoop();
 		this.reduceServer = reducerServer;
 		clients = new Client[reducerServer.size()];
 		reducers = new FloatReducer[reducerServer.size()];
@@ -37,8 +36,9 @@ public class FloatReducerClient implements Closeable{
 			container.add(new TFloatArrayList());
 		}
 	}
-	
+
 	public void connect() throws NumberFormatException, UnknownHostException{
+		this.loop = EventLoop.defaultEventLoop();
 		for(int i = 0; i < clients.length; i++){
 			String[] hostPort = reduceServer.get(i).split(":");
 			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]) + FloatReducer.PORT_AWAY, loop);
@@ -46,24 +46,24 @@ public class FloatReducerClient implements Closeable{
 		}
 	}
 
-	
+
 	public float[] sum(float[] computedValues) throws InterruptedException, ExecutionException{
 		return reduce("sum", computedValues);
 	}
-	
+
 	public float[] max(float[] computedValues) throws InterruptedException, ExecutionException{
 		return reduce("max", computedValues);
 	}
-	
+
 	public float[] min(float[] computedValues) throws InterruptedException, ExecutionException{
 		return reduce("min", computedValues);
 	}
-	
+
 	public float[] avg(float[] computedValues) throws InterruptedException, ExecutionException{
 		return reduce("avg", computedValues);
 	}
-	
-	
+
+
 	private float[] reduce(final String func, float[] computedValues) throws InterruptedException, ExecutionException{
 		for(TFloatArrayList cont : container){
 			cont.resetQuick();
@@ -78,8 +78,8 @@ public class FloatReducerClient implements Closeable{
 			final float[] values = container.get(shardId).toArray();
 			reduceCalls.add(new Callable<float[]>() {
 				public float[] call() throws Exception {
-				     return reducers[toShardId].reduce(func, clientId, values);
-				     
+					return reducers[toShardId].reduce(func, clientId, values);
+
 				}
 			});
 		}
@@ -93,13 +93,14 @@ public class FloatReducerClient implements Closeable{
 		}
 		return reduceBacks;
 	}
-	
-	public void close(){
-		for(Client client : clients){
-			client.close();
-		}
-		loop.shutdown();
-		System.out.println("reduceClients of #" + clients.length + " all closed");
 
+	public void close(){
+		if (loop != null){
+			for(Client client : clients){
+				client.close();
+			}
+			loop.shutdown();
+			System.out.println("reduceClients of #" + clients.length + " all closed");
+		}
 	}
 }

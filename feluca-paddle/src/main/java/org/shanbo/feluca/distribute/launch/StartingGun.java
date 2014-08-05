@@ -65,8 +65,9 @@ public class StartingGun {
 				waitingWorkers.incrementAndGet();
 				if (waitingWorkers.get()  == totalWorkers){
 					synchronized(StartingGun.class){ //Double check lock 
-						if (waitingWorkers.get() == totalWorkers)
+						if (waitingWorkers.get() == totalWorkers){
 							setLoopSignal();
+						}
 					}
 				}
 			}
@@ -96,8 +97,8 @@ public class StartingGun {
 	
 	public void close() throws InterruptedException, KeeperException{
 		ZKClient.get().destoryWatch(workerWatcher);
-		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_LOOP_PATH);
-		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_WAITING_PATH);
+//		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_LOOP_PATH);
+//		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_WAITING_PATH);
 		System.out.println("startingGun of [" + path + "] closed"  );
 	}
 	

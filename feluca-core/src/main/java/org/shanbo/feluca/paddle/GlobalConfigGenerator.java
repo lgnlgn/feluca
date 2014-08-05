@@ -62,7 +62,8 @@ public class GlobalConfigGenerator {
 			result.put(worker, new ArrayList<GlobalConfig>());
 			for(int i = 0 ; i < blocks.size(); i++){
 				int shardId = extractShardId(blocks.getString(i));
-				result.get(worker).add(GlobalConfig.build(shardId, algoName, algoConf, dataName, dataStatistic, workerAddresses, reducers, workerAddresses.get(shardId), configs.get(shardId)));
+				GlobalConfig conf = GlobalConfig.build(shardId, algoName, algoConf, dataName, dataStatistic, workerAddresses, reducers, workerAddresses.get(shardId), configs.get(shardId));
+				result.get(worker).add(conf);
 			}
 		}
 		JSONObject r = new JSONObject();

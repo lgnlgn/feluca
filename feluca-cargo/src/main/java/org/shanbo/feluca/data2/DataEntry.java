@@ -6,10 +6,15 @@ import java.util.Properties;
 
 import org.shanbo.feluca.data2.Vector.VectorType;
 
-
+/**
+ * sugar for VectorReader
+ * TODO add a queue for producer/consumer mode
+ * @author lgn
+ *
+ */
 public class DataEntry implements Closeable{
 	
-	SeqVectorReader reader;
+	VectorReader reader;
 	String dataName;
 	String pattern ;
 	public DataEntry(String dataName) throws IOException{
