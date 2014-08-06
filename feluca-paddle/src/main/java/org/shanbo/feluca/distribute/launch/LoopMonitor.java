@@ -13,6 +13,7 @@ import org.shanbo.feluca.util.concurrent.ConcurrentExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class LoopMonitor {
 	
 	static Logger log = LoggerFactory.getLogger(LoopMonitor.class);
@@ -36,7 +37,7 @@ public class LoopMonitor {
 	 */
 	public void start() throws KeeperException, InterruptedException, ExecutionException, TimeoutException{
 		ZKClient.get().createIfNotExist(path);
-		waitForSignalEquals(StartingGun.START_SIGNAL, 10000);
+		waitForSignalEquals(StartingGun.START_SIGNAL, 100000);
 		loopWatcher = new StringValueWatcher() {
 			public void valueChanged(String l) {
 				loopOk = true;
@@ -51,6 +52,7 @@ public class LoopMonitor {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
+				log.warn("InterruptedException in waitForLoopStart");
 			}
 		}
 		loopOk = false;
@@ -87,7 +89,7 @@ public class LoopMonitor {
 	}
 
 	public void waitForFinish() throws KeeperException, InterruptedException, TimeoutException, ExecutionException{
-		this.waitForSignalEquals(StartingGun.FINISH_SIGNAL, 10000);
+		this.waitForSignalEquals(StartingGun.FINISH_SIGNAL, 100000);
 	}
 
 	public void confirmLoopFinish() throws Exception{
@@ -99,6 +101,8 @@ public class LoopMonitor {
 		System.out.println("loopMonitor of [" + workerName + "] closed");
 	}
 
-
+	public String toString(){
+		return ".../" + path + "/" + workerName; 
+	}
 
 }

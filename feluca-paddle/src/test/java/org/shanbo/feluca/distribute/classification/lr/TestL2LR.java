@@ -24,7 +24,7 @@ public class TestL2LR {
 		String dataName = "real-sim";
 		String worker = NetworkUtils.ipv4Host() + ":12030";
 		JSONObject dataDistribution = new JSONObject();
-		dataDistribution.put(worker,  ImmutableList.of("real-sim.v.0.dat"));
+		dataDistribution.put(worker,  ImmutableList.of("real-sim.v.0.dat", "real-sim.v.1.dat"));
 		
 		JSONObject allocated = GlobalConfigGenerator.allocate(dataDistribution, "l2lr", 
 				DefaultAlgoConf.basicLRconf(10, 0.4, 0.001), dataName, DataUtils.loadForWorker(dataName));

@@ -22,12 +22,12 @@ public class FloatReducerClient implements Closeable{
 	final int clientId;
 	HashPartitioner partitioner;
 
-	List<String> reduceServer ;
+	List<String> reduceServers ;
 	ArrayList<TFloatArrayList> container; //do parallel computing on more reducer maybe faster
 
 	public FloatReducerClient(List<String> reducerServer, int shardId){
 		this.clientId = shardId;
-		this.reduceServer = reducerServer;
+		this.reduceServers = reducerServer;
 		clients = new Client[reducerServer.size()];
 		reducers = new FloatReducer[reducerServer.size()];
 		partitioner = new HashPartitioner(reducerServer.size());
@@ -40,7 +40,7 @@ public class FloatReducerClient implements Closeable{
 	public void connect() throws NumberFormatException, UnknownHostException{
 		this.loop = EventLoop.defaultEventLoop();
 		for(int i = 0; i < clients.length; i++){
-			String[] hostPort = reduceServer.get(i).split(":");
+			String[] hostPort = reduceServers.get(i).split(":");
 			clients[i] = new Client(hostPort[0], Integer.parseInt(hostPort[1]) + FloatReducer.PORT_AWAY, loop);
 			reducers[i] = clients[i].proxy(FloatReducer.class);
 		}

@@ -2,10 +2,15 @@ package org.shanbo.feluca.common;
 
 import java.net.SocketException;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZKUtil;
 import org.shanbo.feluca.util.Config;
 import org.shanbo.feluca.util.NetworkUtils;
 import org.shanbo.feluca.util.ZKClient;
+import org.shanbo.feluca.util.ZKUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +24,22 @@ public abstract class Server {
 	Logger log = LoggerFactory.getLogger(Server.class);
 	protected String ip = null;
 	protected int port;
-
+	protected CuratorFramework zkClient ;
 	public void start(){
 		try{
+			zkClient = ZKUtils.newClient();
+			zkClient.start();
 			this.preStart();
-			ZKClient.get().createIfNotExist(zkPathRegisterTo());
-			ZKClient.get().registerEphemeralNode(zkPathRegisterTo(), getServerAddress());
+			if (zkClient.checkExists().forPath(zkPathRegisterTo()) == null ){
+				zkClient.create().creatingParentsIfNeeded().forPath(zkPathRegisterTo());	
+			}
+			if (zkClient.checkExists().forPath(zkPathRegisterTo() + "/" + getServerAddress()) != null){
+				zkClient.delete().guaranteed().forPath(zkPathRegisterTo() + "/" + getServerAddress());
+			}
+			zkClient.create().withMode(CreateMode.EPHEMERAL).forPath(zkPathRegisterTo() + "/" + getServerAddress());
+			
+				//			ZKClient.get().createIfNotExist(zkPathRegisterTo());
+//			ZKClient.get().registerEphemeralNode(zkPathRegisterTo(), getServerAddress());
 		}catch (Exception e) {
 			log.error("Server [" + this.getClass().getName() + "] start failed", e);
 			throw new FelucaException("Server [" + this.getClass().getName() + "] start failed",e);
@@ -35,10 +50,13 @@ public abstract class Server {
 	public  void stop(){
 		try{
 			this.postStop();
-			ZKClient.get().unRegisterEphemeralNode(zkPathRegisterTo(), getServerAddress());
+			zkClient.delete().guaranteed().forPath(zkPathRegisterTo() + "/" +  getServerAddress());
+//			ZKClient.get().unRegisterEphemeralNode(zkPathRegisterTo(), getServerAddress());
 		}catch (Exception e) {
 			log.error("Server [" + this.getClass().getName() + "] stop failed", e);
 			throw new FelucaException("Server [" + this.getClass().getName() + "] stop failed");
+		}finally{
+			zkClient.close();
 		}
 	}
 

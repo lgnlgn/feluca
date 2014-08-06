@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author lgn
  *
  */
+@Deprecated
 public class StartingGun {
 
 	Logger log = LoggerFactory.getLogger(StartingGun.class);
@@ -97,8 +98,8 @@ public class StartingGun {
 	
 	public void close() throws InterruptedException, KeeperException{
 		ZKClient.get().destoryWatch(workerWatcher);
-//		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_LOOP_PATH);
-//		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_WAITING_PATH);
+		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_LOOP_PATH);
+		ZKClient.get().forceDelete(path + Constants.Algorithm.ZK_WAITING_PATH);
 		System.out.println("startingGun of [" + path + "] closed"  );
 	}
 	
@@ -121,7 +122,7 @@ public class StartingGun {
 					throw new FelucaException("waitForModelServerStarted  KeeperException ",e );
 				}
 			}
-		}, 10000);
+		}, 100000);
 
 	}
 

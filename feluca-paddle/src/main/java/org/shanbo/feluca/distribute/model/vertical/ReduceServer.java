@@ -4,6 +4,7 @@ import org.msgpack.rpc.loop.EventLoop;
 import org.shanbo.feluca.common.ClusterUtil;
 import org.shanbo.feluca.common.Constants;
 import org.shanbo.feluca.common.Server;
+import org.shanbo.feluca.distribute.model.horizon.MModelRPC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +17,9 @@ public class ReduceServer extends Server{
 	static Logger log = LoggerFactory.getLogger(ReduceServer.class);
 	EventLoop loop;
 	org.msgpack.rpc.Server server;
-	int port = 0;
 	String algoName;
 	int totalClients = 1;
+	int port;
 	public ReduceServer(String workerAddress, int totalClients,  String algoName){
 		this.port = new Integer(workerAddress.split(":")[1]) + FloatReducer.PORT_AWAY;
 		this.algoName = algoName;
@@ -43,7 +44,7 @@ public class ReduceServer extends Server{
 
 	@Override
 	public void preStart() throws Exception {
-		ClusterUtil.getWorkerList();
+//		ClusterUtil.getWorkerList();
 		loop = EventLoop.defaultEventLoop();
 		server = new org.msgpack.rpc.Server(loop);
 		server.serve(new FloatReducerImpl(totalClients));
@@ -53,6 +54,11 @@ public class ReduceServer extends Server{
 		
 	}
 
+	public String getServerAddress(){
+		return super.getServerAddress().split(":")[0] + port;
+	}
+	
+	
 	@Override
 	public void postStop() throws Exception {
 		server.close();

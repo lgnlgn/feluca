@@ -2,6 +2,7 @@ package org.shanbo.feluca.data2.convert;
 
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import org.shanbo.feluca.data2.HashPartitioner;
 import org.shanbo.feluca.data2.SeqVectorReader;
 import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.data2.VectorReader;
+
+import com.google.common.io.PatternFilenameFilter;
 
 /**
  * 
@@ -36,7 +39,11 @@ public class VectorPartitioner {
 
 	void doPartition(VectorReader reader, int blocks, String suffix) throws IOException{
 		assert (isPowerOfTwo(blocks) == true);
-		
+		File[] dats = reader.getDataDir().listFiles(new PatternFilenameFilter(".*\\.v\\.\\d+\\.dat"));
+		for(File dat : dats){
+			System.out.print(dat.getName() + ";");
+			dat.delete();
+		}
 		String dataName = reader.getDataDir().getName();
 		HashPartitioner partitioner = new HashPartitioner(blocks);
 		String blockPathTemplate = reader.getDataDir().getAbsolutePath() + "/" + dataName + ".v.%d.dat" + suffix;

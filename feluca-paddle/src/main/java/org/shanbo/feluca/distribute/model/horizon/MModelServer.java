@@ -17,7 +17,7 @@ public class MModelServer extends Server{
 	MModelLocal modelImpl;
 	
 	String algoName;
-	int port ;
+	int port;
 	public MModelServer(String workerAddress, String algoName, MModelLocal model){
 		this.modelImpl = model;
 		this.port = new Integer(workerAddress.split(":")[1]) + MModelRPC.PORT_AWAY;
@@ -42,16 +42,18 @@ public class MModelServer extends Server{
 
 	@Override
 	public void preStart() throws Exception {
-		ClusterUtil.getWorkerList();
+//		ClusterUtil.getWorkerList();
 		loop = EventLoop.defaultEventLoop();
 		server = new org.msgpack.rpc.Server(loop);
 		server.serve(modelImpl);
 		server.listen("0.0.0.0", defaultPort());
 		System.out.println("modelServer[" + port + "] started");
-
-		
 	}
 
+	public String getServerAddress(){
+		return super.getServerAddress().split(":")[0] + ":" +  port;
+	}
+	
 	@Override
 	public void postStop() throws Exception {
 		server.close();
