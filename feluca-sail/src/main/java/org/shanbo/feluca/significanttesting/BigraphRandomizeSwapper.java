@@ -57,7 +57,7 @@ public class BigraphRandomizeSwapper extends RandomSwapper{
 	}
 	
 	@Override
-	public void runSwap() throws IOException {
+	public void runSwap() throws Exception {
 		int attributes = 1024 ; //for the capacity of IntegerArray initialization
 		long t = 0;
 		attributes = Math.max(attributes, Utilities.getIntFromProperties(input.getDataStatistic(), DataStatistic.MAX_FEATURE_ID));

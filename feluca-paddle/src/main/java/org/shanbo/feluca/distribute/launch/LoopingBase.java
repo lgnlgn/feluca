@@ -98,7 +98,7 @@ public abstract class LoopingBase implements Runnable{
 		reducerClient = new FloatReducerClient(conf.getReduceServers(), shardId); 
 	}
 
-	private void openDataInput() throws IOException{
+	private void openDataInput() throws Exception{
 		dataEntry.reOpen();
 	}
 

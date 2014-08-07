@@ -31,10 +31,10 @@ public class FloatReducerImpl implements FloatReducer{
 		ReducePreparation[] toReduce ;	
 		TFloatArrayList accValues;
 		volatile float[] results ;
-		
+
 		CyclicBarrier enterBarrier ;
 		CyclicBarrier leaveBarrier ;
-		
+
 		volatile boolean reduceDone;
 		ReentrantLock lock = new ReentrantLock();
 
@@ -51,22 +51,25 @@ public class FloatReducerImpl implements FloatReducer{
 
 		public void doReduce(){
 			lock.lock();
-			if (reduceDone == false){
-				accValues.resetQuick();
-				processValues();
-				results = accValues.toArray();
-				reduceDone = true;
-				enterBarrier.reset();
-				leaveBarrier.reset();
+			try{
+				if (reduceDone == false){
+					accValues.resetQuick();
+					processValues();
+					results = accValues.toArray();
+					reduceDone = true;
+					enterBarrier.reset();
+					leaveBarrier.reset();
+				}
+			}finally{
+				lock.unlock();
 			}
-			lock.unlock();
 		}
 
 		public abstract void processValues() ;
 
 		public float[] getResult() throws InterruptedException, BrokenBarrierException{
-			leaveBarrier.await();
 			reduceDone = false;
+			leaveBarrier.await();
 			return results;
 		}
 

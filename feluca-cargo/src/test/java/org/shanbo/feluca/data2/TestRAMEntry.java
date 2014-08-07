@@ -8,8 +8,9 @@ public class TestRAMEntry {
 	/**
 	 * @param args
 	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		DataEntry de =  DataEntry.createDataEntry("data/real-sim", true);
 		System.out.println("!!!");
 		de.reOpen();

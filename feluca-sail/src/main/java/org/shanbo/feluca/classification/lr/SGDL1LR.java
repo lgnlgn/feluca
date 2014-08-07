@@ -53,7 +53,7 @@ public final class SGDL1LR extends AbstractSGDLogisticRegression{
 	
 	
 	@Override
-	protected void _train(int fold, int remain) throws IOException {
+	protected void _train(int fold, int remain) throws Exception {
 		// TODO Auto-generated method stub
 		double avge = 99999.9;
 		double lastAVGE = Double.MAX_VALUE;

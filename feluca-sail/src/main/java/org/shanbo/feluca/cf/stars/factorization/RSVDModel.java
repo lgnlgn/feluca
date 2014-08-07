@@ -67,7 +67,7 @@ public class RSVDModel extends SVDModel{
 
 	}
 	
-	private void _train() throws IOException{
+	private void _train() throws Exception{
 		System.out.println("--------------------");
 		float learningSpeed = this.alpha;
 		

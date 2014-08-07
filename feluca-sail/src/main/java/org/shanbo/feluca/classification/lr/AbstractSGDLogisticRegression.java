@@ -254,7 +254,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		return p;
 	}
 
-	protected abstract void _train(int fold, int remain) throws IOException;
+	protected abstract void _train(int fold, int remain) throws Exception;
 
 	public abstract int estimate(Properties dataStatus, Properties parameters) ;
 }

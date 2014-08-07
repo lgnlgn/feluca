@@ -20,5 +20,5 @@ public abstract class RandomSwapper {
 		this.loops = loops;
 	}
 	
-	abstract public void runSwap()throws IOException;
+	abstract public void runSwap()throws Exception;
 }

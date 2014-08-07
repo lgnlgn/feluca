@@ -3,6 +3,8 @@ package org.shanbo.feluca.data2;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.shanbo.feluca.data2.Vector.VectorType;
 
@@ -17,6 +19,9 @@ public class DataEntry implements Closeable{
 	VectorReader reader;
 	String dataName;
 	String pattern ;
+	BlockingQueue<Vector> queue;
+	Thread reading ;
+	volatile boolean finished = false;
 	public DataEntry(String dataName) throws IOException{
 		this(dataName, "\\.\\d+\\.dat");
 	}
@@ -25,14 +30,52 @@ public class DataEntry implements Closeable{
 		this.dataName = dataName;
 		this.pattern = pattern;
 		reader = new SeqVectorReader(dataName, pattern);
+		queue = new LinkedBlockingQueue<Vector>(1000);
 	}
 	
-	public void reOpen() throws IOException{
+	public void reOpen() throws Exception{
 		close();
 		reader = new SeqVectorReader(dataName, pattern);
+//		finished = false;
+//		reading = new Thread(new Runnable() {
+//			public void run() {
+//				try {
+//					fill();
+//				} catch (Exception e) {
+//					throw new RuntimeException("filling queue error!", e);
+//				}
+//			}
+//		});
+//		reading.setDaemon(true);
+//		reading.start();
 	}
 	
-	public Vector getNextVector() throws IOException{
+	private void fill() throws IOException, InterruptedException{
+		
+		for(Vector v = reader.getNextVector(); v!= null;){
+			boolean inserted = queue.offer(v);
+			if (inserted){
+				v = reader.getNextVector();
+			}else{
+				Thread.sleep(5);
+				continue;
+			}
+		}
+		finished = true;
+	}
+	
+	public Vector getNextVector() throws Exception{
+//		Vector v = queue.poll();
+//		if (v == null){
+//			if (finished == true){
+//				return null;
+//			}else{
+//				Thread.sleep(10);
+//				return getNextVector();
+//			}
+//		}else{
+//			return v;
+//		}
 		return reader.getNextVector();
 	}
 	
@@ -45,6 +88,7 @@ public class DataEntry implements Closeable{
 	}
 	
 	public void close() throws IOException{
+		queue.clear();
 		if (reader!=null)
 			reader.close();
 	}
@@ -87,7 +131,7 @@ public class DataEntry implements Closeable{
 			return vectors[idx++];
 		}
 		
-		public void reOpen() throws IOException{
+		public void reOpen() throws Exception{
 			if (vectors == null){
 				super.reOpen();
 				vectors = new Vector[
@@ -102,5 +146,14 @@ public class DataEntry implements Closeable{
 		}
 		
 	}
-	
+	public static void main(String[] args) throws Exception {
+		DataEntry de =  DataEntry.createDataEntry("data/real-sim", false);
+		System.out.println("!!!");
+		de.reOpen();
+		int count = 0;
+		for(Vector v = de.getNextVector(); v!= null ; v = de.getNextVector()){
+			count +=1;
+		}
+		System.out.println(count);
+	}
 }
