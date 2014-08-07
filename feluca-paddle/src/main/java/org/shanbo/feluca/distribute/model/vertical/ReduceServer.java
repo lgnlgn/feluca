@@ -55,7 +55,7 @@ public class ReduceServer extends Server{
 	}
 
 	public String getServerAddress(){
-		return super.getServerAddress().split(":")[0] + port;
+		return super.getServerAddress().split(":")[0] + ":" +  port;
 	}
 	
 	

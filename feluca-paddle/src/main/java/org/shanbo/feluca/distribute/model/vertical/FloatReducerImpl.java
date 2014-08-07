@@ -68,8 +68,8 @@ public class FloatReducerImpl implements FloatReducer{
 		public abstract void processValues() ;
 
 		public float[] getResult() throws InterruptedException, BrokenBarrierException{
-			reduceDone = false;
 			leaveBarrier.await();
+			reduceDone = false; //it's ok; because fastest thread still have to wait for others to enter the doReduce()  
 			return results;
 		}
 

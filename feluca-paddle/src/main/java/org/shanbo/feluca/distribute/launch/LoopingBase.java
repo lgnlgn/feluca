@@ -136,9 +136,8 @@ public abstract class LoopingBase implements Runnable{
 			startBarrier.waitOnBarrier();//wait until start signal(reduceServers & modelServers all started) then start loop watching 
 			System.out.println("loop inside");
 			reducerClient.connect();//connecting; algorithms always use reducer instead of syncModel  
-			if (useSyncModel){
-				modelClient.connect(); //
-			}
+			modelClient.connect(); //
+			
 			
 			for(looping = 0 ; looping < loops && earlyStop() == false;looping++){
 				System.out.print("loop--:----(" + looping);
@@ -148,9 +147,8 @@ public abstract class LoopingBase implements Runnable{
 				computeLoop();
 				loopBarrier.leave();
 			}
-			if (useSyncModel){
-				modelClient.close(); //
-			}
+			
+			modelClient.close(); //	
 			reducerClient.close();
 			if (startingGun != null){  //do cleanup() first 
 				startingGun.setFinish(); //tell all workers to finish job

@@ -170,6 +170,7 @@ public class MModelClient {
 	
 	public List<Future<Integer>> vectorUpdate(final String vectorName, final  int[] fids) throws InterruptedException, ExecutionException{
 		final VectorBuffer vector = vectorBuffers.get(vectorName);
+		vector.clear();
 		for(int i = 0 ; i < fids.length; i++){
 			int toShardId = partitioner.decideShard(fids[i]);
 			if (toShardId == shardId){
@@ -209,6 +210,7 @@ public class MModelClient {
 	
 	public List<Future<Integer>> matrixUpdate(final String matrixName, final  int[] fids) throws InterruptedException, ExecutionException{
 		final MatrixBuffer matrix = matrixBuffers.get(matrixName);
+		matrix.clear();
 		for(int i = 0 ; i < fids.length; i++){
 			int toShardId = partitioner.decideShard(fids[i]);
 			if (toShardId == shardId){
@@ -233,6 +235,15 @@ public class MModelClient {
 			}
 		}
 		return ConcurrentExecutor.asyncExecute(pushCallables);
+//		for(int i = 0 ; i < clients.length; i++){
+//			final int toShardId = i;
+//			if (i == shardId){
+//				continue;
+//			}else{
+//				matrixModels[toShardId].matrixUpdate(matrixName, matrix.getIds(), matrix.getWeights());
+//			}
+//		}
+//		return null;
 	}
 
 	
