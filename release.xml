@@ -7,42 +7,53 @@
 	<formats>
 		<format>zip</format>
 	</formats>
-	<dependencySets>
-		<dependencySet>
-			<useProjectArtifact>true</useProjectArtifact>
-			<outputDirectory>lib</outputDirectory>
-		</dependencySet>
-	</dependencySets>
+
 	<files>
 		<file>
-			<source>src/main/resources/*.properties</source>
+			<source>feluca-core/src/main/resources/log4j.properties</source>
+			<outputDirectory>conf</outputDirectory>
+		</file>
+		<file>
+			<source>feluca-core/src/main/resources/config.properties</source>
 			<outputDirectory>conf</outputDirectory>
 		</file>
 	</files>
 	<fileSets>
 		<fileSet>
-			<directory>src/main/resources/bin</directory>
+			<directory>feluca-core/bin</directory>
 			<outputDirectory>bin</outputDirectory>
+			<fileMode>0755</fileMode>
 		</fileSet>
 		<fileSet>
-			<directory>src/main/resources/logs</directory>
+			<directory>feluca-core/leader_repo</directory>
+			<outputDirectory>leader_repo</outputDirectory>
+			<includes> 
+				<include>data</include>
+				<include>model</include>
+				<include>resources</include>			
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>feluca-core/logs</directory>
 			<outputDirectory>logs</outputDirectory>
+			<excludes>
+				<exclude>**/*</exclude>
+			</excludes>
 		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/pids</directory>
-			<outputDirectory>pids</outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/data</directory>
-			<outputDirectory>data</outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/model</directory>
-			<outputDirectory>data</outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/lib</directory>
-			<outputDirectory>lib</outputDirectory>
-		</fileSet>
+
 	</fileSets>
+	<moduleSets>
+		<moduleSet>
+			<binaries>
+				<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+				<outputDirectory>./</outputDirectory>
+				<unpack>false</unpack>
+				<dependencySets>
+					<dependencySet>
+						<outputDirectory>lib</outputDirectory>
+					</dependencySet>
+				</dependencySets>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
 </assembly>
