@@ -34,13 +34,25 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>feluca-core/worker_repo</directory>
+			<outputDirectory>worker_repo</outputDirectory>
+			<includes> 
+				<include>data</include>
+				<include>model</include>
+				<include>resources</include>			
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>feluca-core/logs</directory>
 			<outputDirectory>logs</outputDirectory>
 			<excludes>
 				<exclude>**/*</exclude>
 			</excludes>
 		</fileSet>
-
+		<fileSet>
+			<directory>feluca-core/pids</directory>
+			<outputDirectory>pids</outputDirectory>
+		</fileSet>
 	</fileSets>
 	<moduleSets>
 		<moduleSet>
@@ -51,6 +63,9 @@
 				<dependencySets>
 					<dependencySet>
 						<outputDirectory>lib</outputDirectory>
+						<excludes>
+						<exclude>org.shanbo:feluca*</exclude>
+						</excludes>
 					</dependencySet>
 				</dependencySets>
 			</binaries>

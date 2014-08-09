@@ -1,0 +1,7 @@
+2014-07-24 11:36:26,233 DEBUG org.shanbo: preRegister called. Server=com.sun.jmx.mbeanserver.JmxMBeanServer@6ee0a386, name=log4j:logger=org.shanbo
+2014-07-24 11:36:26,236 ERROR org.apache.zookeeper.server.ZooKeeperServerMain: Invalid arguments, exiting abnormally
+java.lang.IllegalArgumentException: Invalid args:[]
+	at org.apache.zookeeper.server.ServerConfig.parse(ServerConfig.java:56)
+	at org.apache.zookeeper.server.ZooKeeperServerMain.initializeAndRun(ZooKeeperServerMain.java:83)
+	at org.apache.zookeeper.server.ZooKeeperServerMain.main(ZooKeeperServerMain.java:52)
+2014-07-24 11:36:26,247 INFO org.apache.zookeeper.server.ZooKeeperServerMain: Usage: ZooKeeperServerMain configfile | port datadir [ticktime] [maxcnxns]
