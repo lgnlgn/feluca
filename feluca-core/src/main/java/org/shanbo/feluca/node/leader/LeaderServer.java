@@ -61,7 +61,6 @@ public class LeaderServer extends BaseNioServer{
 
 
 				pipeline.addLast("decoder", new HttpRequestDecoder());
-//				pipeline.addLast("chunk" , new org.jboss.netty.handler.codec.http.HttpChunkAggregator(8888888));
 				pipeline.addLast("encoder", new HttpResponseEncoder());
 				pipeline.addLast("channel", channel);
 

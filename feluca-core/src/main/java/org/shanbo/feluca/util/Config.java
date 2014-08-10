@@ -34,10 +34,10 @@ public abstract class Config {
 			try {
 				if (!cf.exists()) {
 					if( !cf.getParentFile().mkdirs() )
-						log.warn("Parent file exist or create wron");
+						log.warn("Parent file exists or create wrong");
 					
 					if( !cf.createNewFile() )
-						log.warn("File exist or create wron");
+						log.warn("File exists or create wrong");
 				}
 				
 				// ptoStore = new Properties();
