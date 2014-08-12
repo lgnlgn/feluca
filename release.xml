@@ -13,10 +13,6 @@
 			<source>feluca-core/src/main/resources/log4j.properties</source>
 			<outputDirectory>conf</outputDirectory>
 		</file>
-		<file>
-			<source>feluca-core/src/main/resources/config.properties</source>
-			<outputDirectory>conf</outputDirectory>
-		</file>
 	</files>
 	<fileSets>
 		<fileSet>
@@ -52,13 +48,20 @@
 		<fileSet>
 			<directory>feluca-core/pids</directory>
 			<outputDirectory>pids</outputDirectory>
+			<excludes>
+				<exclude>**/*</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>feluca-core/conf</directory>
+			<outputDirectory>conf</outputDirectory>
 		</fileSet>
 	</fileSets>
 	<moduleSets>
 		<moduleSet>
+		<useAllReactorProjects>true</useAllReactorProjects>
 			<binaries>
-				<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-				<outputDirectory>./</outputDirectory>
+				<outputDirectory>lib</outputDirectory>
 				<unpack>false</unpack>
 				<dependencySets>
 					<dependencySet>

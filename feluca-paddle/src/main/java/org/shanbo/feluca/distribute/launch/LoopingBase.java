@@ -2,24 +2,21 @@ package org.shanbo.feluca.distribute.launch;
 
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.io.IOException;
-
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.barriers.DistributedBarrier;
 import org.apache.curator.framework.recipes.barriers.DistributedDoubleBarrier;
 import org.apache.zookeeper.KeeperException;
 import org.shanbo.feluca.common.Constants;
-import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.data2.DataEntry;
+import org.shanbo.feluca.data2.Vector;
 import org.shanbo.feluca.distribute.model.horizon.MModelClient;
 import org.shanbo.feluca.distribute.model.horizon.MModelLocal;
 import org.shanbo.feluca.distribute.model.horizon.MModelServer;
 import org.shanbo.feluca.distribute.model.vertical.FloatReducerClient;
 import org.shanbo.feluca.distribute.model.vertical.ReduceServer;
-
-
 import org.shanbo.feluca.paddle.AlgoDeployConf;
 import org.shanbo.feluca.paddle.GlobalConfig;
+import org.shanbo.feluca.util.Config;
 import org.shanbo.feluca.util.JSONUtil;
 import org.shanbo.feluca.util.ZKUtils;
 import org.slf4j.Logger;
@@ -62,8 +59,9 @@ public abstract class LoopingBase implements Runnable{
 	public LoopingBase(GlobalConfig conf) throws Exception{
 		log = LoggerFactory.getLogger(this.getClass());
 		init(conf);
-		dataEntry = new DataEntry(Constants.Base.getWorkerRepository() + Constants.Base.DATA_DIR + "/" + conf.getDataName(), 
-				"\\.v\\." + this.shardId + "\\.dat");
+		boolean inRam = new Boolean(Config.get().get("dataEntry.inRam", "false"));
+		dataEntry = DataEntry.createDataEntry(Constants.Base.getWorkerRepository() + Constants.Base.DATA_DIR + "/" + conf.getDataName(), 
+				"\\.v\\." + this.shardId + "\\.dat", inRam);
 	}
 
 	/**
