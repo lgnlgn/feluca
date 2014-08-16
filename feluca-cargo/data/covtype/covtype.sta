@@ -1,8 +1,0 @@
-maxFeatureId=54
-maxVectorSize=12
-classes=2
-numVectors=581012
-vectorType=LABEL_FID_WEIGHT
-labelInfo=1:0:297711 2:1:283301 
-totalFeatures=6940438
-sumWeights=3808379.2806646125
