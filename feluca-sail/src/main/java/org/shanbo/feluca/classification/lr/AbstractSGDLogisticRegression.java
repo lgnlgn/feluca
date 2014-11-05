@@ -31,8 +31,8 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 
 	boolean usePool = false;
 
-	protected int[][] dataInfo = null;
-
+	protected int[][] outerLabelInfo = null; //outer label -> info
+	protected int[][] innerLabelInfo = null; //inner label -> info
 
 	protected Double alpha = null; // learning speed
 	protected Double lambda = null;// regularization
@@ -65,7 +65,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 			maxFeatureId = Utilities.getIntFromProperties(dataEntry.getDataStatistic(), DataStatistic.MAX_FEATURE_ID);
 
 			String tmpInfo = Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.LABEL_INFO);
-			this.dataInfo = new int[LABELRANGEBASE * 2][];
+			this.outerLabelInfo = new int[LABELRANGEBASE * 2][];
 			if (tmpInfo.split(" ").length > 2){
 				throw new RuntimeException("Data Set contains more than 2 classes");
 			}
@@ -81,10 +81,14 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		int[] classInfo1Ints = new int[]{Integer.parseInt(classInfo1[0]), Integer.parseInt(classInfo1[1]), Integer.parseInt(classInfo1[2])};
 		int[] classInfo2Ints = new int[]{Integer.parseInt(classInfo2[0]), Integer.parseInt(classInfo2[1]), Integer.parseInt(classInfo2[2])};
 
-		this.dataInfo = new int[LABELRANGEBASE * 2][]; // original_LABEL -> index, #sample
-		this.dataInfo[LABELRANGEBASE + classInfo1Ints[0]] = new int[]{classInfo1Ints[1], classInfo1Ints[2]};
-		this.dataInfo[LABELRANGEBASE + classInfo2Ints[0]] = new int[]{classInfo2Ints[1], classInfo2Ints[2]};
+		this.outerLabelInfo = new int[LABELRANGEBASE * 2][]; // original_LABEL -> innerLabel, #sample
+		this.outerLabelInfo[LABELRANGEBASE + classInfo1Ints[0]] = new int[]{classInfo1Ints[1], classInfo1Ints[2]};
+		this.outerLabelInfo[LABELRANGEBASE + classInfo2Ints[0]] = new int[]{classInfo2Ints[1], classInfo2Ints[2]};
 
+		this.innerLabelInfo = new int[2][];  //innerLabel -> original_LABEL, #sample
+		this.innerLabelInfo[classInfo1Ints[1]] = new int[]{classInfo1Ints[0], classInfo1Ints[2]};
+		this.innerLabelInfo[classInfo2Ints[1]] = new int[]{classInfo2Ints[0], classInfo2Ints[2]};
+		
 		//  set bias automatically
 		float ratio = classInfo2Ints[2] /(classInfo1Ints[2] + 0.0f);
 		this.biasLabel = classInfo1Ints[0];
@@ -145,7 +149,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 						continue;
 					this.predict(sample, resultProbs);
 					for(Evaluator e : evaluators){
-						e.collect(dataInfo[LABELRANGEBASE + sample.getIntHeader()][0], resultProbs);
+						e.collect(outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0], resultProbs);
 					}
 				}
 			}
@@ -212,27 +216,32 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 	}
 
 	/**
-	 * you should make sure the LABEL of data is the same as that of training set. 
+	 * predict probability for data; the predict_Label will accord with training data;
 	 * Otherwise use {@link #predict(String, String, Evaluator...)} instead.
 	 */
 	public void predict(DataEntry data, String resultPath, Evaluator... evaluators) throws Exception {
 		if (this.featureWeights == null)
 			throw new IOException("!Model haven't been initialized yet! :(");
 		BufferedWriter bw = new BufferedWriter(new FileWriter(resultPath));
+		bw.write("testLabel\tpredictLabel\tprobability(here means confidence)\n");
 		double[] resultProbs = new double[2];
-		int idx = -1;
-		for(Vector sample = dataEntry.getNextVector(); sample != null ; sample = dataEntry.getNextVector()){
+		int innerLabel = -1;
+		data.reOpen();
+		for(Vector sample = data.getNextVector(); sample != null ; sample = data.getNextVector()){
 
-			if (sample.getSize() == 0){
-				continue;
+			if (sample.getSize() == 0){ //how to predict without any features? A default probability = 0.5 should be moderate;
+				bw.write(String.format("%d\t%d\t%.4f\n" , sample.getIntHeader(), innerLabelInfo[0][0], 0.5f));
 			}
 			this.predict(sample, resultProbs);
-			for(Evaluator e : evaluators){
-				int tmp = dataInfo[LABELRANGEBASE + sample.getIntHeader()][0];
-				e.collect(tmp, resultProbs);
+			if (evaluators != null){
+				for(Evaluator e : evaluators){
+					int testLabel = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0]; //innerLabel = [0 or 1]
+					e.collect(testLabel, resultProbs);
+				}
 			}
-			idx = resultProbs[0] > resultProbs[1] ? 0 : 1;
-			bw.write(String.format("%d\t%.4f\n" , sample.getIntHeader(), resultProbs[idx]));
+			innerLabel = resultProbs[0] > resultProbs[1] ? 0 : 1; // predict inner Label with probabilities;
+			//output original label;
+			bw.write(String.format("%d\t%d\t%.4f\n" , sample.getIntHeader(), innerLabelInfo[innerLabel][0], resultProbs[innerLabel]));
 		}
 		bw.close();
 		for(Evaluator e : evaluators){

@@ -17,7 +17,7 @@ public class SGDL2LR extends AbstractSGDLogisticRegression{
 			weightSum += featureWeights[sample.getFId(i)] * sample.getWeight(i);
 		}
 		double tmp = Math.pow(Math.E, -weightSum); //e^-sigma(x)
-		double error = dataInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
+		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
 		double partialDerivation =  tmp  / (tmp * tmp + 2 * tmp + 1) ;
 
 		for(int i = 0 ; i < sample.getSize(); i++){
