@@ -84,7 +84,7 @@ public class VectorSerializer {
 			globalStat.stat(vector);
 			count ++;
 			if (count % 10000 == 0){
-				System.out.println("!");
+//				System.out.println("!");
 			}
 			blockSize += vector.getSpaceCost() ;
 			if (blockSize > DATA_SIZE_PER_BLOCK){

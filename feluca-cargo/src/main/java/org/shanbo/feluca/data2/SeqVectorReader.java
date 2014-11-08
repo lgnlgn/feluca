@@ -70,7 +70,7 @@ public class SeqVectorReader implements VectorReader{
 					hasNext = false;
 					return null;
 				}else{
-					System.out.println("!");
+//					System.out.println("!");
 					unpacker = msgpack.createUnpacker(new BufferedInputStream(new FileInputStream(listFiles[blockIt])));
 					return getNextVector();
 				}
