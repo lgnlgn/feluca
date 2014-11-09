@@ -20,16 +20,14 @@ import org.shanbo.feluca.paddle.common.MemoryEstimater;
 import org.shanbo.feluca.paddle.common.Utilities;
 
 public abstract class AbstractSGDLogisticRegression implements Classifier, MemoryEstimater{
-	final static double initWeight = 0;
-	final static int LABELRANGEBASE = 32768;
+	protected final static double initWeight = 0;
+	protected final static int LABELRANGEBASE = 32768;
 	public final static double DEFAULT_STOP = 0.001;
 	public final static int DEFAULT_LOOPS = 30;
 
 	public double[] featureWeights = null;
 
 	protected DataEntry dataEntry= null;
-
-	boolean usePool = false;
 
 	protected int[][] outerLabelInfo = null; //outer label -> info
 	protected int[][] innerLabelInfo = null; //inner label -> info
