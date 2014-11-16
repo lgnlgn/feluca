@@ -20,7 +20,7 @@ public final class SGDL1LR extends AbstractSGDLogisticRegression{
 		super.init();
 	}
 	
-	private double updateWeights(Vector sample){
+	public final double gradientDescend(Vector sample){
 		double weightSum = 0;
 		
 		for(int i = 0 ; i < sample.getSize(); i++){
@@ -52,68 +52,6 @@ public final class SGDL1LR extends AbstractSGDLogisticRegression{
 	}
 	
 	
-	@Override
-	protected void _train(int fold, int remain) throws Exception {
-		// TODO Auto-generated method stub
-		double avge = 99999.9;
-		double lastAVGE = Double.MAX_VALUE;
-		double corrects  = 0;
-		double lastCorrects = -1;
-
-		
-		double multi = (biasWeightRound * minSamples + maxSamples)/(minSamples + maxSamples + 0.0);
-		
-		for(int l = 0 ;  l < Math.max(10, loops)
-				&& (l < Math.min(10, loops) 
-				|| (l < loops && (Math.abs(1- avge/ lastAVGE) > convergence )
-				|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01)); l++){
-			u = u + alpha * lambda;
-			lastAVGE = avge;
-			lastCorrects = corrects;
-			dataEntry.reOpen();
-
-			long timeStart = System.currentTimeMillis();
-			
-			int c =1; //for n-fold cv
-			double error = 0;
-			double sume = 0;
-			corrects = 0;
-			int cc = 0;
-
-			for(Vector sample = dataEntry.getNextVector(); sample != null ; sample = dataEntry.getNextVector()){
-					if (c % fold == remain){ // no train
-						;
-					}else{
-						if ( sample.getIntHeader() == this.biasLabel){ //bias; sequentially compute #(bias - 1) times
-							for(int bw = 1 ; bw < this.biasWeightRound; bw++){ //bias
-								this.updateWeights(sample);
-							}
-						}
-						
-						error = updateWeights(sample);
-						if (Math.abs(error) < 0.5)//accuracy
-							if ( sample.getIntHeader() == this.biasLabel)
-								corrects += this.biasWeightRound;
-							else
-								corrects += 1; 
-						cc += 1;
-						sume += Math.abs(error);
-					}
-					c += 1;
-			}
-			
-			
-			avge = sume / cc;
-			
-			long timeEnd = System.currentTimeMillis();
-			double acc = corrects / (cc * multi) * 100;
-			
-			this.alpha *= 0.99;
-			System.out.println(String.format("#%d loop%d\ttime:%d(ms)\tacc: %.3f(approx)\tavg_error:%.6f", cc, l, (timeEnd - timeStart), acc , avge));
-		}
-		System.out.println(u);
-	}
-
 	protected void estimateParameter() throws NullPointerException{
 		this.samples = Utilities.getIntFromProperties(dataEntry.getDataStatistic(), DataStatistic.NUM_VECTORS);
 		double rate = Math.log(2 + samples /((1 + biasWeightRound)/(biasWeightRound * 2.0)) /( this.maxFeatureId + 0.0));
