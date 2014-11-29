@@ -20,7 +20,7 @@ import org.shanbo.feluca.data2.Vector;
 public class SGDFactorizeMachine extends SGDL2LR{
 
 	protected int dim = 5;
-	protected float fWeightRange = 0.3f;
+	protected float fWeightRange = 0.05f;
 	protected float[][] factors ;
 
 	
@@ -130,11 +130,25 @@ public class SGDFactorizeMachine extends SGDL2LR{
 			intersectionWeightSum += ((Math.pow(SigmaVX[f], 2)  - Sigmav2x2[f]));
 		}
 		double tmp = Math.pow(Math.E, -(oneDegreeWeightSum + (intersectionWeightSum * 0.5))); //e^-sigma(x)
-		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
+//		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
 		
 		//-----------w & v[]--------,
-		double partialDerivation =   tmp  / (tmp * tmp + 2 * tmp + 1) ;
+//		double partialDerivation =   tmp  / (tmp * tmp + 2 * tmp + 1) ;
 
+		
+		double prediction =  1/ (1+tmp);
+		int innerLabel = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0];
+		double error;
+		double partialDerivation =  (tmp)  / (tmp * tmp + 2 * tmp + 1) ;
+		//considered moving direction beforehand 
+		if (innerLabel == 1){
+			error = - (Math.log(prediction) / 0.69314718);
+			
+		}else{ //0
+			error = Math.log(1 - prediction) /0.69314718;
+		}
+		
+		
 		for(int i = 0 ; i < sample.getSize(); i++){
 			// w <- w + alpha * (error * 1 * partial_derivation - lambda * w) 
 			featureWeights[sample.getFId(i)] += 
@@ -142,13 +156,14 @@ public class SGDFactorizeMachine extends SGDL2LR{
 			//v[] : 1/2 * 2(sigmaVX - x)
 			for(int f = 0 ; f < dim ; f++){
 				double step = (SigmaVX[f] - factors[f][sample.getFId(i)]) ;
-				factors[f][sample.getFId(i)] += alpha * (error * step * partialDerivation - lambda * factors[f][sample.getFId(i)] ) ;
+				factors[f][sample.getFId(i)] += alpha  * (error * step * partialDerivation - lambda  * factors[f][sample.getFId(i)] ) ;
 			}
 		}
 		//----------v[]-------
 		return error;
 	}
 	
+	@Deprecated
 	public final double gradientDescend(Vector sample){
 		double oneDegreeWeightSum = 0;
 		for(int i = 0 ; i < sample.getSize(); i++){

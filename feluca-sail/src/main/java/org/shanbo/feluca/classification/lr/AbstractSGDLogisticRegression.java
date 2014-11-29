@@ -305,7 +305,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 						}
 					}
 					error = gradientDescend(sample);
-					if (Math.abs(error) < 0.45)//accuracy
+					if (Math.abs(error) < 0.49)//accuracy
 						if ( sample.getIntHeader() == this.biasLabel)
 							corrects += this.biasWeightRound;
 						else

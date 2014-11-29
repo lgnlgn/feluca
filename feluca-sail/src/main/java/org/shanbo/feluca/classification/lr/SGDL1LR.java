@@ -27,9 +27,19 @@ public final class SGDL1LR extends AbstractSGDLogisticRegression{
 			weightSum += featureWeights[sample.getFId(i)] * sample.getWeight(i);
 		}
 		double tmp = Math.pow(Math.E, -weightSum); //e^-sigma(x)
-		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); //error , (predict_label - correct_label), which is a part of partialDerivation!
-		double partialDerivation =  tmp  / (tmp * tmp + 2 * tmp + 1) ;
-
+//		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); //error , (predict_label - correct_label), which is a part of partialDerivation!
+//		double partialDerivation =  tmp  / (tmp * tmp + 2 * tmp + 1) ;
+		double prediction =  1/ (1+tmp);
+		int innerLabel = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0];
+		double error;
+		double partialDerivation =  (tmp)  / (tmp * tmp + 2 * tmp + 1) ;
+		//considered moving direction beforehand 
+		if (innerLabel == 1){
+			error = - (Math.log(prediction) / 0.69314718);
+			
+		}else{ //0
+			error = Math.log(1 - prediction) /0.69314718;
+		}
 		for(int i = 0 ; i < sample.getSize(); i++){
 			// w <- w + alpha * (error * partial_derivation) 
 			featureWeights[sample.getFId(i)] += 

@@ -12,9 +12,10 @@ public class TestSGDFM {
 	public static void trainTest(String predict) throws Exception{
 		AbstractSGDLogisticRegression lr = new SGDFactorizeMachine();
 		Properties p = new Properties();
-		p.setProperty("alpha", "0.5");
-		p.setProperty("lambda", "0.07");
-		p.setProperty("loops", "16");
+		p.setProperty("alpha", "0.2");
+		p.setProperty("lambda", "0.05");
+		p.setProperty("loops", "30");
+		p.setProperty("dim", "5");
 		lr.setProperties(p);
 		lr.loadData(DataEntry.createDataEntry("/home/lgn/data/avazutrain", false));
 		
