@@ -26,12 +26,28 @@ public class DataEntry implements Closeable{
 		this(dataName, "\\.\\d+\\.dat");
 	}
 	
+	public DataEntry(String dataName, boolean shuffle) throws IOException{
+		this(dataName, "\\.\\d+\\.dat", shuffle);
+	}
+	
+	
 	public DataEntry(String dataName, String pattern) throws IOException{
 		this.dataName = dataName;
 		this.pattern = pattern;
 		reader = new SeqVectorReader(dataName, pattern);
 		queue = new LinkedBlockingQueue<Vector>(1000);
 	}
+	
+	public DataEntry(String dataName, String pattern, boolean shuffle) throws IOException{
+		this.dataName = dataName;
+		this.pattern = pattern;
+		reader = new SeqVectorReader(dataName, pattern, shuffle);
+		queue = new LinkedBlockingQueue<Vector>(1000);
+	}
+	
+	
+	
+	
 	
 	public void reOpen() throws Exception{
 		close();

@@ -1,0 +1,53 @@
+package org.shanbo.feluca.data2;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * buffered 
+ * @author lgn
+ *
+ */
+public class ShuffledDataEntry extends DataEntry{
+
+	List<Vector> cache ;
+	int iter ;
+	final int maxVectorSize;
+	
+	public ShuffledDataEntry(String dataName, int vectorSize) throws IOException {
+		super(dataName, true);
+		if (vectorSize <= 0){
+			throw new RuntimeException("vectorSize <= 0");
+		}
+		this.maxVectorSize = vectorSize;
+		cache = new ArrayList<Vector>(this.maxVectorSize);
+	}
+
+	public ShuffledDataEntry(String dataName) throws IOException {
+		this(dataName, 2000000);
+	}
+	
+	public Vector getNextVector() throws Exception{
+		if (iter >= maxVectorSize || cache.isEmpty()){
+			cache.clear();
+			for(int i = 0 ; i < maxVectorSize;i++){
+				cache.add(super.getNextVector());
+			}
+			Collections.shuffle(cache);
+			iter = 0;
+		}
+		Vector current = cache.get(iter);
+		iter += 1;
+		return current;
+	}
+	
+	
+	public void reOpen() throws Exception{
+		super.reOpen();
+		cache.clear();
+		iter = 0;
+	}
+	
+}

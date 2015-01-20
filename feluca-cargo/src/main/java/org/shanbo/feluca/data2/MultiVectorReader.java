@@ -11,7 +11,7 @@ import org.shanbo.feluca.data2.Vector.VectorType;
 import com.google.common.io.PatternFilenameFilter;
 
 /**
- * 
+ * list of SeqVectorReader, combine vectors into one  at each Next() 
  * @author lgn
  *
  */
