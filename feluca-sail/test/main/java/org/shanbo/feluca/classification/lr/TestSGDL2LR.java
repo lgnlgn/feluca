@@ -13,11 +13,12 @@ public class TestSGDL2LR {
 	public static void testTrain(String model) throws Exception{
 		AbstractSGDLogisticRegression lr = new SGDL2LR();
 		Properties p = new Properties();
-		p.setProperty("alpha", "1.3");
+		p.setProperty("alpha", "1.2");
 		p.setProperty("lambda", "0.5");
 		p.setProperty("loops", "15");
+		p.setProperty("-w1", "5");
 		lr.setProperties(p);
-		lr.loadData(DataEntry.createDataEntry("/home/lgn/data/avazutrain", false));
+		lr.loadData(DataEntry.createDataEntry("/home/lgn/data/avazutrain33", false));
 		
 //		lr.crossValidation(4, new Evaluator.BinaryAccuracy());
 		System.out.println(lr.toString());
@@ -29,9 +30,9 @@ public class TestSGDL2LR {
 	public static void testTest(String model,String predict) throws Exception{
 		SGDL2LR lr = new SGDL2LR();
 		Properties p = new Properties();
-		p.load(new FileReader("/home/lgn/data/avazutrain/avazutrain.sta"));
+		p.load(new FileReader("/home/lgn/data/avazutrain33/avazutrain33.sta"));
 		lr.loadModel(model, p);
-		DataEntry testSet = DataEntry.createDataEntry("/home/lgn/data/avazutest", false);
+		DataEntry testSet = DataEntry.createDataEntry("/home/lgn/data/avazutest33", false);
 		lr.predict(testSet, predict, new Evaluator.BinaryAccuracy());
 	}
 	

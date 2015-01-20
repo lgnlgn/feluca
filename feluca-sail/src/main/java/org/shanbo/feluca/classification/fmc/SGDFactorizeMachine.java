@@ -9,6 +9,7 @@ import org.shanbo.feluca.classification.lr.AbstractSGDLogisticRegression;
 import org.shanbo.feluca.classification.lr.SGDL2LR;
 import org.shanbo.feluca.data2.DataEntry;
 import org.shanbo.feluca.data2.Vector;
+import org.shanbo.feluca.paddle.common.Utilities;
 
 /**
  * only support 2-degree interaction of features.
@@ -20,7 +21,7 @@ import org.shanbo.feluca.data2.Vector;
 public class SGDFactorizeMachine extends SGDL2LR{
 
 	protected int dim = 5;
-	protected float fWeightRange = 0.05f;
+	protected float fWeightRange = 0.01f;
 	protected float[][] factors ;
 
 	
@@ -32,7 +33,7 @@ public class SGDFactorizeMachine extends SGDL2LR{
 		for(int k = 0 ; k < dim ; k ++){
 			factors[k] = new float[maxFeatureId + 1];
 			for(int i = 0 ; i < factors[k].length ; i++){
-				factors[k][i] = rand.nextFloat() * fWeightRange;
+				factors[k][i] = (float)Utilities.randomDouble(-1, 1) * fWeightRange;
 			}
 		}
 	}
@@ -87,7 +88,12 @@ public class SGDFactorizeMachine extends SGDL2LR{
 						else
 							corrects += 1; 
 					cc += 1;
-					sume += Math.abs(error);
+				//	sume += Math.abs(error);
+					if (error > 0){
+						sume += - Math.log(1-error) / 0.69314718;
+					}else{
+						sume+= - Math.log(1+error)/ 0.69314718;
+					}
 				}
 				c += 1;
 			}
@@ -118,7 +124,7 @@ public class SGDFactorizeMachine extends SGDL2LR{
 		for(int i = 0 ; i < sample.getSize(); i++){
 			oneDegreeWeightSum += featureWeights[sample.getFId(i)];
 		}
-		
+		double rand = Utilities.randomDouble(0.8, 1);
 		double intersectionWeightSum = 0;
 		double[] Sigmav2x2 = new double[dim];
 		double[] SigmaVX = new double[dim];
@@ -130,33 +136,38 @@ public class SGDFactorizeMachine extends SGDL2LR{
 			intersectionWeightSum += ((Math.pow(SigmaVX[f], 2)  - Sigmav2x2[f]));
 		}
 		double tmp = Math.pow(Math.E, -(oneDegreeWeightSum + (intersectionWeightSum * 0.5))); //e^-sigma(x)
-//		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
+		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
 		
 		//-----------w & v[]--------,
-//		double partialDerivation =   tmp  / (tmp * tmp + 2 * tmp + 1) ;
+		double partialDerivation =   tmp  / (tmp * tmp + 2 * tmp + 1) ;
 
 		
-		double prediction =  1/ (1+tmp);
-		int innerLabel = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0];
-		double error;
-		double partialDerivation =  (tmp)  / (tmp * tmp + 2 * tmp + 1) ;
-		//considered moving direction beforehand 
-		if (innerLabel == 1){
-			error = - (Math.log(prediction) / 0.69314718);
-			
-		}else{ //0
-			error = Math.log(1 - prediction) /0.69314718;
-		}
+//		double prediction =  1/ (1+tmp);
+//		int innerLabel = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0];
+//		double error;
+//		double partialDerivation =  (tmp)  / (tmp * tmp + 2 * tmp + 1) ;
+//		//considered moving direction beforehand 
+//		if (innerLabel == 1){
+//			error = - (Math.log(prediction) / 0.69314718);
+//			if (error < -2){
+//				error = -2;
+//			}
+//		}else{ //0
+//			error = Math.log(1 - prediction) /0.69314718;
+//			if (error > 2){
+//				error = 2;
+//			}
+//		}
 		
 		
 		for(int i = 0 ; i < sample.getSize(); i++){
 			// w <- w + alpha * (error * 1 * partial_derivation - lambda * w) 
 			featureWeights[sample.getFId(i)] += 
-					alpha * (error *  partialDerivation - lambda * featureWeights[sample.getFId(i)]) ;
+					alpha * rand * (error *  partialDerivation - lambda * featureWeights[sample.getFId(i)]) ;
 			//v[] : 1/2 * 2(sigmaVX - x)
 			for(int f = 0 ; f < dim ; f++){
 				double step = (SigmaVX[f] - factors[f][sample.getFId(i)]) ;
-				factors[f][sample.getFId(i)] += alpha  * (error * step * partialDerivation - lambda  * factors[f][sample.getFId(i)] ) ;
+				factors[f][sample.getFId(i)] += alpha *rand * (error * step * partialDerivation - lambda  * factors[f][sample.getFId(i)] ) ;
 			}
 		}
 		//----------v[]-------
@@ -216,7 +227,7 @@ public class SGDFactorizeMachine extends SGDL2LR{
 
 	@Override
 	public void predict(Vector sample, double[] probabilities) throws Exception {
-		double oneDegreeWeightSum = 0;
+		double oneDegreeWeightSum = w0;
 		for(int i = 0 ; i < sample.getSize(); i++){
 			oneDegreeWeightSum += featureWeights[sample.getFId(i)] * sample.getWeight(i);
 		}

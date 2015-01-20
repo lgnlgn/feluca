@@ -9,33 +9,44 @@ import org.shanbo.feluca.paddle.common.Utilities;
 
 public class SGDL2LR extends AbstractSGDLogisticRegression{
 
+	/**
+	 * 1->1 ; 0-> -1; 0.5->0
+	 * @param y
+	 * @return
+	 */
+	protected double transform(double y ){
+		return y * 2 - 1 ; 
+	}
+	
+	protected double transform(int y ){
+		return (y * 2) - 1 ; 
+	}
+	
 	protected double gradientDescend(Vector sample){
-		double weightSum = 0;
+		double weightSum = w0;
 		for(int i = 0 ; i < sample.getSize(); i++){
 			weightSum += featureWeights[sample.getFId(i)] * sample.getWeight(i);
 		}
 		double tmp = Math.pow(Math.E, -weightSum); //e^-sigma(x)
 		double prediction =  1/ (1+tmp);
 		int innerLabel = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0];
-		double error;
-		double partialDerivation =  (tmp)  / (tmp * tmp + 2 * tmp + 1) ;
-		//considered moving direction beforehand 
-		if (innerLabel == 1){
-			error = - (Math.log(prediction) / 0.69314718);
-			
-		}else{ //0
-			error = Math.log(1 - prediction) /0.69314718;
-		}
-//		error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
 		
+		double newlabel = transform( innerLabel);
+		double pred = transform(prediction);
+		
+		double error = newlabel * (1 /(1 + Math.pow(Math.E, newlabel * pred)) - 1);
+		double partialDerivation =    (tmp)  / (tmp * tmp + 2 * tmp + 1) ;
+//		//considered moving direction beforehand 
+//		error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
+		w0 -= alpha * 2 * (error *  partialDerivation + lambda * w0);
 		//be careful! partialDerivation here is missing coefficient x , i.e. sample.getWeight(i);
 		//we will add it at the gradient phrase below.
 		for(int i = 0 ; i < sample.getSize(); i++){
 			// w <- w + alpha * (error * partial_derivation - lambda * w) 
-			featureWeights[sample.getFId(i)] += 
-					alpha * (error * sample.getWeight(i) * partialDerivation - lambda * featureWeights[sample.getFId(i)]) ;
+			featureWeights[sample.getFId(i)] -= 
+					 2 * alpha * (error * sample.getWeight(i) * partialDerivation + lambda * featureWeights[sample.getFId(i)]) ;
 		}
-		return error;
+		return prediction;
 	}
 
 

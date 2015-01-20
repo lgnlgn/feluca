@@ -32,6 +32,8 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 	public final static double DEFAULT_STOP = 0.001;
 	public final static int DEFAULT_LOOPS = 30;
 
+
+	protected double w0;
 	public double[] featureWeights = null;
 
 	protected DataEntry dataEntry= null;
@@ -56,7 +58,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 	protected int maxFeatureId = -1;
 
 	protected int biasLabel = 0; //  original label
-	protected int biasWeightRound = 1;
+	protected int biasWeightRound = -1;
 
 	// for accuracy stop
 	protected int minSamples = 0;  // #
@@ -93,9 +95,11 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		this.innerLabelInfo = new int[2][];  //innerLabel -> original_LABEL, #sample
 		this.innerLabelInfo[classInfo1Ints[1]] = new int[]{classInfo1Ints[0], classInfo1Ints[2]};
 		this.innerLabelInfo[classInfo2Ints[1]] = new int[]{classInfo2Ints[0], classInfo2Ints[2]};
-		
+
 		//  set bias automatically
 		float ratio = classInfo2Ints[2] /(classInfo1Ints[2] + 0.0f);
+
+
 		this.biasLabel = classInfo1Ints[0];
 		this.minSamples  = classInfo1Ints[2];
 		this.maxSamples  = classInfo2Ints[2];
@@ -107,8 +111,13 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		}else{ //default
 			;
 		}
-		this.biasWeightRound = Math.round(ratio);
-
+		if (biasWeightRound == -1){
+			this.biasWeightRound = Math.round(ratio);
+		}
+		float cc = this.biasWeightRound * classInfo2Ints[2] + classInfo1Ints[2] + 0.0f;
+		w0 = - Math.log(cc/(this.biasWeightRound * classInfo2Ints[2]) -1 );
+		w0 = 0;
+		System.out.println(w0);
 		try{
 			this.estimateParameter();
 			if (this.convergence == null){
@@ -135,6 +144,22 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 	}
 
 
+	protected double logloss(int y, double yy) {
+		if (y == 0){
+			return - Math.log( 1- yy) / 0.69314718;
+		}else{
+			return - Math.log(yy) / 0.69314718;
+		}
+	}
+
+	protected boolean acc(int y , double yy) {
+		if (y == 1 && yy > 0.5){
+			return true;
+		}else if (y == 0 && yy < 0.5){
+			return true;
+		}
+		return false;
+	}
 
 	public void crossValidation(int fold, Evaluator... evaluators) throws Exception {
 
@@ -212,7 +237,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 
 
 	public void predict(Vector sample, double[] probabilities) throws Exception{
-		double weigtSum = 0 ; 
+		double weigtSum = w0 ; 
 		for(int i = 0 ; i < sample.getSize(); i++){
 			weigtSum += this.featureWeights[sample.getFId(i)] * sample.getWeight(i);
 		}
@@ -279,10 +304,10 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 
 		double multi = (biasWeightRound * minSamples + maxSamples)/(minSamples + maxSamples + 0.0);
 
-		for(int l = 0 ; l < Math.max(10, loops)
-						&& (l < Math.min(10, loops) 
+		for(int l = 0 ; l < Math.max(5, loops)
+				&& (l < Math.min(5, loops) 
 						|| (l < loops && (Math.abs(1- avge/ lastAVGE) > convergence )
-						|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01)); l++){
+								|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01)); l++){
 			lastAVGE = avge;
 			lastCorrects = corrects;
 			dataEntry.reOpen(); //start reading data
@@ -290,7 +315,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 			long timeStart = System.currentTimeMillis();
 
 			int c =1; //for n-fold cv
-			double error = 0;
+			double predict = 0;
 			double sume = 0;
 			corrects = 0;
 			int cc = 0;
@@ -304,14 +329,26 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 							this.gradientDescend(sample);
 						}
 					}
-					error = gradientDescend(sample);
-					if (Math.abs(error) < 0.49)//accuracy
+					predict = gradientDescend(sample);
+					if (acc(outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0], predict)){
 						if ( sample.getIntHeader() == this.biasLabel)
 							corrects += this.biasWeightRound;
 						else
 							corrects += 1; 
+					}
+					//					if (Math.abs(predict) < 0.49)//accuracy
+					//						if ( sample.getIntHeader() == this.biasLabel)
+					//							corrects += this.biasWeightRound;
+					//						else
+					//							corrects += 1; 
 					cc += 1;
-					sume += Math.abs(error);
+					//		sume += Math.abs(error);
+					//					if (error > 0 ){ // 1 - prediction
+					//						sume += - Math.log( 1- error) / 0.69314718;
+					//					}else{ //0
+					//						sume += - Math.log(1 + error) / 0.69314718;
+					//					}
+					sume += logloss(outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0], predict);
 				}
 				c += 1;
 			}
@@ -333,11 +370,12 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 						lambda = minLambda;
 				}
 			}
+			System.out.println(w0);
 			System.out.println(String.format("#%d loop%d\ttime:%d(ms)\tacc: %.3f(approx)\tavg_error:%.6f", cc, l, (timeEnd - timeStart), acc , avge));
 		}
 	}
 
 	abstract protected  double  gradientDescend(Vector sample) ;
-	
+
 	public abstract int estimate(Properties dataStatus, Properties parameters) ;
 }
