@@ -15,7 +15,7 @@ public class ShuffledDataEntry extends DataEntry{
 	List<Vector> cache ;
 	int iter ;
 	final int maxVectorSize;
-	
+
 	public ShuffledDataEntry(String dataName, int vectorSize) throws IOException {
 		super(dataName, true);
 		if (vectorSize <= 0){
@@ -28,12 +28,18 @@ public class ShuffledDataEntry extends DataEntry{
 	public ShuffledDataEntry(String dataName) throws IOException {
 		this(dataName, 2000000);
 	}
-	
-	public Vector getNextVector() throws Exception{
-		if (iter >= maxVectorSize || cache.isEmpty()){
+
+	public synchronized Vector getNextVector() throws Exception{
+		if (iter >= cache.size() || cache.isEmpty()){
 			cache.clear();
 			for(int i = 0 ; i < maxVectorSize;i++){
-				cache.add(super.getNextVector());
+				Vector v = super.getNextVector();
+				if (v != null)
+					cache.add(v);
+				else {
+					super.close();
+					break;
+				}
 			}
 			Collections.shuffle(cache);
 			iter = 0;
@@ -42,12 +48,16 @@ public class ShuffledDataEntry extends DataEntry{
 		iter += 1;
 		return current;
 	}
-	
-	
-	public void reOpen() throws Exception{
-		super.reOpen();
-		cache.clear();
+
+
+	public synchronized void reOpen() throws Exception{
+		if (cache.size() < maxVectorSize){
+			Collections.shuffle(cache);
+		}else{
+			super.reOpen();
+			cache.clear();
+		}
 		iter = 0;
 	}
-	
+
 }

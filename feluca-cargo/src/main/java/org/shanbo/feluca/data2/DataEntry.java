@@ -52,18 +52,6 @@ public class DataEntry implements Closeable{
 	public void reOpen() throws Exception{
 		close();
 		reader = new SeqVectorReader(dataName, pattern);
-//		finished = false;
-//		reading = new Thread(new Runnable() {
-//			public void run() {
-//				try {
-//					fill();
-//				} catch (Exception e) {
-//					throw new RuntimeException("filling queue error!", e);
-//				}
-//			}
-//		});
-//		reading.setDaemon(true);
-//		reading.start();
 	}
 	
 	private void fill() throws IOException, InterruptedException{
@@ -81,17 +69,6 @@ public class DataEntry implements Closeable{
 	}
 	
 	public Vector getNextVector() throws Exception{
-//		Vector v = queue.poll();
-//		if (v == null){
-//			if (finished == true){
-//				return null;
-//			}else{
-//				Thread.sleep(10);
-//				return getNextVector();
-//			}
-//		}else{
-//			return v;
-//		}
 		return reader.getNextVector();
 	}
 	
@@ -124,6 +101,11 @@ public class DataEntry implements Closeable{
 			return new DataEntry(dataName, pattern );
 		}
 	}
+	
+	public static DataEntry shuffledDataEntry(String dataName) throws IOException{
+		return new ShuffledDataEntry(dataName, 1000000);	
+	}
+	
 	
 	
 	public static class RAMDataEntry extends DataEntry{
