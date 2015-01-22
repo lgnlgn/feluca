@@ -19,8 +19,7 @@ public class DataEntry implements Closeable{
 	VectorReader reader;
 	String dataName;
 	String pattern ;
-	BlockingQueue<Vector> queue;
-	Thread reading ;
+	
 	volatile boolean finished = false;
 	public DataEntry(String dataName) throws IOException{
 		this(dataName, "\\.\\d+\\.dat");
@@ -35,14 +34,12 @@ public class DataEntry implements Closeable{
 		this.dataName = dataName;
 		this.pattern = pattern;
 		reader = new SeqVectorReader(dataName, pattern);
-		queue = new LinkedBlockingQueue<Vector>(1000);
 	}
 	
 	public DataEntry(String dataName, String pattern, boolean shuffle) throws IOException{
 		this.dataName = dataName;
 		this.pattern = pattern;
 		reader = new SeqVectorReader(dataName, pattern, shuffle);
-		queue = new LinkedBlockingQueue<Vector>(1000);
 	}
 	
 	
@@ -54,19 +51,6 @@ public class DataEntry implements Closeable{
 		reader = new SeqVectorReader(dataName, pattern);
 	}
 	
-	private void fill() throws IOException, InterruptedException{
-		
-		for(Vector v = reader.getNextVector(); v!= null;){
-			boolean inserted = queue.offer(v);
-			if (inserted){
-				v = reader.getNextVector();
-			}else{
-				Thread.sleep(5);
-				continue;
-			}
-		}
-		finished = true;
-	}
 	
 	public Vector getNextVector() throws Exception{
 		return reader.getNextVector();
@@ -81,7 +65,6 @@ public class DataEntry implements Closeable{
 	}
 	
 	public void close() throws IOException{
-		queue.clear();
 		if (reader!=null)
 			reader.close();
 	}

@@ -41,6 +41,9 @@ public class ShuffledDataEntry extends DataEntry{
 					break;
 				}
 			}
+			if (cache.isEmpty()){
+				return null;
+			}
 			Collections.shuffle(cache);
 			iter = 0;
 		}
@@ -51,12 +54,8 @@ public class ShuffledDataEntry extends DataEntry{
 
 
 	public synchronized void reOpen() throws Exception{
-		if (cache.size() < maxVectorSize){
-			Collections.shuffle(cache);
-		}else{
-			super.reOpen();
-			cache.clear();
-		}
+		super.reOpen();
+		cache.clear();
 		iter = 0;
 	}
 
