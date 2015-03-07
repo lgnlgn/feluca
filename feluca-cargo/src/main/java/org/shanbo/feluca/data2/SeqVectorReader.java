@@ -2,6 +2,7 @@ package org.shanbo.feluca.data2;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Random;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -75,6 +76,8 @@ public class SeqVectorReader implements VectorReader{
 		listFiles = dir.listFiles(new PatternFilenameFilter(dir.getName() + filterPattern));
 		if (shuffle){
 			shuffle(listFiles);
+			
+			System.out.println(Arrays.toString(listFiles));
 		}else {
 			//sort by blockid
 		}

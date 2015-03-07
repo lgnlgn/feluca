@@ -12,11 +12,14 @@ public class TestFMC {
 		AbstractSGDLogisticRegression lr = new SGDL2LR();
 		Properties p = new Properties();
 		p.setProperty("alpha", "0.7");
-		p.setProperty("lambda", "0.001");
-		p.setProperty("loops", "26");
+		p.setProperty("lambda", "0.01");
+		p.setProperty("loops", "16");
+		p.setProperty("w0type", "0");
 		p.setProperty("-w1", "1");
 		lr.setProperties(p);
+		
 		lr.loadData(DataEntry.createDataEntry("/home/lgn/data/realsim", true));
+		System.out.println(lr.toString());
 		lr.train();
 		
 

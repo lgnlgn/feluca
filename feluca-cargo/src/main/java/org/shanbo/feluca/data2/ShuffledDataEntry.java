@@ -54,7 +54,8 @@ public class ShuffledDataEntry extends DataEntry{
 
 
 	public synchronized void reOpen() throws Exception{
-		super.reOpen();
+		super.close();
+		reader = new SeqVectorReader(dataName, pattern, true);
 		cache.clear();
 		iter = 0;
 	}

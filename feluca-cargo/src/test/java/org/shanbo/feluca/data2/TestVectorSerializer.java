@@ -6,9 +6,9 @@ import org.shanbo.feluca.data2.convert.VectorSerializer;
 
 public class TestVectorSerializer {
 	public static void main(String[] args) throws IOException {
-		String file = "/home/lgn/kaggle/avazutrain33.txt";
+		String file = "/home/lgn/kaggle/avazutest33.txt";
 		VectorSerializer vs = new VectorSerializer(file);
 //		vs.convertTuple2VID("data/mltest");
-		vs.convertLW2LW("/home/lgn/data/avazutrain33");
+		vs.convertLW2LW("/home/lgn/data/avazutest33");
 	}
 }

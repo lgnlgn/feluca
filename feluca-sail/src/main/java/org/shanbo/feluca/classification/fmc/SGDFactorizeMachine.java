@@ -21,7 +21,7 @@ import org.shanbo.feluca.paddle.common.Utilities;
 public class SGDFactorizeMachine extends SGDL2LR{
 
 	protected int dim = 5;
-	protected float fWeightRange = 0.01f;
+	protected float fWeightRange = 0.05f;
 	protected float[][] factors ;
 
 	
@@ -41,90 +41,95 @@ public class SGDFactorizeMachine extends SGDL2LR{
 	/**
 	 * just for one-hot dataset
 	 */
-	protected void _train(int fold, int remain) throws Exception{
-//		if (true){
-//			super._train(fold, remain);
-//			return;
+//	protected void _train(int fold, int remain) throws Exception{
+////		if (true){
+////			super._train(fold, remain);
+////			return;
+////		}
+//		System.out.println("one hot");
+//		double avge = 99999.9;
+//		double lastAVGE = Double.MAX_VALUE;
+//
+//		double corrects  = 0;
+//		double lastCorrects = -1;
+//
+//
+//		double multi = (biasWeightRound * minSamples + maxSamples)/(minSamples + maxSamples + 0.0);
+//
+//		for(int l = 0 ; l < Math.max(10, loops)
+//						&& (l < Math.min(10, loops) 
+//						|| (l < loops && (Math.abs(1- avge/ lastAVGE) > convergence )
+//						|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01)); l++){
+//			lastAVGE = avge;
+//			lastCorrects = corrects;
+//			dataEntry.reOpen(); //start reading data
+//
+//			long timeStart = System.currentTimeMillis();
+//
+//			int c =1; //for n-fold cv
+//			double error = 0;
+//			double sume = 0;
+//			corrects = 0;
+//			int cc = 0;
+//
+//			for(Vector sample = dataEntry.getNextVector(); sample != null ; sample = dataEntry.getNextVector()){
+//				if (c % fold == remain){ // no train
+//					;
+//				}else{ //train
+//					if ( sample.getIntHeader() == this.biasLabel){ //bias; sequentially compute #(bias - 1) times
+//						for(int bw = 1 ; bw < this.biasWeightRound; bw++){ //bias
+//							this.gradientDescendOneHot(sample);
+//						}
+//					}
+//					error = gradientDescendOneHot(sample);
+//					if (Math.abs(error) < 0.45)//accuracy
+//						if ( sample.getIntHeader() == this.biasLabel)
+//							corrects += this.biasWeightRound;
+//						else
+//							corrects += 1; 
+//					cc += 1;
+//				//	sume += Math.abs(error);
+//					if (error > 0){
+//						sume += - Math.log(1-error) / 0.69314718;
+//					}else{
+//						sume+= - Math.log(1+error)/ 0.69314718;
+//					}
+//				}
+//				c += 1;
+//			}
+//
+//			avge = sume / cc;
+//
+//			long timeEnd = System.currentTimeMillis();
+//			double acc = corrects / (cc * multi) * 100;
+//
+//			if (corrects  < lastCorrects ){ //
+//				if (!alphaSetted){
+//					this.alpha *= 0.5;
+//					if (alpha < minAlpha)
+//						alpha = minAlpha;
+//				}
+//				if (!lambdaSetted){
+//					this.lambda *= 0.9;
+//					if (lambda < minLambda)
+//						lambda = minLambda;
+//				}
+//			}
+//			System.out.println(String.format("#%d loop%d\ttime:%d(ms)\tacc: %.3f(approx)\tavg_error:%.6f", cc, l, (timeEnd - timeStart), acc , avge));
 //		}
-		System.out.println("one hot");
-		double avge = 99999.9;
-		double lastAVGE = Double.MAX_VALUE;
+//	}
 
-		double corrects  = 0;
-		double lastCorrects = -1;
-
-
-		double multi = (biasWeightRound * minSamples + maxSamples)/(minSamples + maxSamples + 0.0);
-
-		for(int l = 0 ; l < Math.max(10, loops)
-						&& (l < Math.min(10, loops) 
-						|| (l < loops && (Math.abs(1- avge/ lastAVGE) > convergence )
-						|| Math.abs(1- corrects/ lastCorrects) > convergence * 0.01)); l++){
-			lastAVGE = avge;
-			lastCorrects = corrects;
-			dataEntry.reOpen(); //start reading data
-
-			long timeStart = System.currentTimeMillis();
-
-			int c =1; //for n-fold cv
-			double error = 0;
-			double sume = 0;
-			corrects = 0;
-			int cc = 0;
-
-			for(Vector sample = dataEntry.getNextVector(); sample != null ; sample = dataEntry.getNextVector()){
-				if (c % fold == remain){ // no train
-					;
-				}else{ //train
-					if ( sample.getIntHeader() == this.biasLabel){ //bias; sequentially compute #(bias - 1) times
-						for(int bw = 1 ; bw < this.biasWeightRound; bw++){ //bias
-							this.gradientDescendOneHot(sample);
-						}
-					}
-					error = gradientDescendOneHot(sample);
-					if (Math.abs(error) < 0.45)//accuracy
-						if ( sample.getIntHeader() == this.biasLabel)
-							corrects += this.biasWeightRound;
-						else
-							corrects += 1; 
-					cc += 1;
-				//	sume += Math.abs(error);
-					if (error > 0){
-						sume += - Math.log(1-error) / 0.69314718;
-					}else{
-						sume+= - Math.log(1+error)/ 0.69314718;
-					}
-				}
-				c += 1;
-			}
-
-			avge = sume / cc;
-
-			long timeEnd = System.currentTimeMillis();
-			double acc = corrects / (cc * multi) * 100;
-
-			if (corrects  < lastCorrects ){ //
-				if (!alphaSetted){
-					this.alpha *= 0.5;
-					if (alpha < minAlpha)
-						alpha = minAlpha;
-				}
-				if (!lambdaSetted){
-					this.lambda *= 0.9;
-					if (lambda < minLambda)
-						lambda = minLambda;
-				}
-			}
-			System.out.println(String.format("#%d loop%d\ttime:%d(ms)\tacc: %.3f(approx)\tavg_error:%.6f", cc, l, (timeEnd - timeStart), acc , avge));
+	/**
+	 * for one-hot
+	 */
+	public final double gradientDescend(Vector sample){
+		double wTx = w0;
+		int innerLabel = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0];
+		double newlabel = transform( innerLabel); //{-1, +1}
+		for(int i = 0 ; i < sample.getSize(); i++){//wTx
+			wTx += featureWeights[sample.getFId(i)] * sample.getWeight(i);
 		}
-	}
-
-	public final double gradientDescendOneHot(Vector sample){
-		double oneDegreeWeightSum = 0;
-		for(int i = 0 ; i < sample.getSize(); i++){
-			oneDegreeWeightSum += featureWeights[sample.getFId(i)];
-		}
-		double rand = Utilities.randomDouble(0.8, 1);
+		
 		double intersectionWeightSum = 0;
 		double[] Sigmav2x2 = new double[dim];
 		double[] SigmaVX = new double[dim];
@@ -135,81 +140,23 @@ public class SGDFactorizeMachine extends SGDL2LR{
 			}
 			intersectionWeightSum += ((Math.pow(SigmaVX[f], 2)  - Sigmav2x2[f]));
 		}
-		double tmp = Math.pow(Math.E, -(oneDegreeWeightSum + (intersectionWeightSum * 0.5))); //e^-sigma(x)
-		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
-		
-		//-----------w & v[]--------,
-		double partialDerivation =   tmp  / (tmp * tmp + 2 * tmp + 1) ;
-
-		
-//		double prediction =  1/ (1+tmp);
-//		int innerLabel = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0];
-//		double error;
-//		double partialDerivation =  (tmp)  / (tmp * tmp + 2 * tmp + 1) ;
-//		//considered moving direction beforehand 
-//		if (innerLabel == 1){
-//			error = - (Math.log(prediction) / 0.69314718);
-//			if (error < -2){
-//				error = -2;
-//			}
-//		}else{ //0
-//			error = Math.log(1 - prediction) /0.69314718;
-//			if (error > 2){
-//				error = 2;
-//			}
-//		}
-		
-		
-		for(int i = 0 ; i < sample.getSize(); i++){
-			// w <- w + alpha * (error * 1 * partial_derivation - lambda * w) 
-			featureWeights[sample.getFId(i)] += 
-					alpha * rand * (error *  partialDerivation - lambda * featureWeights[sample.getFId(i)]) ;
-			//v[] : 1/2 * 2(sigmaVX - x)
-			for(int f = 0 ; f < dim ; f++){
-				double step = (SigmaVX[f] - factors[f][sample.getFId(i)]) ;
-				factors[f][sample.getFId(i)] += alpha *rand * (error * step * partialDerivation - lambda  * factors[f][sample.getFId(i)] ) ;
-			}
-		}
-		//----------v[]-------
-		return error;
-	}
-	
-	@Deprecated
-	public final double gradientDescend(Vector sample){
-		double oneDegreeWeightSum = 0;
-		for(int i = 0 ; i < sample.getSize(); i++){
-			oneDegreeWeightSum += featureWeights[sample.getFId(i)] * sample.getWeight(i);
-		}
-		
-		double intersectionWeightSum = 0;
-		double[] Sigmav2x2 = new double[dim];
-		double[] SigmaVX = new double[dim];
-		for(int f = 0; f < dim ; f ++){
-			for(int i = 0 ; i < sample.getSize(); i++){
-				SigmaVX[f] += factors[f][sample.getFId(i)] * sample.getWeight(i);
-				Sigmav2x2[f] += Math.pow(factors[f][sample.getFId(i)], 2) * Math.pow(sample.getWeight(i), 2);
-			}
-			intersectionWeightSum += ((Math.pow(SigmaVX[f], 2)  - Sigmav2x2[f]));
-		}
-		double tmp = Math.pow(Math.E, -(oneDegreeWeightSum + (intersectionWeightSum * 0.5))); //e^-sigma(x)
-		double error = outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0] - (1/ (1+tmp)); 
-		
-		//-----------w & v[]--------,
-		double partialDerivation =   tmp  / (tmp * tmp + 2 * tmp + 1) ;
-
+		wTx += (intersectionWeightSum * 0.5 );
+		double gradient = - newlabel * ( 1 - 1/(1 + Math.pow(Math.E, - newlabel * wTx)));
+		if (w0Type == 2)
+			w0 -= alpha  * (gradient + 2 * lambda * w0);
 		for(int i = 0 ; i < sample.getSize(); i++){
 			// w <- w + alpha * (error * partial_derivation - lambda * w) 
-			featureWeights[sample.getFId(i)] += 
-					alpha * (error * sample.getWeight(i) * partialDerivation - lambda * featureWeights[sample.getFId(i)]) ;
-			//v[] 
+			featureWeights[sample.getFId(i)] -= 
+					  alpha * (gradient  + 2 * lambda * featureWeights[sample.getFId(i)]) ;
 			for(int f = 0 ; f < dim ; f++){
-				double step = (SigmaVX[f] * sample.getWeight(i) - factors[f][sample.getFId(i)] * sample.getWeight(i) * sample.getWeight(i)) * 2;
-				factors[f][sample.getFId(i)] += alpha * (error * step * partialDerivation - lambda * factors[f][sample.getFId(i)] ) ;
+				double step = (SigmaVX[f] - factors[f][sample.getFId(i)]) ;
+				factors[f][sample.getFId(i)] -= alpha  * (gradient * step  + 2 * lambda  * factors[f][sample.getFId(i)] ) ;
 			}
 		}
-		//----------v[]-------
-		return error;
+		double innerPrediction =  1/ (1+Math.pow(Math.E,  - wTx));
+		return innerPrediction;
 	}
+	
 	
 	@Override
 	public void setProperties(Properties prop) {
