@@ -11,6 +11,7 @@ import org.apache.commons.lang3.text.StrBuilder;
 import org.msgpack.packer.Packer;
 import org.msgpack.unpacker.Unpacker;
 import org.shanbo.feluca.data2.util.NumericTokenizer;
+import org.shanbo.feluca.data2.util.NumericTokenizer.FeatureWeight;
 
 public abstract class Vector {
 	
@@ -168,11 +169,12 @@ public abstract class Vector {
 			nt.load(line);
 			this.label = (Integer)(nt.nextNumber());
 			while(nt.hasNext()){
-				long kv = nt.nextKeyValuePair();
-				int fid = NumericTokenizer.extractFeatureId(kv);
-				float weight = NumericTokenizer.extractWeight(kv);
-				fids.add(fid);
-				weights.add(weight);
+//				long kv = nt.nextKeyValuePair();
+				FeatureWeight nextKeyWeight = nt.nextKeyWeight();
+//				int fid = nextKeyWeight.getId();
+//				float weight = NumericTokenizer.extractWeight(kv);
+				fids.add(nextKeyWeight.getId());
+				weights.add(nextKeyWeight.getWeight());
 			}
 			if (fids.size() == 0){
 				return false;

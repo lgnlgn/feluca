@@ -37,20 +37,20 @@ public class VectorPartitioner {
 	}
 
 
-	void doPartition(VectorReader reader, int blocks, String suffix) throws IOException{
-		assert (isPowerOfTwo(blocks) == true);
+	void doPartition(VectorReader reader, int shards, String suffix) throws IOException{
+		assert (isPowerOfTwo(shards) == true);
 		File[] dats = reader.getDataDir().listFiles(new PatternFilenameFilter(".*\\.v\\.\\d+\\.dat"));
 		for(File dat : dats){
 			System.out.print(dat.getName() + ";");
 			dat.delete();
 		}
 		String dataName = reader.getDataDir().getName();
-		HashPartitioner partitioner = new HashPartitioner(blocks);
+		HashPartitioner partitioner = new HashPartitioner(shards);
 		String blockPathTemplate = reader.getDataDir().getAbsolutePath() + "/" + dataName + ".v.%d.dat" + suffix;
 
-		ArrayList<Packer> packers = new ArrayList<Packer>(blocks);
+		ArrayList<Packer> packers = new ArrayList<Packer>(shards);
 		MessagePack messagePack = new MessagePack();
-		for(int i = 0 ; i < blocks;i++){ //output
+		for(int i = 0 ; i < shards;i++){ //output
 			packers.add(messagePack.createPacker(
 					new BufferedOutputStream(new FileOutputStream(String.format(blockPathTemplate, i)), 1024 * 1024 * 2)));
 		}
@@ -75,9 +75,9 @@ public class VectorPartitioner {
 		}
 	}
 
-	public void doPartition(String dirName, int blocks) throws IOException{
+	public void doPartition(String dirName, int shards) throws IOException{
 		SeqVectorReader vr = new SeqVectorReader(dirName);
-		doPartition(vr, blocks, "");
+		doPartition(vr, shards, "");
 	}
 
 //	/**

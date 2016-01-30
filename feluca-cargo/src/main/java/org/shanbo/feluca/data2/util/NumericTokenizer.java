@@ -5,7 +5,8 @@ import java.util.Arrays;
 /**
  * Split text line by non-digit chars;
  * digit related chars include : '0'~'9', '.', '+-'
- * <p><b>WARNING: currently not support for custom split;</b>
+ * <p><b>WARNING: not support for custom split;</b>
+ * <p><b>WARNING: not thread safe!</b>
  * @author lgn
  *
  */
@@ -15,6 +16,50 @@ public class NumericTokenizer {
 	final static int[] POWERS_OF_10 =
 		{1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
+	public class FeatureWeight{
+		long kv;
+		
+		public FeatureWeight(long kv) {
+			this.kv = kv;
+		}
+		
+		public void setKV(long kv){
+			this.kv = kv;
+		}
+		
+		public int getId(){
+			return (int) ((kv & 0xffffffff00000000l) >>> 32);
+		}
+		
+		public float getWeight(){
+			int w = (int)(kv & 0xffffffff);
+			return Float.intBitsToFloat(w);
+		}
+	}
+	
+	public class FeatureFieldWeight{
+		int fid;
+		int field;
+		float weight;
+		
+		public int getFid(){
+			return fid;
+		}
+		public int  getField() {
+			return field;
+		}
+		public float getWeight(){
+			return weight;
+		}
+		
+		void set(int fid, int field, float weight){
+			this.fid = fid;
+			this.field = field;
+			this.weight = weight;
+		}
+	}
+	
+	
 	class ByteArray {
 		final static int MAX_ENLARGE_SIZE = 1024*1024*8;
 		public byte[] array;
@@ -78,6 +123,9 @@ public class NumericTokenizer {
 
 	ByteArray line;
 
+	FeatureWeight keyWeight;
+	FeatureFieldWeight ffWeight;
+	
 	int digitIdx = 0; // a token's cursor
 	int bound = 0;
 	private  void init(byte[] delims){
@@ -203,20 +251,42 @@ public class NumericTokenizer {
 	 * first 32 bits(integer) for id, last 32 bits(float) for weight
 	 * @return 64 bits(long) for key:value pair 
 	 */
-	public long nextKeyValuePair(){
+	private long nextKeyValuePair(){
 		long id = (Integer)nextNumber();
 		Object w = nextNumber();
 		Float weight = (w instanceof Float )? (Float)w : (Integer)w;
 		long result = (((long)id) << 32) | (Float.floatToIntBits(weight) & 0xffffffffl);
 		return result;
 	}
-
-	public static int extractFeatureId(long kv){
-		return (int) ((kv & 0xffffffff00000000l) >>> 32);
+	
+	public FeatureWeight nextKeyWeight(){
+		long got = nextKeyValuePair();
+		if (keyWeight == null){
+			keyWeight = new FeatureWeight(got);
+		}else{
+			keyWeight.setKV(got);
+		}
+		return keyWeight;
+	}
+	
+	public FeatureFieldWeight nextFFW(){
+		int fid = (Integer)nextNumber();
+		int field = (Integer)nextNumber();
+		Object w = nextNumber();
+		Float weight = (w instanceof Float )? (Float)w : (Integer)w;
+		if (ffWeight == null){
+			ffWeight = new FeatureFieldWeight();
+		}
+		ffWeight.set(fid, field, weight);
+		return ffWeight;
 	}
 
-	public static float extractWeight(long kv){
-		int w = (int)(kv & 0xffffffff);
-		return Float.intBitsToFloat(w);
-	}
+//	public static int extractFeatureId(long kv){
+//		return (int) ((kv & 0xffffffff00000000l) >>> 32);
+//	}
+//
+//	public static float extractWeight(long kv){
+//		int w = (int)(kv & 0xffffffff);
+//		return Float.intBitsToFloat(w);
+//	}
 }
