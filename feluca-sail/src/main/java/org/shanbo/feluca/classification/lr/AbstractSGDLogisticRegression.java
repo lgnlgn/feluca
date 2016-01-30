@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 
 
+
 import org.shanbo.feluca.classification.common.Classifier;
 import org.shanbo.feluca.classification.common.Evaluator;
 import org.shanbo.feluca.data2.DataEntry;
@@ -34,6 +35,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 
 
 	protected double w0;
+	protected int w0Type = 0;// 0 for no use; 1 for stay ; 2 for gradient 
 	public double[] featureWeights = null;
 
 	protected DataEntry dataEntry= null;
@@ -114,9 +116,10 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		if (biasWeightRound == -1){
 			this.biasWeightRound = Math.round(ratio);
 		}
-		float cc = this.biasWeightRound * classInfo2Ints[2] + classInfo1Ints[2] + 0.0f;
-		w0 = - Math.log(cc/(this.biasWeightRound * classInfo2Ints[2]) -1 );
-		w0 = 0;
+		float cc = this.biasWeightRound * this.minSamples + this.maxSamples + 0.0f;
+		w0 = - Math.log(cc/(this.biasWeightRound * this.minSamples) -1 );
+		if (w0Type == 0 || w0Type == 2)
+			w0 = 0;
 		System.out.println(w0);
 		try{
 			this.estimateParameter();
@@ -203,6 +206,9 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 			convergence = Utilities.getDoubleFromProperties(prop,"convergence");
 		}
 
+		if (prop.getProperty("w0type") != null){
+			setW0Type(Utilities.getIntFromProperties(prop,"w0type"));
+		}
 
 		for(Entry<Object, Object> entry : prop.entrySet()){
 			String  key= entry.getKey().toString();
@@ -211,12 +217,15 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 				biasWeightRound = Integer.parseInt(entry.getValue().toString());
 			}
 		}
+
+
 	}
 
 	public void saveModel(String filePath) throws Exception {		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
 		//		bw.write(Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.MAX_FEATURE_ID) + "\n");
 		//		bw.write(Utilities.getStrFromProperties(dataEntry.getDataStatistic(), DataStatistic.LABEL_INFO) + "\n");
+		bw.write(w0 + "\n");
 		for(int i = 0 ; i < this.featureWeights.length; i++){
 			if (this.featureWeights[i] != initWeight)
 				bw.write(String.format("%d\t%.6f\n", i, this.featureWeights[i]));			
@@ -228,6 +237,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		BufferedReader br = new BufferedReader(new FileReader(modelPath));	
 		this.featureWeights = new double[Integer.parseInt(statistic.getProperty(DataStatistic.MAX_FEATURE_ID)) + 1];
 		this._loadDataInfo(statistic.getProperty(DataStatistic.LABEL_INFO));
+		w0 = Double.parseDouble(br.readLine());
 		for(String line = br.readLine(); line != null; line = br.readLine()){
 			String[] fidWeight = line.split("\t");
 			this.featureWeights[Integer.parseInt(fidWeight[0])] = Double.parseDouble(fidWeight[1]);
@@ -258,6 +268,7 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		double[] resultProbs = new double[2];
 		int innerLabel = -1;
 		data.reOpen();
+		System.out.println(w0);
 		for(Vector sample = data.getNextVector(); sample != null ; sample = data.getNextVector()){
 
 			if (sample.getSize() == 0){ //how to predict without any features? A default probability = 0.5 should be moderate;
@@ -294,6 +305,14 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 		return p;
 	}
 
+	public void setW0Type(int type){
+		if (type > 2 || type < 0){
+			throw new RuntimeException("0 for no use; 1 for stay ; 2 for gradient");
+		}
+		this.w0Type = type;
+	}
+
+
 	protected void _train(int fold, int remain) throws Exception{
 		double avge = 99999.9;
 		double lastAVGE = Double.MAX_VALUE;
@@ -315,48 +334,42 @@ public abstract class AbstractSGDLogisticRegression implements Classifier, Memor
 			long timeStart = System.currentTimeMillis();
 
 			int c =1; //for n-fold cv
-			double predict = 0;
+			double innerPredict = 0; //0~1
 			double sume = 0;
 			corrects = 0;
 			int cc = 0;
 
+
+			int pp = 10;
 			for(Vector sample = dataEntry.getNextVector(); sample != null ; sample = dataEntry.getNextVector()){
 				if (c % fold == remain){ // no train
 					;
 				}else{ //train
-					if ( sample.getIntHeader() == this.biasLabel){ //bias; sequentially compute #(bias - 1) times
-						for(int bw = 1 ; bw < this.biasWeightRound; bw++){ //bias
-							this.gradientDescend(sample);
+					//bias; sequentially compute #(bias - 1) times
+					innerPredict = this.gradientDescend(sample);
+					if (acc(outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0], innerPredict)){
+						corrects += 1;
+					}
+					cc += 1;
+					sume += logloss(outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0], innerPredict);
+					if ( sample.getIntHeader() == this.biasLabel){
+						for(int bw = 0 ; bw < this.biasWeightRound; bw++){ //bias
+							innerPredict = this.gradientDescend(sample);
 						}
 					}
-					predict = gradientDescend(sample);
-					if (acc(outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0], predict)){
-						if ( sample.getIntHeader() == this.biasLabel)
-							corrects += this.biasWeightRound;
-						else
-							corrects += 1; 
-					}
-					//					if (Math.abs(predict) < 0.49)//accuracy
-					//						if ( sample.getIntHeader() == this.biasLabel)
-					//							corrects += this.biasWeightRound;
-					//						else
-					//							corrects += 1; 
-					cc += 1;
-					//		sume += Math.abs(error);
-					//					if (error > 0 ){ // 1 - prediction
-					//						sume += - Math.log( 1- error) / 0.69314718;
-					//					}else{ //0
-					//						sume += - Math.log(1 + error) / 0.69314718;
-					//					}
-					sume += logloss(outerLabelInfo[LABELRANGEBASE + sample.getIntHeader()][0], predict);
+
 				}
 				c += 1;
+				if (c% pp == 0){
+					System.out.print(String.format("[%.4f:%.1f]", sume / cc, corrects * 100 / cc));
+					pp *= 2;
+				}
 			}
 
 			avge = sume / cc;
 
 			long timeEnd = System.currentTimeMillis();
-			double acc = corrects / (cc * multi) * 100;
+			double acc = corrects / (cc ) * 100;
 
 			if (corrects  < lastCorrects ){ //
 				if (!alphaSetted){

@@ -12,13 +12,14 @@ public class TestSGDFM {
 	public static void trainTest(String predict) throws Exception{
 		AbstractSGDLogisticRegression lr = new SGDFactorizeMachine();
 		Properties p = new Properties();
-		p.setProperty("alpha", "0.9");
-		p.setProperty("lambda", "0.1");
-		p.setProperty("loops", "25");
-		p.setProperty("-w1", "5");
-		p.setProperty("dim", "4");
+		p.setProperty("alpha", "0.007");
+		p.setProperty("lambda", "0.05");
+		p.setProperty("loops", "35");
+		p.setProperty("-w1", "1");
+		p.setProperty("dim", "8");
+		p.setProperty("w0type", "1");
 		lr.setProperties(p);
-		lr.loadData(DataEntry.createDataEntry("/home/lgn/data/avazutrain33", false));
+		lr.loadData(DataEntry.shuffledDataEntry("/home/lgn/data/avazutrain33"));
 		
 //		lr.crossValidation(5, new Evaluator.BinaryAccuracy());
 		System.out.println(lr.toString());

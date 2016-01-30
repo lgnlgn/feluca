@@ -13,12 +13,13 @@ public class TestSGDL2LR {
 	public static void testTrain(String model) throws Exception{
 		AbstractSGDLogisticRegression lr = new SGDL2LR();
 		Properties p = new Properties();
-		p.setProperty("alpha", "1.2");
-		p.setProperty("lambda", "0.5");
+		p.setProperty("alpha", "0.1");
+		p.setProperty("lambda", "0.1");
 		p.setProperty("loops", "15");
-		p.setProperty("-w1", "5");
+		p.setProperty("-w1", "2");
+		p.setProperty("w0type", "0");
 		lr.setProperties(p);
-		lr.loadData(DataEntry.createDataEntry("/home/lgn/data/avazutrain33", false));
+		lr.loadData(DataEntry.shuffledDataEntry("/home/lgn/data/avazutrain33"));
 		
 //		lr.crossValidation(4, new Evaluator.BinaryAccuracy());
 		System.out.println(lr.toString());
