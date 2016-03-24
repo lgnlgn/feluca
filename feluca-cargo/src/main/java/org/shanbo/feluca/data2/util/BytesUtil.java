@@ -14,5 +14,40 @@ public class BytesUtil {
 		return Float.intBitsToFloat(getInt(array, pos));
 	}
 	
+	public static void int2Byte(int integer, byte[] dest){
+		if (dest ==null || dest.length < 4){
+			throw new RuntimeException();
+		}
+		dest[0] = (byte)((integer & 0xFF000000) >>24);
+		dest[1] = (byte)((integer >> 16) & 0xFF);
+		dest[2] = (byte)((integer >> 8) & 0xFF); 
+		dest[3] = (byte)(integer & 0xFF);
+	}
 	
+	public static int getInt(byte[] bytes){
+		return getInt(bytes, 0);
+	}
+	
+	public static void float2Bytes(float f, byte[] bytes){
+		int2Byte(Float.floatToIntBits(f),  bytes);
+	}
+	
+	public static float bytes2Float(byte[] bytes){
+		return Float.intBitsToFloat(getInt(bytes));
+	}
+	
+	
+	public static void main(String[] args) {
+		int aa = 546234325;
+		byte[] c = new byte[4];
+		int2Byte(aa, c);
+		int bb = getInt(c);
+		System.out.println(aa);
+		System.out.println(bb);
+		
+		float ff = 4.546f;
+		float2Bytes(ff, c);
+		float ff2 = bytes2Float(c);
+		System.out.println(ff2);
+	}
 }

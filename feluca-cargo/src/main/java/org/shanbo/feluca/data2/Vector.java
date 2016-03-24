@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.msgpack.packer.Packer;
 import org.msgpack.unpacker.Unpacker;
+import org.shanbo.feluca.data2.DataSetInfo.Statistic;
 import org.shanbo.feluca.data2.util.NumericTokenizer;
 import org.shanbo.feluca.data2.util.NumericTokenizer.FeatureWeight;
 
@@ -18,12 +19,14 @@ public abstract class Vector {
 	public enum VectorType{
 		LABEL_FID_WEIGHT,
 		VID_FID_WEIGHT,
+		NUMBER_FID_WEIGHT,
 	}
 	
-	TIntArrayList fids;
-	VectorType inputType;  //use only for convert or build
-	VectorType outputType; //
+	protected TIntArrayList fids;
+	protected VectorType inputType;  //use only for convert or build
+	protected VectorType outputType; //
 
+	public abstract List<Statistic> getStat();
 	
 	public abstract void pack(Packer packer) throws IOException;
 	
@@ -52,17 +55,16 @@ public abstract class Vector {
 		return fids.size();
 	}
 
+	@Deprecated
 	public long getLongHeader(){
 		return 0;
 	}
 
+	@Deprecated
 	public int getIntHeader(){
 		return 0;
 	}
 
-	public byte[] getHeader(){
-		return null;
-	}
 
 	
 	public int getFId(int idx){
@@ -70,23 +72,24 @@ public abstract class Vector {
 	}
 
 
-	
+	@Deprecated
 	public float getWeight(int idx){
 		return 0;
 	}
 
+	@Deprecated
 	public byte[] getBytesPayload(int idx){
 		return new byte[]{};
 	}
-	
+	@Deprecated
 	public int getIntPayload(int idx){
 		return 0;
 	}
-
+	@Deprecated
 	public long getLongPayload(int idx){
 		return 0l;
 	}
-
+	@Deprecated
 	public float getFloatPayload(int idx) {
 		return 0.0f;
 	}
@@ -204,7 +207,7 @@ public abstract class Vector {
 			return true;
 		}
 
-		@Override
+
 		public List<Vector> divideByFeature(HashPartitioner partitioner) {
 			List<Vector> vectors = new ArrayList<Vector>(partitioner.getMaxShards());
 			List<StrBuilder> lines = new ArrayList<StrBuilder>(partitioner.getMaxShards());
@@ -236,6 +239,14 @@ public abstract class Vector {
 				weights.add(v.getWeight(i));
 			}
 		}
+
+		@Override
+		public List<Statistic> getStat() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+
 	}
 	
 	public static class VIDVector extends LWVector{

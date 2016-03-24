@@ -198,7 +198,7 @@ public class NumericTokenizer {
 	 * return a number  
 	 * @return Integer or Float
 	 */
-	public Object nextNumber(){
+	public Number nextNumber(){
 		long value = 0;
 		boolean isFloat = false;
 		int dpIndex = 0;

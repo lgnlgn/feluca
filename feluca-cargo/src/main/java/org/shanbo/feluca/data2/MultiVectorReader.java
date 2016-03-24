@@ -15,6 +15,7 @@ import com.google.common.io.PatternFilenameFilter;
  * @author lgn
  *
  */
+@Deprecated
 public class MultiVectorReader implements VectorReader{
 	List<SeqVectorReader> readers;
 	List<Vector> currentVectors;

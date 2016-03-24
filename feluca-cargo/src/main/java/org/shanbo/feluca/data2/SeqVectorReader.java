@@ -86,10 +86,7 @@ public class SeqVectorReader implements VectorReader{
 		}
 		msgpack = new MessagePack();
 		unpacker = msgpack.createUnpacker(new BufferedInputStream(new FileInputStream(listFiles[blockIt]),1024 * 1024 * 2));
-		stat = new Properties();
-		FileInputStream fis = new FileInputStream(dirName + "/" + dir.getName()  + ".sta"); 
-		stat.load(fis);
-		fis.close();
+		stat = DataSetInfo.load(new File(dirName + "/" + dir.getName()  + ".sta"));
 		vt = VectorType.valueOf(stat.getProperty("vectorType"));
 	}
 	
