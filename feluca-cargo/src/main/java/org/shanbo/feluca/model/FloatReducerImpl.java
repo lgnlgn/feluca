@@ -43,12 +43,12 @@ public class FloatReducerImpl implements FloatReducer{
 		}
 		
 		public Workshop(Preparation[] input){
-			if (input[0].values[0].length == 1 && input[0].values[0][1] == -1){//one degree
+			if (FloatWindow.isZipped(input[0].values)){//one degree
 				reduceSlot = new float[1][][];
 				reduceSlot[0] = new float[input.length][];
 				result = new float[1][];
 				for(int i = 0 ; i < input.length; i++){
-					reduceSlot[0][i] = new float[input[0].values[1].length];
+					reduceSlot[0][i] = input[i].values[1];
 				}
 			}else{ //two degree
 				int maxSize = 0;
@@ -63,7 +63,7 @@ public class FloatReducerImpl implements FloatReducer{
 				for(int i = 0; i < input.length; i++){
 					for(int j = 0 ; j < input[i].values[0].length; j++){
 						int flatIndex = (int)input[i].values[0][j];
-						reduceSlot[flatIndex][i] = new float[input[i].values[j + 1].length];
+						reduceSlot[flatIndex][i] = input[i].values[j + 1];
 					}
 				}
 			}
@@ -77,9 +77,9 @@ public class FloatReducerImpl implements FloatReducer{
 		}
 		
 		void toReturn(Preparation[] output){
-			if (output[0].values[0].length == 1 && output[0].values[0][1] == -1){//one degree
+			if (FloatWindow.isZipped(output[0].values)){//one degree
 				for(int i = 0 ; i < output.length; i++){
-					output[i].values[1] = result[1];
+					output[i].values[1] = result[0];
 				}
 			}else{//two degree
 				for(int i = 0; i < output.length; i++){

@@ -64,6 +64,14 @@ import gnu.trove.list.array.TFloatArrayList;
 	}
 	
 	public String toString(){
+		return orignalFormat();
+	}
+	
+	public String zippedFormat(){
+		return toString(zip());
+	}
+	
+	public String orignalFormat(){
 		StringBuilder a = new StringBuilder(new TFloatArrayList(keys).subList(0, Math.min(keys.length, 15)).toString() + "\n[");
 		for(int i = 0 ; i < Math.min(keys.length, 15); i++){
 			a.append(new TFloatArrayList(list[i]).toString() + ",");
@@ -100,12 +108,19 @@ import gnu.trove.list.array.TFloatArrayList;
 		}
 	}
 	
+	static boolean isZipped(float[][] result){
+		if (result[0].length == 1 &&  result[0][0] == -1){
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * 
 	 * @param result
 	 */
 	public void unzipAndSet(float[][] result){
-		if (result[0].length == 1 &&  result[0][1] == -1){
+		if (isZipped(result)){
 			for(int i = 0; i < keys.length; i++){
 				list[i][0] = result[1][i];
 			}
